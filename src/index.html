@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Free AWS certification notes (Cloud Practitioner, Solutions Architect), DSA practice problems, and self-test quizzes. Structured study material for AWS exams and coding interviews.">
+    <meta name="keywords"
+        content="AWS notes, AWS certification, DSA practice, data structures and algorithms, AWS quiz, cloud computing, AWS Cloud Practitioner, AWS Solutions Architect, free study resources">
+
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:title" content="Free AWS & DSA Notes, Quizzes | Learning Dashboard">
+    <meta property="og:description"
+        content="Free AWS certification notes, DSA practice problems, and self-test quizzes — structured study material for AWS exams and coding interviews.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/">
+    <meta property="og:image" content="https://namrata2709.github.io/Resources/images/dashboard-preview.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:title" content="Free AWS & DSA Notes, Quizzes | Learning Dashboard">
+    <meta name="twitter:description"
+        content="Free AWS certification notes, DSA practice problems, and self-test quizzes — structured study material for AWS exams and coding interviews.">
+    <meta name="twitter:image" content="https://namrata2709.github.io/Resources/images/dashboard-preview.png">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+
+    <title>Free AWS & DSA Notes, Quizzes | Learning Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Structured Data for Google Rich Results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Learning Dashboard",
+      "description": "Free AWS certification notes, DSA practice problems, and self-test quizzes for AWS exams and coding interview prep",
+      "url": "https://namrata2709.github.io/Resources/",
+      "author": {
+        "@type": "Person",
+        "name": "Namrata Mulwani",
+        "email": "awslecturenotes@gmail.com"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Namrata Mulwani"
+      },
+      "inLanguage": "en",
+      "keywords": ["AWS", "DSA", "cloud computing", "data structures", "algorithms", "training", "certification"],
+      "educationalUse": "Professional Development",
+      "educationalLevel": "Beginner to Intermediate"
+    }
+    </script>
+</head>
+
+<body>
+    <!-- Loading State -->
+    <div id="pageLoader" class="page-loader">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Loading resources...</p>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+        <span class="theme-icon"></span>
+    </button>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>🎓 Learning Dashboard</h1>
+            <p class="subtitle">Your self-paced study hub</p>
+
+            <!-- Version Info -->
+            <div class="version-info">
+                <p><strong>Version:</strong> 2.0</p>
+                <p><strong>Last Updated:</strong> June 24, 2026</p>
+                <p><strong>Status:</strong> ✅ Active</p>
+            </div>
+        </header>
+
+        <!--
+            Dashboard cards (AWS, DSA, Quiz, and any future subjects or
+            standalone modules) are rendered dynamically by js/dashboard.js
+            from data/index/dashboard-cards.json.
+            To add a new card later: add an entry to dashboard-cards.json —
+            no edits needed here.
+        -->
+        <div id="modulesGrid" class="modules-grid">
+            <div class="loading">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Footer with License & Disclaimer (injected by js/shared/footer.js) -->
+    <div id="footerRoot"></div>
+
+    <!-- External JS -->
+    <!-- Shared meta tags (author, robots, og:site_name, twitter:card,
+         theme-color, color-scheme) — identical on every page, injected
+         from a single source of truth instead of duplicated in <head>. -->
+    <script src="js/shared/shared-meta.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/shared/footer.js"></script>
+    <script src="js/shared/analytics.js"></script>
+    <script src="js/shared/page-loader.js"></script>
+</body>
+
+</html>

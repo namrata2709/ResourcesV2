@@ -1,0 +1,430 @@
+/* ============================================
+   DSA NOTES STYLESHEET
+   Loaded alongside styles.css + notes.css
+   File: css/dsa-notes.css
+   ============================================ */
+
+/* ============================================
+   TAGS
+   ============================================ */
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: var(--bg-secondary, #f1f5f9);
+    color: var(--text-secondary, #475569);
+    border: 1px solid var(--border-color, #e2e8f0);
+}
+
+[data-theme="dark"] .tag {
+    background: rgba(99, 102, 241, 0.12);
+    color: #a5b4fc;
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+[data-theme="comfort"] .tag {
+    background: #f0ead6;
+    color: #6b5d3f;
+    border-color: #e0d4b0;
+}
+
+/* ============================================
+   CODE TABS (Implementation section)
+   ============================================ */
+
+.code-tab-bar {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid var(--border-color, #e2e8f0);
+    margin-bottom: 16px;
+}
+
+.code-tab {
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-secondary, #64748b);
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.code-tab:hover {
+    color: var(--text-primary, #1e293b);
+}
+
+.code-tab.active {
+    color: #6366f1;
+    border-bottom-color: #6366f1;
+}
+
+[data-theme="dark"] .code-tab.active {
+    color: #a5b4fc;
+    border-bottom-color: #a5b4fc;
+}
+
+.code-panel pre {
+    margin: 0;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.code-panel pre code {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+/* ============================================
+   VISUALISATION PANEL
+   ============================================ */
+
+.viz-panel {
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-secondary, #f8fafc);
+}
+
+.viz-tab-bar {
+    display: flex;
+    background: var(--bg-tertiary, #f1f5f9);
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+/* ---------- Tab Bar ---------- */
+
+.viz-tab-bar {
+    display: flex;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* ---------- Tab ---------- */
+
+.viz-tab {
+    flex: 1;
+    padding: 14px 18px;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    border: none;
+    border-bottom: 3px solid transparent;
+
+    background: transparent;
+    color: var(--text-secondary);
+
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.viz-tab:hover {
+    background: var(--bg-hover);
+}
+
+/* ---------- Active ---------- */
+
+.viz-tab.active {
+    background: var(--bg-primary);
+    color: var(--accent-color, #6366f1);
+    border-bottom-color: var(--accent-color, #6366f1);
+}
+
+/* ---------- Dark ---------- */
+
+[data-theme="dark"] .viz-tab.active {
+    background: #111827;
+    color: #a5b4fc;
+    border-bottom-color: #818cf8;
+}
+
+/* ---------- Comfort ---------- */
+
+[data-theme="comfort"] .viz-tab.active {
+    background: #f8f2e7;
+    color: #7c5b2f;
+    border-bottom-color: #b28b46;
+}
+
+.viz-images {
+    padding: 20px;
+    text-align: center;
+}
+
+.viz-step-img {
+    /* !important required: .note-content img { display: block; } from
+       notes.css has specificity 0,1,1 which beats this rule's
+       0,1,0 -- without !important every step image renders visible at
+       once regardless of the .active class below. */
+    display: none !important;
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.viz-step-img.active {
+    display: inline-block !important;
+}
+
+.viz-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.viz-nav button {
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #e2e8f0);
+    background: var(--bg-primary, #ffffff);
+    color: var(--text-primary, #1e293b);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.viz-nav button:hover {
+    background: var(--bg-hover, rgba(99,102,241,0.06));
+}
+
+.viz-nav button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.viz-counter {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #64748b);
+    font-family: 'Courier New', monospace;
+}
+
+.image-caption {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: var(--text-secondary, #64748b);
+    font-style: italic;
+}
+
+.viz-animation {
+    padding: 0;
+}
+
+.viz-animation iframe {
+    display: block;
+    border: none;
+}
+
+.viz-animation-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    padding: 8px 14px;
+    border-top: 1px solid var(--border-color);
+
+    background: var(--bg-secondary);
+}
+
+.viz-fullscreen-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 12px;
+
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+
+    background: var(--bg-primary);
+
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 500;
+
+    transition: all .2s;
+}
+
+.viz-fullscreen-link:hover {
+    color: var(--accent-color, #6366f1);
+    border-color: var(--accent-color, #6366f1);
+}
+
+.viz-fullscreen-link {
+    font-size: 0.82rem;
+    color: #6366f1;
+    text-decoration: none;
+}
+
+.viz-fullscreen-link:hover {
+    text-decoration: underline;
+}
+
+.viz-tab {
+    background: transparent;
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+}
+
+[data-theme="dark"] .viz-tab,
+[data-theme="comfort"] .viz-tab {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   LEETCODE / CONTEST PROBLEM TABLES
+   ============================================ */
+
+#problemsContainer table,
+#contestContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+}
+
+#problemsContainer th,
+#contestContainer th {
+    text-align: left;
+    font-size: 0.82rem;
+    color: var(--text-secondary, #64748b);
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border-color, #e2e8f0);
+}
+
+#problemsContainer td,
+#contestContainer td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+    font-size: 0.9rem;
+}
+
+#problemsContainer a,
+#contestContainer a {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#problemsContainer a:hover,
+#contestContainer a:hover {
+    text-decoration: underline;
+}
+
+.badge-easy, .badge-medium, .badge-hard {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
+.badge-easy   { background: rgba(74,222,128,0.15); color: #15803d; }
+.badge-medium { background: rgba(251,191,36,0.15); color: #b45309; }
+.badge-hard   { background: rgba(248,113,113,0.15); color: #b91c1c; }
+
+[data-theme="dark"] .badge-easy   { color: #4ade80; }
+[data-theme="dark"] .badge-medium { color: #fbbf24; }
+[data-theme="dark"] .badge-hard   { color: #f87171; }
+
+.contest-pattern {
+    font-size: 0.82rem;
+    color: var(--text-secondary, #64748b);
+}
+
+/* ============================================
+   IMAGE PROMPT BLOCKS
+   ============================================ */
+
+.image-prompt-block {
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.image-prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--bg-tertiary, #f1f5f9);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.copy-prompt-btn {
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid #6366f1;
+    background: rgba(99,102,241,0.08);
+    color: #6366f1;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.copy-prompt-btn:hover {
+    background: rgba(99,102,241,0.18);
+}
+
+.image-prompt-text {
+    margin: 0;
+    padding: 14px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    background: var(--bg-secondary, #f8fafc);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* ============================================
+   YOUTUBE / CONTEST / INTERVIEW CARDS
+   (reuses .interview-question from notes.css)
+   ============================================ */
+
+.interview-question a {
+    color: #6366f1;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.interview-question a:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+    .code-tab-bar, .viz-tab-bar {
+        flex-wrap: wrap;
+    }
+    .viz-nav {
+        flex-wrap: wrap;
+    }
+    #problemsContainer table,
+    #contestContainer table {
+        font-size: 0.82rem;
+    }
+}
+

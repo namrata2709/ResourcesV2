@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Interactive AWS quiz with detailed answer explanations. Learn AWS concepts through guided quiz questions with comprehensive explanations and resources.">
+    <meta name="keywords" content="AWS quiz, AWS practice questions, AWS certification prep, interactive AWS learning">
+
+    <meta property="og:title" content="Quiz - Learning Dashboard">
+    <meta property="og:description" content="Interactive AWS quiz with detailed answer explanations and learning resources.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/quiz.html">
+    <meta property="og:image" content="https://namrata2709.github.io/Resources/images/quiz-preview.png">
+
+    <meta name="twitter:title" content="Quiz - Learning Dashboard">
+    <meta name="twitter:description" content="Interactive AWS quiz with detailed explanations.">
+    <meta name="twitter:image" content="https://namrata2709.github.io/Resources/images/quiz-preview.png">
+
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/quiz.html">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+
+    <title>Quiz - Learning Dashboard</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/quiz/quiz.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Quiz",
+      "name": "AWS Quiz",
+      "description": "Interactive quiz with detailed answer explanations for AWS concepts",
+      "url": "https://namrata2709.github.io/Resources/quiz.html",
+      "author": { "@type": "Person", "name": "Namrata Mulwani", "email": "awslecturenotes@gmail.com" },
+      "publisher": { "@type": "Person", "name": "Namrata Mulwani" },
+      "inLanguage": "en",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Learning Dashboard",
+        "url": "https://namrata2709.github.io/Resources/"
+      },
+      "educationalUse": "Assessment",
+      "educationalLevel": "Beginner to Intermediate"
+    }
+    </script>
+</head>
+<!--
+    data-subject    → footer.js reads this to inject AWS disclaimer
+    data-page-title → page-header.js injects <h1>; quiz-page.js overwrites
+                      this after JSON loads with the real quiz title
+    data-back-href  → page-header.js injects back button pointing here
+    data-back-label → back button text
+-->
+<body
+    data-subject="aws"
+    data-page-title="📝 Quiz"
+>
+    <!-- Page Loader — hardcoded so it shows before any JS runs -->
+    <div id="pageLoader" class="page-loader">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Loading questions...</p>
+    </div>
+
+    <!--
+        Injected by shared scripts (in order):
+          shared-meta.js  → author, robots, og:site_name, twitter:card, theme-color, color-scheme
+          theme.js        → #themeToggle button + applies saved theme
+          breadcrumb.js   → <nav class="breadcrumb"> + BreadcrumbList JSON-LD
+          page-header.js  → .page-header with back button + <h1 id="pageTitle">
+          footer.js       → <footer> into #footerRoot, AWS disclaimer via data-subject
+          analytics.js    → GA
+          page-loader.js  → hides #pageLoader on window load
+
+        Then quiz-page.js loads quiz modules and boots QuizEngine.
+    -->
+
+    <div class="page-container">
+        <!--
+            .page-header injected here by page-header.js.
+            quiz-page.js updates #pageTitle + breadcrumb last crumb
+            after fetching the quiz JSON and reading its real title.
+        -->
+
+        <!--
+            QuizEngine inserts: progress bar, toolbar, navigator,
+            search filter — all before #questionsContainer.
+        -->
+        <div id="questionsContainer">
+            <div class="loading">Loading questions...</div>
+        </div>
+    </div>
+
+    <!-- Print Button -->
+    <button class="print-button" aria-label="Print this quiz">
+        <span class="print-icon">🖨️</span>
+        <span class="print-text">Print</span>
+    </button>
+
+    <div id="footerRoot"></div>
+
+    <!-- Shared scripts — same order as index.html -->
+    <script src="js/shared/shared-meta.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/breadcrumb.js"></script>
+    <script src="js/shared/page-header.js"></script>
+    <script src="js/shared/footer.js"></script>
+    <script src="js/shared/analytics.js"></script>
+    <script src="js/shared/page-loader.js"></script>
+
+    <!-- Quiz bootloader — loads quiz modules then boots engine -->
+    <script src="js/quiz/quiz-page.js" defer></script>
+</body>
+</html>

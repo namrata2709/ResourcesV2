@@ -1,0 +1,139 @@
+/* ============================================
+   DSA PRINT STYLESHEET
+   Loaded ONLY inside the print preview window, injected by dsa-print.js
+   right after notes-print.js opens that window. Covers every class
+   notes-print.css has no rule for: code-tabs, viz-panel, problem/contest
+   tables, and the new MCQ/Interview wrapper chrome introduced when the
+   schema was fixed to match notes-mcq.js/notes-interview.js exactly.
+   File: css/dsa-print.css
+   ============================================ */
+
+/* ============================================
+   VISUALISATION — animation iframe has no place on paper,
+   show the full static image sequence instead of just "active"
+   ============================================ */
+
+.viz-animation,
+.viz-tab-bar,
+.viz-nav {
+    display: none !important;
+}
+
+.viz-step-img {
+    display: block !important;
+    max-width: 100%;
+    margin-bottom: 0.4cm;
+    border: 1pt solid #ccc;
+    page-break-inside: avoid;
+}
+
+.viz-panel {
+    border: none;
+    background: none;
+}
+
+/* ============================================
+   IMPLEMENTATION — print only the active language panel,
+   hide the tab buttons themselves
+   ============================================ */
+
+.code-tab-bar {
+    display: none !important;
+}
+
+.code-panel {
+    display: none !important;
+}
+
+.code-panel.active {
+    display: block !important;
+}
+
+/* ============================================
+   LEETCODE / CONTEST PROBLEM TABLES
+   ============================================ */
+
+#problemsContainer table,
+#contestContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+    page-break-inside: avoid;
+}
+
+#problemsContainer th,
+#contestContainer th {
+    background: #e0e0e0;
+    border: 1pt solid #999;
+    padding: 0.3rem 0.5rem;
+    font-weight: 700;
+    text-align: left;
+}
+
+#problemsContainer td,
+#contestContainer td {
+    border: 1pt solid #ccc;
+    padding: 0.3rem 0.5rem;
+    color: #111;
+}
+
+#problemsContainer a,
+#contestContainer a {
+    color: #111;
+    text-decoration: underline;
+}
+
+.badge-easy, .badge-medium, .badge-hard {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 700;
+    padding: 1px 6px;
+    border: 1pt solid #999;
+}
+
+.contest-pattern {
+    font-size: 9pt;
+    color: #444;
+    font-style: italic;
+}
+
+/* ============================================
+   MCQ WRAPPER CHROME — new divs introduced when the schema was
+   fixed to match notes-mcq.js exactly. These are <div>s, not
+   <button>s, so notes-print.js's generic button-strip never
+   touches them. Hide the interactive chrome, keep the slides.
+   ============================================ */
+
+.quiz-info,
+.quiz-counter,
+.quiz-score-display,
+.quiz-summary-section,
+.quiz-summary-btn,
+.quiz-reset-container,
+.quiz-reset-btn {
+    display: none !important;
+}
+
+.quiz-carousel-container {
+    border: none;
+    padding: 0;
+}
+
+/* ============================================
+   INTERVIEW WRAPPER CHROME — same issue as MCQ above
+   ============================================ */
+
+.interview-intro,
+.interview-progress {
+    display: none !important;
+}
+
+/* ============================================
+   VISUAL QUESTIONS — reuses .quiz-slide/.quiz-option-card styling
+   from notes-print.css already (same class names), only the
+   wrapper navigation needs hiding, same pattern as MCQ above
+   ============================================ */
+
+#visualMcqContainer + .quiz-navigation {
+    display: none !important;
+}

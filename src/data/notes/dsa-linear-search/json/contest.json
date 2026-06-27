@@ -1,0 +1,28 @@
+{
+  "problems": [
+    {
+      "id": 1,
+      "title": "Linear Search (introductory problem)",
+      "platform": "CSES",
+      "url": "https://cses.fi/problemset/task/1620",
+      "diff": "easy",
+      "pattern": "Direct linear scan over an array of queries"
+    },
+    {
+      "id": 2,
+      "title": "Distinct Numbers",
+      "platform": "CSES",
+      "url": "https://cses.fi/problemset/task/1621",
+      "diff": "easy",
+      "pattern": "Linear scan to count unique values after sorting — linear search used as a component"
+    },
+    {
+      "id": 3,
+      "title": "Array Description",
+      "platform": "CSES",
+      "url": "https://cses.fi/problemset/task/1746",
+      "diff": "medium",
+      "pattern": "DP with linear scan over valid transitions between states"
+    }
+  ]
+}

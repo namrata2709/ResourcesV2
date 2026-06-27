@@ -1,0 +1,404 @@
+/* ============================================
+   ANIMATION CORE STYLESHEET
+   Shared across all 171 animated DSA topics
+   File: css/animation-core.css
+   ============================================ */
+
+* , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: #0f1117;
+    color: #e2e8f0;
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.anim-header {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.anim-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    letter-spacing: 0.3px;
+}
+
+.anim-subtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+/* ============================================
+   INPUT PANEL
+   ============================================ */
+
+.input-panel {
+    width: 100%;
+    max-width: 900px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 160px;
+}
+
+.input-group label {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.input-group input,
+.input-group textarea {
+    background: #0f1117;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    color: #e2e8f0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    padding: 7px 10px;
+    outline: none;
+    resize: vertical;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+    border-color: #6366f1;
+}
+
+.run-btn {
+    background: #6366f1;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 9px 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.run-btn:hover { background: #4f46e5; }
+
+.input-error {
+    width: 100%;
+    font-size: 0.78rem;
+    color: #f87171;
+    margin-top: 2px;
+}
+
+/* ============================================
+   STEP LABEL
+   ============================================ */
+
+.step-label {
+    width: 100%;
+    max-width: 900px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 16px;
+    min-height: 42px;
+}
+
+.step-label strong { color: #e2e8f0; }
+
+/* ============================================
+   ANIMATION CANVAS (renderer mounts here)
+   ============================================ */
+
+.anim-canvas {
+    width: 100%;
+    max-width: 900px;
+    position: relative;
+    min-height: 220px;
+    padding: 40px 0;
+}
+
+/* ============================================
+   GENERIC POINTER (used by array, string renderers)
+   ============================================ */
+
+.pointer {
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transform: translateX(-50%);
+    transition: left 0.4s ease;
+    pointer-events: none;
+}
+
+.pointer-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+.pointer-arrow {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 12px solid currentColor;
+}
+
+.pointer-low  { color: #38bdf8; }
+.pointer-mid  { color: #a855f7; }
+.pointer-high { color: #f87171; }
+.pointer-i    { color: #facc15; }
+.pointer-j    { color: #fb923c; }
+
+/* ============================================
+   GENERIC CELL (array, grid, string renderers)
+   ============================================ */
+
+.cell {
+    width: 64px;
+    height: 64px;
+    background: #1e2130;
+    border: 1.5px solid #2a2d3a;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier New', monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    position: relative;
+    transition: background 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.cell.active {
+    background: #7c3aed;
+    border-color: #a855f7;
+    box-shadow: 0 0 16px rgba(168,85,247,0.5);
+}
+
+.cell.eliminated {
+    background: #111827;
+    border-color: #1f2937;
+    color: #374151;
+}
+
+.cell.found {
+    background: #065f46;
+    border-color: #4ade80;
+    box-shadow: 0 0 20px rgba(74,222,128,0.5);
+    color: #4ade80;
+}
+
+.cell.compared {
+    border-color: #fbbf24;
+    box-shadow: 0 0 10px rgba(251,191,36,0.4);
+}
+
+.cell.swapped {
+    background: #7c2d12;
+    border-color: #fb923c;
+}
+
+.index-label {
+    text-align: center;
+    font-size: 0.72rem;
+    color: #64748b;
+    font-family: monospace;
+    margin-top: 6px;
+}
+
+/* ============================================
+   GENERIC NODE + EDGE (tree, graph renderers — SVG based)
+   ============================================ */
+
+.anim-canvas svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.node-circle {
+    fill: #1e2130;
+    stroke: #2a2d3a;
+    stroke-width: 1.5;
+    transition: fill 0.3s, stroke 0.3s;
+}
+
+.node-circle.active {
+    fill: #7c3aed;
+    stroke: #a855f7;
+    filter: drop-shadow(0 0 8px rgba(168,85,247,0.6));
+}
+
+.node-circle.visited {
+    fill: #1e3a5f;
+    stroke: #38bdf8;
+}
+
+.node-circle.found {
+    fill: #065f46;
+    stroke: #4ade80;
+    filter: drop-shadow(0 0 10px rgba(74,222,128,0.6));
+}
+
+.node-text {
+    fill: #e2e8f0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+}
+
+.edge-line {
+    stroke: #334155;
+    stroke-width: 2;
+    transition: stroke 0.3s, stroke-width 0.3s;
+}
+
+.edge-line.active {
+    stroke: #fbbf24;
+    stroke-width: 3;
+}
+
+.edge-line.selected {
+    stroke: #4ade80;
+    stroke-width: 3;
+}
+
+.edge-weight {
+    fill: #94a3b8;
+    font-family: monospace;
+    font-size: 11px;
+    text-anchor: middle;
+}
+
+/* ============================================
+   DECISION BANNER
+   ============================================ */
+
+.decision-banner {
+    width: 100%;
+    max-width: 900px;
+    background: #1a1200;
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    color: #fbbf24;
+    margin-top: 4px;
+    min-height: 42px;
+    opacity: 0;
+}
+
+/* ============================================
+   STATUS BAR
+   ============================================ */
+
+.status-bar {
+    width: 100%;
+    max-width: 900px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-top: 10px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.status-item span { font-weight: 700; }
+.status-item .val-low    { color: #38bdf8; }
+.status-item .val-high   { color: #f87171; }
+.status-item .val-mid    { color: #a855f7; }
+.status-item .val-found  { color: #4ade80; }
+.status-item .val-notfound { color: #f87171; }
+
+/* ============================================
+   CONTROLS
+   ============================================ */
+
+.controls {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.ctrl-btn {
+    background: rgba(99,102,241,0.08);
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 0.82rem;
+    padding: 8px 16px;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.ctrl-btn:hover { background: rgba(99,102,241,0.15); color: #e2e8f0; }
+.ctrl-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.ctrl-btn.primary {
+    background: rgba(99,102,241,0.18);
+    border-color: #6366f1;
+    color: #a5b4fc;
+}
+
+.step-counter {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: #475569;
+    font-family: monospace;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 600px) {
+    .cell { width: 44px; height: 44px; font-size: 1rem; }
+    .index-label { font-size: 0.65rem; }
+    .controls { gap: 8px; }
+    .step-counter { width: 100%; margin-left: 0; text-align: center; }
+    .input-panel { flex-direction: column; align-items: stretch; }
+}

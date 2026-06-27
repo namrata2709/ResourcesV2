@@ -1,0 +1,100 @@
+{
+  "categories": [
+    {
+      "title": "Understanding",
+      "items": [
+        {
+          "id": "c1",
+          "text": "I can explain linear search using an everyday analogy without using any CS jargon"
+        },
+        {
+          "id": "c2",
+          "text": "I understand why the worst-case is O(n) and can prove it requires checking every element when the target is absent"
+        },
+        {
+          "id": "c3",
+          "text": "I understand why the average case is (n+1)/2 comparisons and can derive this from the uniform distribution assumption"
+        },
+        {
+          "id": "c4",
+          "text": "I can explain when linear search is preferable to binary search despite being asymptotically slower"
+        },
+        {
+          "id": "c5",
+          "text": "I understand the theoretical lower bound Ω(n) for searching unsorted data and why linear search is optimal"
+        }
+      ]
+    },
+    {
+      "title": "Implementation",
+      "items": [
+        {
+          "id": "c6",
+          "text": "I can implement linear search from scratch in Python, Java, and C++ without reference"
+        },
+        {
+          "id": "c7",
+          "text": "I can implement the find-all-occurrences variant that returns every matching index"
+        },
+        {
+          "id": "c8",
+          "text": "I can implement reverse linear search to find the last occurrence"
+        },
+        {
+          "id": "c9",
+          "text": "I can implement sentinel linear search with correct save-and-restore of the last element"
+        },
+        {
+          "id": "c10",
+          "text": "I can implement predicate-based linear search with a custom comparator function"
+        }
+      ]
+    },
+    {
+      "title": "Problem Solving",
+      "items": [
+        {
+          "id": "c11",
+          "text": "I solved Two Sum (LC #1) using linear search with a complement scan, without hints"
+        },
+        {
+          "id": "c12",
+          "text": "I solved Missing Number (LC #268) using linear scan, without hints"
+        },
+        {
+          "id": "c13",
+          "text": "I solved First Missing Positive (LC #41) using linear scan with in-place marking, without hints"
+        },
+        {
+          "id": "c14",
+          "text": "I attempted Find Median from Data Stream (LC #295) and can explain why O(n) linear scan per query is too slow"
+        }
+      ]
+    },
+    {
+      "title": "Expert Level",
+      "items": [
+        {
+          "id": "c15",
+          "text": "I know when NOT to use linear search: sorted array with large n, repeated queries on the same data, or data in a hash table"
+        },
+        {
+          "id": "c16",
+          "text": "I can identify the linear search pattern in unseen problems — any \"find the first element satisfying condition X\" framing"
+        },
+        {
+          "id": "c17",
+          "text": "I understand the sentinel trick and can explain the constant-factor improvement it provides"
+        },
+        {
+          "id": "c18",
+          "text": "I can reason about cache effects and explain why linear search sometimes beats binary search on medium-sized arrays in practice"
+        },
+        {
+          "id": "c19",
+          "text": "I know the move-to-front heuristic and can describe when it does and does not improve expected search time"
+        }
+      ]
+    }
+  ]
+}

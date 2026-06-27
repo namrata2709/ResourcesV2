@@ -1,0 +1,28 @@
+{
+  "cards": [
+    {
+      "id": "aws",
+      "label": "AWS",
+      "icon": "☁️",
+      "description": "Cloud certification prep — notes and labs",
+      "type": "subject",
+      "url": "notes-index.html?subject=aws"
+    },
+    {
+      "id": "dsa",
+      "label": "DSA",
+      "icon": "🧩",
+      "description": "Data Structures & Algorithms — notes",
+      "type": "subject",
+      "url": "notes-index.html?subject=dsa"
+    },
+    {
+      "id": "quiz",
+      "label": "Quiz",
+      "icon": "📝",
+      "description": "Practice quizzes across all subjects",
+      "type": "standalone",
+      "url": "quiz-index.html"
+    }
+  ]
+}

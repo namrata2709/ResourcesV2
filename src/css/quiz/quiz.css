@@ -1,0 +1,2117 @@
+/**
+ * Quiz Stylesheet — AWS Learning Dashboard
+ * File: css/quiz.css
+ * Load on: quiz.html, quiz-index.html
+ * Requires: css/styles.css loaded first (provides all CSS variables)
+ *
+ * PHASE 1: Quiz list, question cards, options, explanations,
+ *          difficulty badges, toast, print button, print instructions,
+ *          print media query, quiz-specific responsive overrides.
+ *
+ * PHASE 2 additions (marked ★):
+ *   ★ #18  Progress bar
+ *   ★ #22  Question navigator
+ *   ★ #15  Live score badge
+ *   ★ #16  Score summary card
+ *   ★ #17  Per-question result badge
+ *   ★ #23  Next-question button
+ *   ★ #28  .sr-only utility
+ *   ★      Nav-highlight flash on scroll-to
+ */
+
+/* ============================================================
+   QUIZ LIST PAGE  (quiz-index.html)
+   ============================================================ */
+
+
+
+
+
+.difficulty-badge              { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
+.difficulty-badge.beginner     { background: var(--success); color: white; }
+.difficulty-badge.intermediate { background: var(--warning); color: white; }
+.difficulty-badge.advanced     { background: var(--error);   color: white; }
+
+/* ============================================================
+   ★ #18  PROGRESS BAR
+   Inserted above questionsContainer by JS after load.
+   Shows answered / total and fills left-to-right.
+   ============================================================ */
+
+.quiz-progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+}
+
+.quiz-progress-track {
+    flex: 1;
+    height: 10px;
+    background: var(--bg-secondary);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.quiz-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--primary-gradient);
+    border-radius: 5px;
+    transition: width 0.4s ease;
+}
+
+.quiz-progress-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 110px;
+    text-align: right;
+}
+
+/* ============================================================
+   ★ #22  QUESTION NAVIGATOR
+   Dot strip — one numbered button per question.
+   Colours update after each answer.
+   ============================================================ */
+
+.quiz-navigator {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+}
+
+.quiz-nav-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    padding: 0;
+    line-height: 1;
+}
+
+.quiz-nav-dot:hover           { border-color: var(--primary); color: var(--primary); transform: scale(1.15); }
+.quiz-nav-dot:focus-visible   { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.quiz-nav-dot.answered-correct {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+.quiz-nav-dot.answered-wrong {
+    background: var(--error);
+    border-color: var(--error);
+    color: white;
+}
+
+/* Brief flash when scrolled-to via navigator */
+@keyframes nav-highlight-pulse {
+    0%, 100% { box-shadow: var(--card-shadow); }
+    40%       { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.35), var(--card-shadow-hover); }
+}
+
+.question-card.nav-highlight {
+    animation: nav-highlight-pulse 0.8s ease;
+}
+
+/* ============================================================
+   QUESTION CARDS
+   ============================================================ */
+
+.question-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+    position: relative;
+    scroll-margin-top: 1rem; /* so sticky elements don't cover scrolled-to card */
+}
+
+.question-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.question-number {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.question-text {
+    flex: 1;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.multi-select-hint {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: normal;
+}
+
+/* ============================================================
+   ★ #17  PER-QUESTION RESULT BADGE
+   Small pill appended to question-header after answering.
+   ============================================================ */
+
+.question-result-badge {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-left: auto;
+    animation: badge-pop 0.3s ease;
+}
+
+@keyframes badge-pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.15); }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+.question-result-badge.badge-correct  { background: var(--success); color: white; }
+.question-result-badge.badge-wrong    { background: var(--error);   color: white; }
+
+/* ============================================================
+   OPTIONS
+   ============================================================ */
+
+.options-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.option {
+    padding: 1rem 1.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--bg-card);
+}
+
+.option:hover     { border-color: var(--primary); background: rgba(59, 130, 246, 0.05); transform: translateX(5px); }
+.option.selected  { background: rgba(59, 130, 246, 0.1); border-color: var(--primary); }
+.option.correct   { background: rgba(16, 185, 129, 0.1); border-color: var(--success); }
+.option.incorrect { background: rgba(239, 68, 68, 0.1);  border-color: var(--error); }
+
+/* Letter label before answer, ✓/✗ after */
+.option-icon {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    color: var(--option-label-color, #6b7280);
+    background: var(--bg-secondary);
+}
+
+.option.correct   .option-icon { background: var(--success); border-color: var(--success); color: white; font-size: 1rem; }
+.option.incorrect .option-icon { background: var(--error);   border-color: var(--error);   color: white; font-size: 1rem; }
+
+.option:not(.correct):not(.incorrect):hover .option-icon {
+    border-color: var(--primary);
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--primary);
+}
+
+/* Multi-select max — dim unselectable options */
+.option.max-reached { opacity: 0.45; cursor: not-allowed; }
+.option.max-reached:hover { transform: none; border-color: var(--border-color); background: var(--bg-card); }
+
+.option-text { flex: 1; color: var(--text-primary); line-height: 1.5; }
+
+/* ============================================================
+   TOAST  (multi-select max feedback)
+   ============================================================ */
+
+.quiz-toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    z-index: 1100;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.quiz-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ============================================================
+   EXPLANATION
+   ============================================================ */
+
+.explanation {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-left: 4px solid var(--primary);
+    border-radius: 4px;
+}
+
+.explanation.correct   { background: rgba(16, 185, 129, 0.05); border-left-color: var(--success); }
+.explanation.incorrect { background: rgba(239, 68, 68, 0.05);  border-left-color: var(--error); }
+
+/* Hidden on screen; shown in @media print for unselected correct answers */
+.explanation.print-only { display: none; }
+
+.explanation-text { color: var(--text-secondary); margin-bottom: 0.5rem; line-height: 1.6; }
+
+.learn-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.learn-more:hover { gap: 0.75rem; color: var(--link-hover); }
+
+/* ============================================================
+   ★ #23  NEXT-QUESTION BUTTON
+   Appears at the bottom of an answered question card.
+   ============================================================ */
+
+.quiz-next-btn {
+    display: block;
+    margin-top: 1.25rem;
+    margin-left: auto;
+    padding: 0.6rem 1.25rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.quiz-next-btn:hover       { background: var(--primary-hover); transform: translateX(3px); }
+.quiz-next-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+
+/* ============================================================
+   ★ #15  LIVE SCORE BADGE
+   Floating pill, bottom-left. Updates on each answer.
+   Kept left so it doesn't collide with the print button (right).
+   ============================================================ */
+
+.quiz-score-badge {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    padding: 10px 18px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    box-shadow: 0 4px 16px var(--shadow);
+    z-index: 999;
+    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.quiz-score-badge.score-good { background: rgba(16, 185, 129, 0.12); border-color: var(--success); color: var(--success); }
+.quiz-score-badge.score-ok   { background: rgba(245, 158, 11, 0.12); border-color: var(--warning); color: var(--warning); }
+.quiz-score-badge.score-poor { background: rgba(239, 68, 68, 0.12);  border-color: var(--error);   color: var(--error); }
+
+/* ============================================================
+   ★ #16  SCORE SUMMARY CARD
+   Injected below all questions when every question is answered.
+   ============================================================ */
+
+.quiz-summary {
+    margin-top: 2rem;
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: var(--card-shadow-hover);
+    animation: summary-slide-in 0.5s ease;
+}
+
+@keyframes summary-slide-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.quiz-summary.summary-pass {
+    background: rgba(16, 185, 129, 0.07);
+    border: 2px solid var(--success);
+}
+
+.quiz-summary.summary-fail {
+    background: rgba(239, 68, 68, 0.05);
+    border: 2px solid var(--error);
+}
+
+.summary-icon  { font-size: 3rem; margin-bottom: 0.75rem; }
+
+.summary-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.summary-score {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.summary-pct {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+}
+
+.summary-bar-wrap {
+    width: 100%;
+    max-width: 400px;
+    height: 12px;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 0 auto 1.25rem;
+}
+
+.summary-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.8s ease;
+}
+
+.quiz-summary.summary-pass .summary-bar-fill { background: var(--success); }
+.quiz-summary.summary-fail .summary-bar-fill { background: var(--error); }
+
+.summary-message {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.75rem;
+    line-height: 1.6;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.summary-retry-btn {
+    padding: 0.75rem 2rem;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.summary-retry-btn:hover       { opacity: 0.9; transform: translateY(-2px); }
+.summary-retry-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+
+/* ============================================================
+   PRINT INSTRUCTIONS
+   ============================================================ */
+
+.print-instructions {
+    max-width: 900px;
+    margin: 3rem auto 2rem;
+    padding: 1.5rem;
+    background: var(--info-bg);
+    border-left: 4px solid var(--info-border);
+    border-radius: 8px;
+    display: none;
+}
+
+.print-instructions.visible { display: block; }
+
+.print-instructions h3 { font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin: 0 0 1rem 0; }
+.print-instructions ol  { margin: 0 0 0 1.5rem; padding: 0; }
+.print-instructions li  { margin-bottom: 0.75rem; color: var(--text-primary); line-height: 1.6; font-size: 1rem; }
+
+.print-instructions kbd {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    font-weight: 600;
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+/* ============================================================
+   PRINT BUTTON
+   ============================================================ */
+
+.print-button {
+    position: fixed;
+    bottom: 30px; right: 30px;
+    padding: 14px 24px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+    box-shadow: 0 4px 16px var(--shadow);
+    font-family: inherit;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    animation: pulse-print 2s ease-in-out 3;
+    animation-delay: 1s;
+}
+
+.print-button:hover        { background: var(--accent-hover); transform: translateY(-3px); box-shadow: 0 8px 24px var(--shadow); animation: none; }
+.print-button:active       { transform: translateY(-1px); box-shadow: 0 4px 12px var(--shadow); }
+.print-button:focus        { outline: 3px solid var(--accent); outline-offset: 3px; }
+.print-button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.print-icon { font-size: 1.2rem; line-height: 1; }
+.print-text { font-size: 1rem; font-weight: 600; }
+
+@keyframes pulse-print {
+    0%, 100% { box-shadow: 0 4px 16px var(--shadow); }
+    50%       { box-shadow: 0 4px 28px rgba(59, 130, 246, 0.45); }
+}
+
+/* ============================================================
+   ★ #28  SCREEN-READER ONLY UTILITY
+   Used for the aria-live announcement region.
+   ============================================================ */
+
+.sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ============================================================
+   RESPONSIVE — quiz-specific overrides
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .quiz-list       { grid-template-columns: 1fr; }
+    .question-header { flex-direction: column; }
+    .quiz-toast      { bottom: 75px; font-size: 0.9rem; }
+
+    .print-button  { bottom: 20px; right: 20px; padding: 12px 20px; }
+    .print-instructions          { margin: 2rem 1rem 1.5rem; padding: 1.25rem; }
+    .print-instructions h3       { font-size: 1.2rem; }
+    .print-instructions li       { font-size: 0.95rem; margin-bottom: 0.5rem; }
+
+    .quiz-score-badge { bottom: 20px; left: 20px; font-size: 0.85rem; padding: 8px 14px; }
+    .quiz-nav-dot     { width: 28px; height: 28px; font-size: 0.7rem; }
+    .quiz-summary     { padding: 1.75rem 1.25rem; }
+    .summary-score    { font-size: 2.25rem; }
+    .summary-title    { font-size: 1.4rem; }
+}
+
+@media (max-width: 480px) {
+    .print-button   { bottom: 15px; right: 15px; width: 56px; height: 56px; padding: 0; border-radius: 50%; justify-content: center; }
+    .print-text     { display: none; }
+    .print-icon     { font-size: 1.5rem; }
+    .quiz-score-badge { bottom: 15px; left: 15px; }
+}
+
+@media (max-width: 360px) {
+    .print-button   { width: 50px; height: 50px; bottom: 12px; right: 12px; }
+    .print-icon     { font-size: 1.3rem; }
+}
+
+@media (prefers-contrast: high) { .print-button { border: 2px solid white; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .print-button, .quiz-summary, .question-result-badge,
+    .quiz-progress-fill, .summary-bar-fill { transition: none; animation: none; }
+    .print-button:hover { transform: none; }
+}
+
+/* ============================================================
+   PRINT MEDIA QUERY
+   Forces light output for all themes, reveals correct answers.
+   ============================================================ */
+
+@media print {
+    /* Hide all UI chrome */
+    .theme-toggle, .back-btn, .modal, .search-bar,
+    .filter-controls, .print-button, .print-instructions,
+    .page-loader, .breadcrumb, .quiz-toast,
+    .quiz-progress-bar, .quiz-navigator,
+    .quiz-score-badge, .quiz-next-btn, .quiz-summary { display: none !important; }
+
+    *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    html, body,
+    [data-theme="dark"],
+    [data-theme="comfort"] {
+        background: #ffffff !important;
+        color: #1f2937 !important;
+    }
+
+    .question-card,
+    .page-container,
+    [data-theme="dark"]    .question-card,
+    [data-theme="dark"]    .option,
+    [data-theme="comfort"] .question-card,
+    [data-theme="comfort"] .option {
+        background: #ffffff !important;
+        color: #1f2937 !important;
+        box-shadow: none !important;
+        border: 1px solid #d1d5db !important;
+        page-break-inside: avoid;
+    }
+
+    .option {
+        background: #ffffff !important;
+        color: #1f2937 !important;
+        border: 1px solid #d1d5db !important;
+        transform: none !important;
+    }
+
+    .option-icon    { background: #f3f4f6 !important; color: #6b7280 !important; border-color: #d1d5db !important; }
+    .option-text    { color: #1f2937 !important; }
+    .question-text  { color: #1f2937 !important; }
+    .question-number { background: #3b82f6 !important; color: #ffffff !important; }
+
+    /* Correct/incorrect colours applied per print-mode only, not globally here */
+    .option.correct   { background: #d1fae5 !important; border-color: #10b981 !important; }
+    .option.correct .option-icon { background: #10b981 !important; border-color: #10b981 !important; color: #ffffff !important; }
+    .option.incorrect { background: #fee2e2 !important; border-color: #ef4444 !important; }
+    .option.incorrect .option-icon { background: #ef4444 !important; border-color: #ef4444 !important; color: #ffffff !important; }
+
+    .explanation { background: #ffffff !important; color: #1f2937 !important; border-left-width: 3px !important; }
+
+    .explanation.correct,
+    .explanation.print-only { display: block !important; background: #f0fdf4 !important; border-left-color: #10b981 !important; }
+
+    .explanation.incorrect  { display: block !important; background: #fef2f2 !important; border-left-color: #ef4444 !important; }
+
+    .explanation-text { color: #374151 !important; }
+
+    .question-result-badge { display: none !important; }
+
+    .page-header h1  { font-size: 1.5rem !important; color: #1f2937 !important; }
+    .content-footer  { page-break-before: always; border-top: 1px solid #d1d5db !important; }
+
+    .footer-disclaimer { background: #fffbeb !important; border: 1px solid #d1d5db !important; border-left: 3px solid #f59e0b !important; }
+    .footer-disclaimer p, .footer-list li,
+    .footer-copyright, .footer-license, .footer-contact { color: #1f2937 !important; }
+    .breadcrumb { display: none !important; }
+}
+/* ============================================================
+   PHASE 3 ADDITIONS
+   ============================================================ */
+
+/* ============================================================
+   #P3-1  RESUME BANNER
+   Shown at top of page when saved progress is detected.
+   ============================================================ */
+
+.quiz-resume-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--highlight-bg);
+    border: 2px solid var(--highlight-border);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    animation: summary-slide-in 0.35s ease;
+}
+
+.resume-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.resume-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+.resume-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.resume-text strong {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.resume-text span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.resume-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.resume-btn {
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.resume-continue {
+    background: var(--primary);
+    color: white;
+}
+
+.resume-continue:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+.resume-fresh {
+    background: transparent;
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+.resume-fresh:hover { border-color: var(--error); color: var(--error); }
+
+.resume-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* ============================================================
+   #P3-4  TIMER
+   Displayed inside the progress bar row (appended by JS).
+   ============================================================ */
+
+.quiz-timer {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    white-space: nowrap;
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--border-color);
+    margin-left: 0.25rem;
+    position: relative; /* tooltip anchor */
+    cursor: default;
+}
+
+/* Tooltip — only visible while timer is idle (data-idle attribute present) */
+.quiz-timer[data-idle]::after {
+    content: "Timer starts on your first answer";
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.76rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: var(--card-shadow);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 100;
+}
+
+/* Caret */
+.quiz-timer[data-idle]::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--border-color);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 101;
+}
+
+.quiz-timer[data-idle]:hover::after,
+.quiz-timer[data-idle]:hover::before {
+    opacity: 1;
+}
+
+.timer-icon  { font-size: 0.9rem; }
+.timer-value { font-variant-numeric: tabular-nums; min-width: 2.8ch; }
+
+/* ============================================================
+   #P3-3  TOOLBAR  (Shuffle + Bookmark filter buttons)
+   Sits between the navigator and the question list.
+   ============================================================ */
+
+.quiz-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.quiz-toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.quiz-toolbar-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.quiz-toolbar-btn.active {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.quiz-toolbar-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.toolbar-btn-label { font-size: 0.82rem; }
+
+/* ============================================================
+   #P3-5  BOOKMARK BUTTON on question cards
+   ============================================================ */
+
+.bookmark-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background: transparent;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.35;
+    transition: opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    padding: 0;
+    line-height: 1;
+}
+
+/* Show on card hover OR when already bookmarked */
+.question-card:hover .bookmark-btn,
+.bookmark-btn.bookmarked {
+    opacity: 1;
+}
+
+.bookmark-btn.bookmarked {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: var(--warning);
+}
+
+.bookmark-btn:hover {
+    opacity: 1;
+    background: rgba(245, 158, 11, 0.1);
+    border-color: var(--warning);
+}
+
+.bookmark-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; opacity: 1; }
+
+/* Navigator dot bookmark indicator — small ring around dot */
+.quiz-nav-dot.bookmarked {
+    box-shadow: 0 0 0 2px var(--warning);
+}
+
+/* Bookmark filter — hide non-bookmarked cards */
+.question-card.bookmark-hidden {
+    display: none;
+}
+
+/* Empty state when filter active but no bookmarks */
+.bookmark-empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+/* ============================================================
+   #P3-1  SUMMARY — time taken line
+   ============================================================ */
+
+.summary-time {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+/* ============================================================
+   RESPONSIVE — Phase 3 additions
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .quiz-resume-banner { flex-direction: column; align-items: flex-start; }
+    .resume-actions     { width: 100%; }
+    .resume-btn         { flex: 1; text-align: center; }
+    .quiz-toolbar-btn   { font-size: 0.8rem; padding: 0.4rem 0.75rem; }
+    .toolbar-btn-label  { display: none; }   /* icon only on mobile */
+    .quiz-toolbar-btn   { min-width: 38px; justify-content: center; }
+}
+
+/* ============================================================
+   PRINT — hide Phase 3 UI chrome
+   ============================================================ */
+
+@media print {
+    .quiz-resume-banner, .quiz-toolbar, .quiz-timer,
+    .bookmark-btn, .summary-time { display: none !important; }
+}
+
+/* ============================================================
+   PHASE 4 ADDITIONS
+   ============================================================ */
+
+/* ============================================================
+   #P4-2  SWIPE HIGHLIGHT
+   Brief pulse when a swipe gesture lands on a card.
+   ============================================================ */
+
+.question-card.swipe-highlight {
+    animation: swipe-pulse 0.6s ease;
+}
+
+@keyframes swipe-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+    50%  { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.15); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+/* Swipe hint label — mobile only, below the navigator */
+.swipe-hint {
+    display: none;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 0.25rem 0 0.5rem;
+    letter-spacing: 0.03em;
+}
+
+@media (max-width: 768px) and (pointer: coarse) {
+    .swipe-hint { display: block; }
+}
+
+/* ============================================================
+   #P4-3  QUIZ HISTORY PANEL
+   Collapsible panel below the toolbar, shown only when open.
+   ============================================================ */
+
+.quiz-history-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.2s ease;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.quiz-history-panel.open {
+    max-height: 420px;
+    padding: 1rem 1.25rem;
+    overflow-y: auto;
+}
+
+.history-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.history-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.history-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Bar chart — last 5 attempts */
+.history-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    height: 80px;
+    margin-bottom: 1rem;
+    padding: 0 0.25rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.history-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 0.2rem;
+}
+
+.history-bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    transition: height 0.4s ease;
+}
+
+.history-bar.bar-pass { background: var(--success); }
+.history-bar.bar-fail { background: var(--error); }
+
+.history-bar-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+/* List of attempts */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.history-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+}
+
+.history-row.row-pass { background: rgba(16, 185, 129, 0.08); }
+.history-row.row-fail { background: rgba(239, 68, 68, 0.07); }
+
+.history-badge {
+    font-size: 0.9rem;
+    width: 18px;
+    flex-shrink: 0;
+}
+
+.history-score { font-weight: 700; color: var(--text-primary); min-width: 3.5ch; }
+.history-pct   { font-weight: 700; color: var(--text-primary); min-width: 3.5ch; }
+.history-time  { color: var(--text-muted); font-size: 0.78rem; }
+.history-date  { color: var(--text-muted); font-size: 0.78rem; margin-left: auto; }
+
+/* ============================================================
+   #P4-4  EXPORT BUTTONS in summary card
+   ============================================================ */
+
+.summary-export-wrap {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.summary-export-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.summary-export-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(59, 130, 246, 0.06);
+    transform: translateY(-1px);
+}
+
+.summary-export-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* ============================================================
+   PRINT — summary-only mode (#P4-4 Download PDF)
+   When body has .print-summary-only, hide everything except
+   the summary card. Overrides the existing print stylesheet.
+   ============================================================ */
+
+@media print {
+    body.print-summary-only * { visibility: hidden; }
+    body.print-summary-only #quizSummary,
+    body.print-summary-only #quizSummary * { visibility: visible; }
+    body.print-summary-only #quizSummary {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%;
+        padding: 2rem;
+        box-shadow: none;
+    }
+    /* Hide export buttons themselves from the PDF */
+    body.print-summary-only .summary-export-wrap,
+    body.print-summary-only .summary-retry-btn { display: none !important; }
+}
+
+/* ============================================================
+   RESPONSIVE — Phase 4 additions
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .history-chart { height: 60px; }
+    .quiz-history-panel.open { max-height: 380px; }
+    .summary-export-wrap { flex-direction: column; align-items: center; }
+    .summary-export-btn  { width: 100%; max-width: 260px; text-align: center; }
+}
+
+/* ============================================================
+   PHASE 5 ADDITIONS
+   ============================================================ */
+
+/* ============================================================
+   AUDIT FIX — A13  .locked option
+   Single-choice options that are non-selected after answering.
+   Visually dimmed but content still readable (not hidden).
+   ============================================================ */
+
+.option.locked {
+    opacity: 0.45;
+    cursor: default;
+    pointer-events: none;
+}
+
+.option.locked:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* ============================================================
+   #P5-1  SEARCH / FILTER BAR
+   ============================================================ */
+
+.quiz-search-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    padding: 0.65rem 0.9rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+}
+
+.search-input-wrap {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 180px;
+    gap: 0.4rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 7px;
+    padding: 0.35rem 0.7rem;
+    transition: border-color 0.2s;
+}
+
+.search-input-wrap:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+}
+
+.search-icon { font-size: 0.85rem; flex-shrink: 0; color: var(--text-muted); }
+
+.quiz-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+}
+
+.quiz-search-input::placeholder { color: var(--text-muted); }
+
+.search-clear-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    padding: 0 0.1rem;
+    line-height: 1;
+    border-radius: 3px;
+    transition: color 0.15s;
+}
+.search-clear-btn:hover { color: var(--error); }
+.search-clear-btn:focus-visible { outline: 2px solid var(--primary); }
+
+.quiz-status-select {
+    padding: 0.38rem 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: 7px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.quiz-status-select:focus {
+    outline: 2px solid var(--primary);
+    border-color: var(--primary);
+}
+
+[data-theme="dark"]    .quiz-status-select { background: var(--bg-secondary); }
+[data-theme="comfort"] .quiz-status-select { background: var(--bg-secondary); }
+
+.search-count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 6ch;
+}
+
+/* Hidden cards from search/status filter */
+.question-card.search-hidden { display: none; }
+
+/* ============================================================
+   #P5-2  QUESTION FLAGGING
+   ============================================================ */
+
+/* Flag button — sits beside bookmark button in question-header */
+.flag-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background: transparent;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3;
+    transition: opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    padding: 0;
+    line-height: 1;
+}
+
+.question-card:hover .flag-btn,
+.flag-btn.flagged {
+    opacity: 1;
+}
+
+.flag-btn.flag-confusing {
+    opacity: 1;
+    background: rgba(245, 158, 11, 0.12);
+    border-color: var(--warning);
+}
+
+.flag-btn.flag-incorrect {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--error);
+}
+
+.flag-btn:hover { opacity: 1; background: rgba(239, 68, 68, 0.08); border-color: var(--error); }
+.flag-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; opacity: 1; }
+
+/* Flagged card left-border accent */
+.question-card.flagged-confusing {
+    border-left: 4px solid var(--warning);
+}
+
+.question-card.flagged-incorrect {
+    border-left: 4px solid var(--error);
+}
+
+/* Navigator dot flag rings — distinct from bookmark (yellow) */
+.quiz-nav-dot.flagged-confusing {
+    box-shadow: 0 0 0 2px var(--warning), 0 0 0 4px rgba(245,158,11,0.25);
+}
+
+.quiz-nav-dot.flagged-incorrect {
+    box-shadow: 0 0 0 2px var(--error), 0 0 0 4px rgba(239,68,68,0.2);
+}
+
+/* ============================================================
+   #P5-3  WEAK AREAS PANEL
+   ============================================================ */
+
+.quiz-weak-areas-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.2s ease;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.quiz-weak-areas-panel.open {
+    max-height: 500px;
+    padding: 1rem 1.25rem;
+    overflow-y: auto;
+}
+
+.weak-areas-meta {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.weak-areas-placeholder {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 0.5rem 0;
+}
+
+.weak-area-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.weak-area-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.weak-area-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.weak-area-cat {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.weak-area-stat {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.weak-area-bar-track {
+    width: 120px;
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.weak-area-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.wa-strong { background: var(--success); }
+.wa-ok     { background: var(--warning); }
+.wa-weak   { background: var(--error); }
+
+.weak-area-pct {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    min-width: 3ch;
+    text-align: right;
+}
+
+/* ============================================================
+   #P5-4  STUDY MODE
+   ============================================================ */
+
+/* Study mode indicator on toolbar button */
+.quiz-toolbar-btn#quizStudyModeBtn.active {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: var(--success);
+    color: var(--success);
+}
+
+/* Rating widget below options list */
+.study-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    animation: summary-slide-in 0.25s ease;
+}
+
+.study-rating-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.study-rating-btn {
+    padding: 0.35rem 0.85rem;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-card);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.study-rating-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.study-rating-btn.rating-active[data-rating="got-it"] {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.study-rating-btn.rating-active[data-rating="still-learning"] {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: var(--warning);
+    color: var(--warning);
+}
+
+.study-rating-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* Study mode: answered questions can be re-selected — remove locked dimming */
+.question-card .option.locked { opacity: 0.45; }
+
+/* ============================================================
+   RESPONSIVE — Phase 5 additions
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .quiz-search-filter { gap: 0.5rem; padding: 0.55rem 0.75rem; }
+    .search-input-wrap  { min-width: 0; }
+    .quiz-status-select { font-size: 0.82rem; }
+    .weak-area-bar-track { width: 80px; }
+    .study-rating       { gap: 0.4rem; }
+    .study-rating-btn   { font-size: 0.8rem; padding: 0.3rem 0.65rem; }
+}
+
+/* ============================================================
+   PRINT — hide Phase 5 UI chrome
+   PR1: swipe-hint; plus new Phase 5 elements
+   ============================================================ */
+
+@media print {
+    .swipe-hint,
+    .quiz-search-filter,
+    .flag-btn,
+    .study-rating,
+    .quiz-weak-areas-panel { display: none !important; }
+}
+
+/* ============================================================
+   #8  STYLED ERROR STATE
+   ============================================================ */
+
+.quiz-error-state {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 2rem 2.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--error);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+}
+
+.quiz-error-icon  { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+.quiz-error-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.quiz-error-file {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    word-break: break-all;
+}
+
+.quiz-error-file code {
+    background: var(--bg-secondary);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.quiz-error-detail {
+    font-size: 0.88rem;
+    color: var(--error);
+    margin-bottom: 1.25rem;
+}
+
+.quiz-error-tip {
+    background: var(--info-bg);
+    border-left: 3px solid var(--info-border);
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    text-align: left;
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.quiz-error-tip code {
+    background: var(--bg-secondary);
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85em;
+}
+
+.quiz-error-back {
+    display: inline-block;
+    padding: 0.55rem 1.25rem;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.quiz-error-back:hover { background: var(--primary-hover); text-decoration: none; color: #fff; }
+.quiz-error-back:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+
+/* ============================================================
+   #14  PER-QUESTION RESET BUTTON
+   ============================================================ */
+
+.question-reset-wrap {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.4rem 0.25rem 0.1rem;
+}
+
+.question-reset-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: inherit;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.question-reset-btn:hover {
+    color: var(--error);
+    border-color: var(--error);
+    background: rgba(239, 68, 68, 0.06);
+}
+
+.question-reset-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* ============================================================
+   #25  SHOW ALL ANSWERS PANEL
+   ============================================================ */
+
+.show-all-reveal {
+    margin-top: 0.75rem;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 0.75rem;
+    animation: summary-slide-in 0.2s ease;
+}
+
+/* ============================================================
+   #33  TIMED MODE
+   ============================================================ */
+
+.quiz-timed-picker {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--card-shadow);
+    animation: summary-slide-in 0.2s ease;
+}
+
+.timed-picker-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.65rem;
+}
+
+.timed-picker-options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.timed-pick-btn {
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+}
+
+.timed-pick-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(59,130,246,0.08);
+}
+
+.timed-pick-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.timed-cancel-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.timed-cancel-btn:hover { color: var(--text-secondary); }
+
+/* Countdown display — sits in progress bar row, same as count-up timer */
+.quiz-countdown {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    white-space: nowrap;
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--border-color);
+    margin-left: 0.25rem;
+}
+
+.quiz-countdown.countdown-urgent {
+    color: var(--error);
+    animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+@keyframes countdown-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.6; }
+}
+
+.countdown-value { font-variant-numeric: tabular-nums; min-width: 2.8ch; }
+
+/* ============================================================
+   #38  DIFFICULTY BADGE
+   ============================================================ */
+
+.difficulty-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.55rem;
+    border-radius: 20px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    border: 1px solid transparent;
+}
+
+.diff-easy,
+.diff-beginner { background: rgba(16,185,129,0.12); color: var(--success); border-color: var(--success); }
+
+.diff-medium,
+.diff-intermediate { background: rgba(245,158,11,0.12); color: var(--warning); border-color: var(--warning); }
+
+.diff-hard,
+.diff-advanced { background: rgba(239,68,68,0.1); color: var(--error); border-color: var(--error); }
+
+/* ============================================================
+   #32  MOBILE SCORE BADGE — full-width sticky strip
+   ============================================================ */
+
+@media (max-width: 640px) {
+    .quiz-score-badge {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 0;
+        width: 100%;
+        justify-content: center;
+        padding: 0.6rem 1rem;
+        border-top: 1px solid var(--border-color);
+        box-shadow: 0 -2px 12px var(--shadow);
+        font-size: 1rem;
+    }
+}
+
+/* ============================================================
+   #36  DARK-MODE PRINT — force white background
+   ============================================================ */
+
+@media print {
+    /* Override dark/comfort theme variables for print */
+    :root,
+    [data-theme="dark"],
+    [data-theme="comfort"] {
+        --bg-primary:   #ffffff !important;
+        --bg-secondary: #f3f4f6 !important;
+        --bg-card:      #ffffff !important;
+        --text-primary:   #1f2937 !important;
+        --text-secondary: #374151 !important;
+        --text-muted:     #6b7280 !important;
+        --border-color: rgba(0,0,0,0.15) !important;
+        --card-shadow:  none !important;
+    }
+
+    /* Ensure body background is white regardless of theme */
+    body { background: #ffffff !important; color: #1f2937 !important; }
+
+    /* #32 mobile badge off-screen during print */
+    .quiz-score-badge { display: none !important; }
+
+    /* #33 timed mode elements hidden in print */
+    .quiz-timed-picker,
+    .quiz-countdown { display: none !important; }
+
+    /* #14 reset button hidden in print */
+    .question-reset-wrap { display: none !important; }
+
+    /* #25 show-all panels — keep visible in print */
+    .show-all-reveal { display: block !important; }
+}
+
+/* ============================================================
+   PRINT MODE PICKER MODAL
+   ============================================================ */
+
+.quiz-print-picker {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quiz-print-picker[hidden] { display: none; }
+
+.print-picker-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+}
+
+.print-picker-panel {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    padding: 1.75rem 2rem;
+    width: min(520px, calc(100vw - 2rem));
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    animation: summary-slide-in 0.2s ease;
+}
+
+.print-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+}
+
+.print-picker-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.print-picker-close {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+.print-picker-close:hover { background: var(--error); color: #fff; }
+.print-picker-close:focus-visible { outline: 2px solid var(--primary); }
+
+.print-picker-subtitle {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.print-picker-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.print-pick-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.print-pick-btn:hover {
+    border-color: var(--primary);
+    background: var(--bg-card);
+    transform: translateX(3px);
+}
+
+.print-pick-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.pick-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.pick-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.pick-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.pick-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+.print-picker-cancel {
+    width: 100%;
+    padding: 0.55rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+.print-picker-cancel:hover { background: var(--bg-secondary); color: var(--text-secondary); }
+
+/* ============================================================
+   PRINT MODE RULES — keyed off body[data-print-mode]
+   All four modes share the base chrome-hiding rules first,
+   then each mode adds its own visibility overrides.
+   ============================================================ */
+
+/* ---- BASE: hide all interactive chrome in every print mode ---- */
+@media print {
+    body[data-print-mode] .quiz-print-picker,
+    body[data-print-mode] .print-picker-backdrop,
+    body[data-print-mode] .quiz-score-badge,
+    body[data-print-mode] .quiz-progress-bar,
+    body[data-print-mode] .quiz-navigator,
+    body[data-print-mode] .quiz-toolbar,
+    body[data-print-mode] .quiz-search-filter,
+    body[data-print-mode] .quiz-weak-areas-panel,
+    body[data-print-mode] .quiz-history-panel,
+    body[data-print-mode] .quiz-timed-picker,
+    body[data-print-mode] .quiz-countdown,
+    body[data-print-mode] .swipe-hint,
+    body[data-print-mode] .quiz-resume-banner,
+    body[data-print-mode] .quiz-next-btn,
+    body[data-print-mode] .quiz-summary,
+    body[data-print-mode] .question-reset-wrap,
+    body[data-print-mode] .study-rating,
+    body[data-print-mode] .bookmark-btn,
+    body[data-print-mode] .flag-btn,
+    body[data-print-mode] .question-result-badge,
+    body[data-print-mode] .show-all-reveal,
+    body[data-print-mode] .print-button { display: none !important; }
+
+    /* All print-only explanations hidden by default — each mode reveals what it needs */
+    body[data-print-mode] [data-print-explanation] { display: none !important; }
+
+    /* All selected-state styling stripped — each mode reapplies what it needs */
+    body[data-print-mode] .option { background: #ffffff !important; border-color: #d1d5db !important; }
+    body[data-print-mode] .option-icon { background: #f3f4f6 !important; color: #6b7280 !important; }
+    body[data-print-mode] .option.correct,
+    body[data-print-mode] .option.incorrect { background: #ffffff !important; border-color: #d1d5db !important; }
+    body[data-print-mode] .explanation { display: none !important; }
+
+    /* Score summary hidden in all question-paper / answer modes */
+    body[data-print-mode] .quiz-summary { display: none !important; }
+}
+
+/* ---- MODE 1: question-paper --------------------------------- */
+/* Blank test — options plain with letters, NO answers shown     */
+@media print {
+    /* Force ALL options to plain white — including correct ones.
+       data-is-correct attribute stays in the DOM so we must
+       explicitly override it here. JS already stripped .correct
+       and .incorrect classes, but the attribute selector in any
+       older rule could still fire. */
+    body[data-print-mode="question-paper"] .option,
+    body[data-print-mode="question-paper"] .option[data-is-correct="true"],
+    body[data-print-mode="question-paper"] .option[data-is-correct="false"] {
+        background: #ffffff !important;
+        border-color: #d1d5db !important;
+    }
+    body[data-print-mode="question-paper"] .option-icon,
+    body[data-print-mode="question-paper"] .option[data-is-correct="true"] .option-icon,
+    body[data-print-mode="question-paper"] .option[data-is-correct="false"] .option-icon {
+        background: #f3f4f6 !important;
+        color: #6b7280 !important;
+        border-color: #d1d5db !important;
+    }
+    /* No explanations shown at all — JS already hides them,
+       this is a belt-and-braces guard */
+    body[data-print-mode="question-paper"] .explanation {
+        display: none !important;
+    }
+}
+
+/* ---- MODE 2: answer-key ------------------------------------- */
+/* Correct options highlighted green, no explanations            */
+@media print {
+    body[data-print-mode="answer-key"] .option[data-is-correct="true"] {
+        background: #d1fae5 !important;
+        border-color: #10b981 !important;
+    }
+    body[data-print-mode="answer-key"] .option[data-is-correct="true"] .option-icon {
+        background: #10b981 !important;
+        color: #ffffff !important;
+        border-color: #10b981 !important;
+    }
+}
+
+/* ---- MODE 3: answer-reasons --------------------------------- */
+/* Correct options highlighted + explanation for correct only    */
+@media print {
+    body[data-print-mode="answer-reasons"] .option[data-is-correct="true"] {
+        background: #d1fae5 !important;
+        border-color: #10b981 !important;
+    }
+    body[data-print-mode="answer-reasons"] .option[data-is-correct="true"] .option-icon {
+        background: #10b981 !important;
+        color: #ffffff !important;
+        border-color: #10b981 !important;
+    }
+    /* Show correct explanations */
+    body[data-print-mode="answer-reasons"] [data-print-explanation="correct"] {
+        display: block !important;
+        background: #f0fdf4 !important;
+        border-left: 3px solid #10b981 !important;
+        color: #1f2937 !important;
+    }
+    /* Also show inline explanation if student already selected it */
+    body[data-print-mode="answer-reasons"] .explanation.correct {
+        display: block !important;
+        background: #f0fdf4 !important;
+        border-left: 3px solid #10b981 !important;
+    }
+}
+
+/* ---- MODE 4: full-explanations ------------------------------ */
+/* Correct options highlighted + ALL option explanations shown   */
+@media print {
+    body[data-print-mode="full-explanations"] .option[data-is-correct="true"] {
+        background: #d1fae5 !important;
+        border-color: #10b981 !important;
+    }
+    body[data-print-mode="full-explanations"] .option[data-is-correct="true"] .option-icon {
+        background: #10b981 !important;
+        color: #ffffff !important;
+        border-color: #10b981 !important;
+    }
+    /* Show ALL explanations */
+    body[data-print-mode="full-explanations"] [data-print-explanation="correct"],
+    body[data-print-mode="full-explanations"] [data-print-explanation="incorrect"] {
+        display: block !important;
+        color: #1f2937 !important;
+    }
+    body[data-print-mode="full-explanations"] [data-print-explanation="correct"] {
+        background: #f0fdf4 !important;
+        border-left: 3px solid #10b981 !important;
+    }
+    body[data-print-mode="full-explanations"] [data-print-explanation="incorrect"] {
+        background: #fef2f2 !important;
+        border-left: 3px solid #ef4444 !important;
+    }
+    /* Also show any inline explanations already rendered from selection */
+    body[data-print-mode="full-explanations"] .explanation.correct,
+    body[data-print-mode="full-explanations"] .explanation.incorrect {
+        display: block !important;
+    }
+    body[data-print-mode="full-explanations"] .explanation.correct {
+        background: #f0fdf4 !important;
+        border-left: 3px solid #10b981 !important;
+    }
+    body[data-print-mode="full-explanations"] .explanation.incorrect {
+        background: #fef2f2 !important;
+        border-left: 3px solid #ef4444 !important;
+    }
+}
+
+/* Picker hidden during print (it's a modal — already off-screen but belt-and-braces) */
+@media print {
+    .quiz-print-picker { display: none !important; }
+}

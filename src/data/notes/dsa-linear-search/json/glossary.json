@@ -1,0 +1,94 @@
+{
+  "terms": [
+    {
+      "term": "Linear Search",
+      "definition": "A sequential search algorithm that checks each element one by one from start to end until the target is found or the list is exhausted.",
+      "example": "Searching for 7 in [3, 1, 7, 9] checks 3, then 1, then 7 — found at index 2."
+    },
+    {
+      "term": "Sequential Access",
+      "definition": "A data traversal pattern where elements are visited in order, one after another, without random jumping.",
+      "example": "Reading a linked list node by node is sequential access; jumping to arr[5] is random access."
+    },
+    {
+      "term": "Target Value",
+      "definition": "The specific element being searched for within a collection.",
+      "example": "In linearSearch(arr, 9), the value 9 is the target."
+    },
+    {
+      "term": "Sentinel",
+      "definition": "A special value placed at a known position (often the end of an array) to guarantee a loop terminates without a separate bounds check.",
+      "example": "Placing target at arr[n-1] before the loop means the loop always hits the target, removing the i < n condition."
+    },
+    {
+      "term": "Sentinel Linear Search",
+      "definition": "A variant of linear search that inserts the target as a sentinel at the last position, reducing per-iteration comparisons from two to one.",
+      "example": "Saves roughly half the comparisons per step compared to a naive loop with a bounds check."
+    },
+    {
+      "term": "Worst Case",
+      "definition": "The input arrangement that causes the algorithm to do the maximum work; for linear search this is when the target is at the last index or absent.",
+      "example": "Searching for 99 in [1, 2, 3, 99] is worse than searching for 1, because 99 is found last."
+    },
+    {
+      "term": "Best Case",
+      "definition": "The input arrangement that causes the algorithm to do the minimum work; for linear search this is when the target is the very first element.",
+      "example": "Searching for 3 in [3, 7, 1, 9] returns immediately after one comparison."
+    },
+    {
+      "term": "Average Case",
+      "definition": "The expected performance over all possible inputs assuming a uniform distribution; for linear search this is (n+1)/2 comparisons.",
+      "example": "On average, the target is found halfway through a randomly ordered array of n elements."
+    },
+    {
+      "term": "Index",
+      "definition": "The integer position of an element within an array, starting at 0 in most languages.",
+      "example": "In arr = [5, 3, 8], value 8 is at index 2."
+    },
+    {
+      "term": "Unsorted Array",
+      "definition": "An array whose elements are in no particular order, making index-based shortcuts like binary search inapplicable.",
+      "example": "[7, 2, 5, 1, 9] is unsorted; linear search is the safe default."
+    },
+    {
+      "term": "Binary Search",
+      "definition": "A divide-and-conquer search that halves the search space at each step; requires the array to be sorted.",
+      "example": "On [1, 3, 5, 7, 9], binary search finds 7 in 2 comparisons versus 4 for linear search."
+    },
+    {
+      "term": "Brute Force",
+      "definition": "A problem-solving strategy that exhaustively tries every possibility without exploiting structure; linear search is the brute-force approach to searching.",
+      "example": "Checking every element is brute force; exploiting sortedness with binary search is not."
+    },
+    {
+      "term": "Move-to-Front Heuristic",
+      "definition": "An optimization for repeated searches where each found element is moved to the head of the list, so frequently queried items are found faster over time.",
+      "example": "If 7 is searched 100 times in a list, moving it to the front after the first find makes all subsequent searches O(1)."
+    },
+    {
+      "term": "O(1) Space",
+      "definition": "A constant-space guarantee meaning the algorithm uses the same amount of extra memory regardless of input size.",
+      "example": "Linear search only needs one loop counter and one comparand — it never allocates memory proportional to n."
+    },
+    {
+      "term": "Data Stream",
+      "definition": "A potentially infinite or real-time sequence of values that can only be read once in order; random access is unavailable.",
+      "example": "Sensor readings arriving in real time form a stream — only linear scanning is possible."
+    },
+    {
+      "term": "Occurrence",
+      "definition": "A single instance of the target value appearing in the array; a value may have zero, one, or many occurrences.",
+      "example": "In [1, 3, 3, 7, 3], value 3 has three occurrences at indices 1, 2, and 4."
+    },
+    {
+      "term": "Random Access",
+      "definition": "The ability to read any element in O(1) time by index, as arrays support; enables algorithms like binary search.",
+      "example": "arr[5] is random access; following five next pointers in a linked list is sequential access."
+    },
+    {
+      "term": "Predicate Search",
+      "definition": "A generalized form of linear search that accepts a boolean function rather than a fixed target value, returning the first element satisfying the condition.",
+      "example": "Find first element greater than 5: linear_search_if(arr, lambda x: x > 5)."
+    }
+  ]
+}

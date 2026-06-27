@@ -1,0 +1,172 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the time complexity of linear search in the best, average, and worst cases?",
+      "answer": "Best case is O(1) — the target is at index 0. Worst case is O(n) — the target is at the last position or absent, requiring all n comparisons. Average case is O(n) as well; with uniform distribution the target is found halfway on average, meaning (n+1)/2 comparisons, which is still Θ(n). Space is O(1) throughout because only a loop counter is used.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 2,
+      "question": "When would you prefer linear search over binary search?",
+      "answer": "When the array is unsorted and sorting is expensive or forbidden — sorting costs O(n log n) which only pays off if you search many times. Also when the data structure is a linked list (no random access, so binary search is impossible) or a data stream (elements arrive one at a time). For very small n (under ~10), linear search often beats binary search because it has lower constant overhead.",
+      "difficulty": "easy",
+      "category": "application"
+    },
+    {
+      "id": 3,
+      "question": "How do you find all occurrences of a target using linear search?",
+      "answer": "Remove the early return and accumulate indices into a result list. Iterate the full array, appending each matching index. Return the list; an empty list means the element is absent. This always runs in O(n) time because every element must be checked even after the first match, since later duplicates may exist.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 4,
+      "question": "What is sentinel linear search and why is it faster?",
+      "answer": "Sentinel search places the target value at position n-1 before the loop starts, then loops with only the equality check (no bounds check). The sentinel guarantees the loop always terminates without ever going out of bounds, eliminating one comparison per iteration. After the loop, we check whether we stopped before the sentinel position or whether the original last element was the target. This halves the number of comparisons per step — a constant-factor improvement at the same O(n) asymptotic complexity, relevant in performance-critical inner loops.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 5,
+      "question": "Can linear search be applied to a linked list? What about binary search?",
+      "answer": "Yes — linear search traverses nodes one by one via next pointers, which is exactly how linked lists are read. Binary search cannot be applied to a standard singly-linked list because it requires O(1) random access to compute and jump to the midpoint. Even if the list were sorted, reaching the midpoint takes O(n) time per step, degrading binary search to O(n log n) — worse than linear search. Skip lists are a data structure designed to recover sub-linear search on linked structures.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 6,
+      "question": "How does the move-to-front heuristic improve repeated linear searches?",
+      "answer": "After finding the target at index i, move it to index 0 (shifting other elements right). Future searches for the same element cost O(1). Over many queries with skewed access patterns — where a small subset of values is searched far more often — popular elements cluster at the front and average search time drops significantly. The tradeoff is that you alter the original order of the list, which may be unacceptable if ordering carries meaning.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 7,
+      "question": "What is the exact expected number of comparisons for a successful linear search on n elements?",
+      "answer": "Assuming each of the n elements is equally likely to be the target and the target is present exactly once, the expected position is (1 + 2 + … + n) / n = (n+1)/2. So the expected comparisons for a successful search is (n+1)/2. For an unsuccessful search (target absent), it is always exactly n. The combined expected comparisons (assuming p is the probability the element is present) is p × (n+1)/2 + (1-p) × n.",
+      "difficulty": "medium",
+      "category": "complexity"
+    },
+    {
+      "id": 8,
+      "question": "How would you implement linear search to return the last occurrence of a target?",
+      "answer": "Scan from right to left: iterate from index n-1 down to 0 and return the first match. Alternatively scan left to right but don't return on match — instead update a result variable and continue; return the variable after the loop. The reverse scan version can exit early on the first hit from the right, which is slightly more elegant and allows early termination if the last occurrence happens to be near the end.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 9,
+      "question": "At what query count k does binary search (with pre-sorting) beat repeated linear searches on an array of n elements?",
+      "answer": "Sorting costs O(n log n). Each binary search costs O(log n), each linear search costs O(n). Total cost with sorting: O(n log n + k log n). Total without: O(kn). Binary search wins when n log n + k log n < kn, which simplifies to k(n - log n) > n log n, giving k > n log n / (n - log n) ≈ log n for large n. Practically speaking: if you will query the same array more than ~log n times, sort it first.",
+      "difficulty": "hard",
+      "category": "complexity"
+    },
+    {
+      "id": 10,
+      "question": "Describe how linear search behaves when elements are not uniformly distributed.",
+      "answer": "If certain elements are searched far more frequently, the average case improves if those elements happen to be near the front. With the move-to-front heuristic, the list self-organizes to match the access distribution over time, and expected search length approaches the harmonic number scaled by frequency (similar to the optimal encoding length in information theory). Without any heuristic, a skewed distribution gives no improvement — the algorithm still checks all preceding elements before a popular-but-late element.",
+      "difficulty": "hard",
+      "category": "complexity"
+    },
+    {
+      "id": 11,
+      "question": "How does linear search apply to 2D matrices?",
+      "answer": "Flatten the 2D access into a single scan. Iterate row by row (or column by column), checking each element. For an m×n matrix this is O(mn) time, O(1) space. If the matrix has special structure — rows sorted, or rows and columns both sorted (the \"sorted matrix\" problem) — linear scan is suboptimal and the staircase search (start top-right, move left or down) achieves O(m+n). Always ask about structure before defaulting to brute-force scan.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 12,
+      "question": "What is the difference between linear search returning an index versus a boolean?",
+      "answer": "Index-returning search gives strictly more information — you can derive the boolean by checking whether the returned index is -1. Boolean-returning search discards location, which is fine for existence checks but useless if the caller needs to modify the found element or verify its position. In practice, always implement the index version; callers that only need existence can ignore the index.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 13,
+      "question": "How would you use linear search to find the minimum element in an unsorted array?",
+      "answer": "Initialize a variable `min_val = arr[0]` (handle empty array as a special case). Scan from index 1 to n-1; whenever `arr[i] < min_val`, update `min_val = arr[i]`. Return `min_val` after the loop. This is O(n) time, O(1) space. Finding minimum is structurally identical to linear search — both scan once and maintain one piece of state. To also return the index, maintain `min_idx` alongside `min_val`.",
+      "difficulty": "easy",
+      "category": "application"
+    },
+    {
+      "id": 14,
+      "question": "Can you parallelize linear search? What are the tradeoffs?",
+      "answer": "Yes — divide the array into p roughly equal chunks and assign each chunk to a thread. Each thread searches its chunk independently; the first to find the target signals the others to stop. Time drops to O(n/p) with p processors. Tradeoffs: coordination overhead for the early-exit signal, cache coherence costs when threads share the array, and thread setup overhead that dominates for small n. For very large arrays (millions of elements) in latency-critical systems, parallel scan is used in databases and SIMD instruction sets (which scan multiple elements per clock cycle).",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 15,
+      "question": "When does linear search have better cache performance than binary search?",
+      "answer": "Linear search accesses memory in sequential order — exactly how CPUs prefetch cache lines. Each iteration reads the next adjacent memory address, so cache misses are rare after the first access. Binary search jumps to the midpoint each time, causing cache misses whenever the jump crosses a cache line boundary. For small arrays that fit in L1/L2 cache both are fast, but for large arrays on modern hardware, linear search's sequential access pattern can make it competitive with binary search for moderate n due to hardware prefetching.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 16,
+      "question": "How do you search for a target in a sorted array using linear search — and should you?",
+      "answer": "You can exit early when `arr[i] > target` (for ascending order), since no later element can match. This doesn't improve worst-case O(n) but halves average comparisons for unsuccessful searches. However, on a sorted array binary search achieves O(log n) worst case, so unless n is tiny or you specifically need the early-exit property without restructuring the algorithm, binary search is the correct choice. The early-exit optimization is primarily useful when a sorted property is incidental and you can't restructure the code to use binary search.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 17,
+      "question": "What does it mean for linear search to be \"comparison-based\" and why does it matter?",
+      "answer": "Comparison-based means the algorithm's only operation on data is less-than or equal-to comparisons — it never looks at bit patterns or uses hashing. This makes it universal (works on any type with a defined equality) but means it cannot beat O(n) for search on unsorted data — there is no way to rule out an unseen element without comparing it. Algorithms that exploit structure (hash tables achieve O(1) average; radix structures achieve O(k) for key length k) are not comparison-based and can outperform O(n).",
+      "difficulty": "expert",
+      "category": "complexity"
+    },
+    {
+      "id": 18,
+      "question": "What is the theoretical lower bound for searching in an unsorted array?",
+      "answer": "The lower bound is Ω(n) — any deterministic algorithm must examine every element in the worst case, because with one element unseen, an adversary can place the target there. This is a linear information-theoretic argument: you have n unknowns and each comparison gives exactly one bit of information, so n comparisons are necessary in the worst case. Linear search is therefore asymptotically optimal for unsorted data — no algorithm can do better in the worst case.",
+      "difficulty": "expert",
+      "category": "complexity"
+    },
+    {
+      "id": 19,
+      "question": "How would you implement a type-generic linear search in a statically typed language?",
+      "answer": "Use generics (Java/C++) or templates (C++) with an equality comparator or Comparable interface. In Java: `public static <T> int linearSearch(T[] arr, T target, Comparator<T> cmp)`, comparing via `cmp.compare(arr[i], target) == 0`. In C++: `template<typename T, typename Pred> int linearSearch(vector<T>& arr, Pred predicate)`. The predicate approach is the most flexible — it decouples the search from the equality definition, enabling searches like \"first element satisfying condition\" without changing the function signature.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 20,
+      "question": "What happens if the array has duplicate targets and you run linear search?",
+      "answer": "Standard linear search returns the first (leftmost) occurrence and stops — duplicates at higher indices are never visited. To find all occurrences, remove the early return and collect all matching indices in O(n). To find the last occurrence, scan right to left or scan all and keep updating the answer. The choice depends on the problem specification. In interviews, always clarify: \"Should I return the first occurrence, last, or all?\" before coding.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 21,
+      "question": "How does linear search relate to the \"find peak element\" problem?",
+      "answer": "A peak element is one greater than its neighbours. Naive linear scan — check every element for the peak condition — works in O(n) and is essentially linear search with a custom predicate. However, the sorted structure of the peak problem (the array rises then falls) allows binary search to find a peak in O(log n) by comparing mid to mid+1. Knowing that linear search is the brute-force baseline lets you recognize when problem structure enables something faster.",
+      "difficulty": "hard",
+      "category": "application"
+    },
+    {
+      "id": 22,
+      "question": "What is SIMD and how does it accelerate linear search?",
+      "answer": "SIMD (Single Instruction, Multiple Data) lets a CPU compare 4, 8, or 16 array elements to the target simultaneously in a single instruction (e.g., SSE, AVX on x86). A SIMD linear search loads 8 integers at once, compares all 8 to the target in parallel, and checks the comparison mask in one step — effectively giving a constant-factor speedup of 4–16× over scalar loops while maintaining O(n) asymptotic complexity. Languages expose this via intrinsics (C/C++) or libraries (numpy's vectorized operations in Python).",
+      "difficulty": "expert",
+      "category": "implementation"
+    },
+    {
+      "id": 23,
+      "question": "In what situations should you still use linear search even if the data is sorted?",
+      "answer": "When the searched range is tiny (under ~8 elements) — binary search's overhead of computing midpoints and branch prediction misses can exceed the cost of a simple scan. Standard library implementations (like `std::lower_bound` in C++) often switch to linear scan for small sub-ranges internally. Also when accessing sorted data over a network or from disk, where each read is expensive regardless, and the latency dominates over the comparison count.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 24,
+      "question": "How would you verify the correctness of a linear search implementation?",
+      "answer": "Test four categories: (1) element present at the start (best case), (2) element present at the end (worst case), (3) element present in the middle, (4) element absent (should return -1). Additionally test edge cases: empty array (should return -1 without crashing), single-element array with match, single-element array without match, duplicate elements (returns first occurrence), and all elements equal to target. These seven to nine test cases cover all boundary conditions.",
+      "difficulty": "medium",
+      "category": "implementation"
+    }
+  ]
+}

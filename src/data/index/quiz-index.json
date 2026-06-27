@@ -1,0 +1,14 @@
+{
+  "Quizzes": [
+    {
+      "title": "Additional Networking Protocols",
+      "file": "additional_networking_protocols",
+      "topic": "Networking"
+    },
+    {
+      "title": "Additional Networking Technologies",
+      "file": "additional_networking_technologies",
+      "topic": "Networking"
+    }
+  ]
+}

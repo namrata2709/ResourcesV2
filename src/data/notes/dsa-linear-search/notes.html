@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Linear Search — covers theory, implementation, complexity analysis, LeetCode problems, and interview questions. Keywords: linear search, sequential search, array traversal, unsorted search, brute force search, linear scan. Beginner to expert level.">
+    <meta name="keywords" content="linear search, sequential search, array traversal, unsorted search, brute force search, linear scan, DSA, algorithms, data structures">
+    <meta property="og:title" content="Linear Search - DSA Notes">
+    <meta property="og:description" content="Linear Search — covers theory, implementation, complexity analysis, LeetCode problems, and interview questions. Keywords: linear search, sequential search, array traversal, unsorted search, brute force search, linear scan. Beginner to expert level.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/data/notes/dsa/linear-search/linear-search-notes.html">
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/data/notes/dsa/linear-search/linear-search-notes.html">
+    <title>Linear Search - DSA Notes</title>
+    <link rel="stylesheet" href="../../../../css/styles.css">
+    <link rel="stylesheet" href="../../../../css/notes/notes.css">
+    <link rel="stylesheet" href="../../../../css/notes/dsa/dsa-notes.css">
+    <!-- theme.js must be in head -- sets data-theme before paint -->
+    <script src="../../../../js/shared/theme.js"></script>
+</head>
+<body class="complete-notes dsa-notes">
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Linear Search - DSA Notes",
+    "description": "Linear Search — covers theory, implementation, complexity analysis, LeetCode problems, and interview questions. Keywords: linear search, sequential search, array traversal, unsorted search, brute force search, linear scan. Beginner to expert level.",
+    "author": {
+        "@type": "Person",
+        "name": "Namrata Mulwani",
+        "email": "awslecturenotes@gmail.com"
+    },
+    "datePublished": "2026-06-27",
+    "dateModified": "2026-06-27",
+    "publisher": {
+        "@type": "Person",
+        "name": "Namrata Mulwani"
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://namrata2709.github.io/Resources/data/notes/dsa/linear-search/linear-search-notes.html"
+    },
+    "articleSection": "DSA Notes",
+    "keywords": [
+        "linear search",
+        "sequential search",
+        "array traversal",
+        "unsorted search",
+        "brute force search",
+        "linear scan"
+    ],
+    "educationalLevel": "Beginner to Expert"
+}
+</script>
+
+<div class="note-container">
+
+<div class="note-header">
+    <h1>Linear Search</h1>
+    <div class="note-date">
+        Topic 17 of 200 &middot; Last updated 2026-06-27
+    </div>
+    <div class="tags" aria-label="Topic tags">
+        <span class="tag">searching</span>
+        <span class="tag">arrays</span>
+        <span class="tag">beginner</span>
+        <span class="tag">brute-force</span>
+    </div>
+</div>
+
+<div class="highlight-box" role="note" aria-label="When to use">
+    <p><strong>When to use:</strong> Use when the input array or list is unsorted and you need to find a value, count occurrences, or confirm existence; also use when the dataset is small enough that O(n) is acceptable and avoiding a sort is preferable.</p>
+</div>
+
+<div class="note-content">
+
+<details class="collapsible-section" open>
+<summary><h2 id="introduction">Introduction</h2></summary>
+<div class="section-content">
+
+<p>Imagine you come home and can't find your keys. You don't know where they are, so you check the kitchen counter, then the entryway table, then your jacket pocket — one spot at a time, left to right, until you find them or run out of places to look. That, in its entirety, is linear search.</p>
+
+<span class="exam-highlight-sentence">Linear search (also called sequential search) scans a list from the first element to the last, comparing each element to the target and stopping the moment a match is found.</span> It makes no assumptions about order — the list can be scrambled in any way — and it is the most universally applicable search strategy precisely because it needs nothing from the data except the ability to read one element at a time.
+
+<p>Formally: given a sequence of <code>n</code> elements and a target value <code>t</code>, linear search visits indices <code>0, 1, 2, …</code> in order, returning the index of the first element equal to <code>t</code>, or <code>-1</code> (or a sentinel indicating absence) if <code>t</code> does not appear.</p>
+
+</div>
+</details>
+
+<details class="collapsible-section" open>
+<summary><h2 id="how-it-works">How It Works</h2></summary>
+<div class="section-content">
+
+<p>The algorithm has exactly one decision at each step: does the current element match the target? If yes, return the index. If no, move to the next. When the end of the list is reached without a match, report failure.</p>
+
+<pre><code>
+procedure linearSearch(arr, target):
+    for i from 0 to len(arr) - 1:
+        if arr[i] == target:
+            return i
+    return -1
+</code></pre>
+
+<p>That is the entire algorithm. There is no preprocessing step, no auxiliary structure to build, and no requirement for the data to be sorted. This simplicity is both its greatest strength and its main limitation.</p>
+
+<div class="highlight-box">
+    <p>The key invariant: after checking index `i`, every element at indices `0` through `i` has been ruled out. The unseen suffix `arr[i+1…n-1]` is the remaining search space, and it shrinks by exactly one element per iteration.</p>
+</div>
+
+<p>A concrete trace on <code>arr = [4, 2, 7, 1, 9, 3]</code>, searching for <code>target = 9</code>:</p>
+
+<ul>
+<li>Index 0: <code>4 ≠ 9</code> → continue</li>
+<li>Index 1: <code>2 ≠ 9</code> → continue</li>
+<li>Index 2: <code>7 ≠ 9</code> → continue</li>
+<li>Index 3: <code>1 ≠ 9</code> → continue</li>
+<li>Index 4: <code>9 == 9</code> → <span class="exam-highlight-term" data-term="return 4">return 4</span></li>
+</ul>
+
+<p>Five comparisons to find an element near the end of a six-element array — exactly what you'd expect from a left-to-right scan.</p>
+
+<div class="diagram-container">
+<img src="images/inline-01-trace-example.png" alt="Linear search step-by-step on [4,2,7,1,9,3" class="provided-image">
+<p class="image-caption">Linear search step-by-step on [4,2,7,1,9,3</p>
+</div> searching for 9 — each cell is highlighted as it is compared, with the match highlighted in green at index 4]
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="variants-and-extensions">Variants and Extensions</h2></summary>
+<div class="section-content">
+
+<h3 id="find-all-occurrences">Find All Occurrences</h3>
+
+<p>The standard algorithm returns on the *first* match. To collect *all* indices where the target appears, replace the early return with an append:</p>
+
+<pre><code>
+procedure findAll(arr, target):
+    results = []
+    for i from 0 to len(arr) - 1:
+        if arr[i] == target:
+            results.append(i)
+    return results      # empty list means not found
+</code></pre>
+
+<p>This always runs in O(n) regardless of whether the element appears once, many times, or not at all.</p>
+
+<h3 id="sentinel-linear-search">Sentinel Linear Search</h3>
+
+<p>Every iteration performs two comparisons: the bounds check (<code>i &lt; n</code>) and the equality check (<code>arr[i] == target</code>). By placing the target at position <code>n</code> before the loop, the bounds check becomes unnecessary — the sentinel guarantees the loop always terminates.</p>
+
+<pre><code>
+procedure sentinelSearch(arr, target):
+    n = len(arr)
+    last = arr[n - 1]
+    arr[n - 1] = target          # place sentinel
+    i = 0
+    while arr[i] != target:
+        i += 1
+    arr[n - 1] = last            # restore
+    if i &lt; n - 1 or arr[n - 1] == target:
+        return i
+    return -1
+</code></pre>
+
+<span class="exam-highlight-sentence">The sentinel trick halves the number of comparisons per iteration, giving a constant-factor speedup while keeping O(n) asymptotic complexity.</span> It is most relevant in C/C++ inner loops where the branch predictor cost of the bounds check is measurable.
+
+<h3 id="searching-on-linked-lists">Searching on Linked Lists</h3>
+
+<p>Linear search on a singly-linked list is identical in spirit — traverse node by node, compare, stop on match — but random access is unavailable, so binary search is impossible regardless of whether the list is sorted. This makes linear search the *only* general search option for linked structures.</p>
+
+<div class="info-box">
+    <p>**Move-to-front heuristic:** if the same elements are searched repeatedly and some are much more popular than others, move each found element to the front of the list after finding it. Over time, the most-queried items cluster at the head and average search time drops — at the cost of altering the original order.</p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="complexity-analysis">Complexity Analysis</h2></summary>
+<div class="section-content">
+
+<table>
+<thead><tr>
+<th>Case</th>
+<th>Time</th>
+<th>Space</th>
+<th>Why</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Best</td>
+<td>O(1)</td>
+<td>O(1)</td>
+<td>Target is at index 0; found on the first comparison</td>
+</tr>
+<tr>
+<td>Average</td>
+<td>O(n)</td>
+<td>O(1)</td>
+<td>Expected position of target is n/2 when uniformly distributed</td>
+</tr>
+<tr>
+<td>Worst</td>
+<td>O(n)</td>
+<td>O(1)</td>
+<td>Target is at the last index, or absent entirely — all n elements checked</td>
+</tr>
+</tbody></table>
+
+<p>Space is O(1) because the algorithm uses only a loop counter and a comparand — no extra memory grows with input size.</p>
+
+<div class="error-box">
+    <p>It is tempting to say "average case is O(n/2) = O(n)" and leave it at that. The important insight is *why* the average is n/2: each element is equally likely to be the target, so the expected number of comparisons is `(1 + 2 + … + n) / n = (n+1)/2`. When the element is absent, the count is exactly `n`. Both collapse to Θ(n) — the constant vanishes in big-O notation.</p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="comparison">Linear Search vs Binary Search</h2></summary>
+<div class="section-content">
+
+<table>
+<thead><tr>
+<th>Feature</th>
+<th>Linear Search</th>
+<th>Binary Search</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Input requirement</td>
+<td>Any order</td>
+<td>Must be sorted</td>
+</tr>
+<tr>
+<td>Time complexity (worst)</td>
+<td>O(n)</td>
+<td>O(log n)</td>
+</tr>
+<tr>
+<td>Time complexity (best)</td>
+<td>O(1)</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>Space complexity</td>
+<td>O(1)</td>
+<td>O(1) iterative, O(log n) recursive</td>
+</tr>
+<tr>
+<td>Small n performance</td>
+<td>Competitive or faster (low overhead)</td>
+<td>Slight overhead from midpoint math</td>
+</tr>
+<tr>
+<td>Works on linked lists</td>
+<td>Yes</td>
+<td>No (no random access)</td>
+</tr>
+<tr>
+<td>Works on streams</td>
+<td>Yes</td>
+<td>No (needs indexed access)</td>
+</tr>
+<tr>
+<td>Preprocessing cost</td>
+<td>None</td>
+<td>O(n log n) to sort if unsorted</td>
+</tr>
+<tr>
+<td>Implementation complexity</td>
+<td>Trivial</td>
+<td>Moderate (off-by-one errors are common)</td>
+</tr>
+</tbody></table>
+
+<p>The crossover point — where binary search starts winning despite the sort cost — depends on how many times you search the same dataset. If you search once, linear search is usually better because sorting costs O(n log n) but one linear scan costs O(n). If you search k times, the total cost is O(n + k log n) with sorting versus O(kn) without; binary search wins when <code>k &gt; n / log n</code>.</p>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="common-mistakes">Common Mistakes</h2></summary>
+<div class="section-content">
+
+<ul>
+<li>**Returning the value instead of the index.** Most problems ask where the element is, not what it equals. Returning <code>arr[i]</code> instead of <code>i</code> is a silent bug that passes many tests by coincidence.</li>
+<li><span class="exam-highlight-term" data-term="Off-by-one at the boundary.">Off-by-one at the boundary.</span> Using <code>i &lt; n - 1</code> instead of <code>i &lt; n</code> misses the last element. Using <code>i &lt;= n</code> causes an index-out-of-bounds on the extra iteration.</li>
+<li><span class="exam-highlight-term" data-term="Assuming the first result is unique.">Assuming the first result is unique.</span> If the problem asks for the *last* occurrence or *all* occurrences, returning on the first match produces a wrong answer that is easy to overlook in testing.</li>
+<li><span class="exam-highlight-term" data-term="Forgetting to handle the not-found case.">Forgetting to handle the not-found case.</span> Falling through the loop without returning <code>-1</code> (or <code>None</code>) leaves the caller with an undefined or garbage value. Always have an explicit sentinel return after the loop.</li>
+<li>**Using linear search on a sorted array when n is large.** If the interviewer tells you the array is sorted and n can be 10⁶, they expect binary search. Defaulting to a loop signals unawareness of the sorted property.</li>
+<li>**Mutating input in sentinel search without restoring.** The sentinel trick places the target at <code>arr[n-1]</code> temporarily; forgetting to restore the original last element corrupts the caller's data.</li>
+</ul>
+
+</div>
+</details>
+
+<details class="collapsible-section" open>
+<summary><h2 id="visualisation">Visualisation</h2></summary>
+<div class="section-content">
+<div class="viz-panel">
+
+    <div class="viz-tab-bar" role="tablist">
+        <button class="viz-tab active"
+                role="tab" aria-selected="true"
+                aria-controls="viz-images" id="tab-images">
+<p>Step-by-Step</p>
+        </button>
+        <button class="viz-tab"
+                role="tab" aria-selected="false"
+                aria-controls="viz-animation" id="tab-animation">
+<p>Animation</p>
+        </button>
+    </div>
+
+    <div class="viz-images" id="viz-images" role="tabpanel"
+         aria-labelledby="tab-images">
+        <img src="images/step-01-initial.png" alt="Step 1: Initial state — array [3, 7, 1, 9, 4, 6, 2, 8" class="viz-step-img active" data-step="1" data-caption="Step 1: Initial state — array [3, 7, 1, 9, 4, 6, 2, 8">
+        <img src="images/step-02-scanning.png" alt="Step 2: Pointer advances — elements 3, 7, 1 eliminated (greyed), pointer now at index 3 (value 9)" class="viz-step-img" data-step="2" data-caption="Step 2: Pointer advances — elements 3, 7, 1 eliminated (greyed), pointer now at index 3 (value 9)">
+        <img src="images/step-03-match.png" alt="Step 3: Match found — pointer reaches index 4 (value 4), cell highlighted green" class="viz-step-img" data-step="3" data-caption="Step 3: Match found — pointer reaches index 4 (value 4), cell highlighted green">
+        <img src="images/step-04-not-found.png" alt="Step 4: Not-found scenario — same array, target = 5, all cells greyed after full scan, result = -1" class="viz-step-img" data-step="4" data-caption="Step 4: Not-found scenario — same array, target = 5, all cells greyed after full scan, result = -1">
+        <img src="images/step-05-complexity.png" alt="Step 5: Complexity summary — O(1) best, O(n) average and worst; comparison table with Binary Search" class="viz-step-img" data-step="5" data-caption="Step 5: Complexity summary — O(1) best, O(n) average and worst; comparison table with Binary Search">
+        <div class="viz-nav" aria-label="Image navigation">
+            <button id="viz-prev" aria-label="Previous step">&#8592; Prev</button>
+            <span class="viz-counter">
+<p>Step <span id="viz-current">1</span></p>
+<p>of <span id="viz-total">5</span></p>
+            </span>
+            <button id="viz-next" aria-label="Next step">Next &#8594;</button>
+        </div>
+        <p class="image-caption" id="viz-caption">Step 1: Initial state — array [3, 7, 1, 9, 4, 6, 2, 8</p>
+    </div>
+
+    <div class="viz-animation" id="viz-animation" role="tabpanel"
+         aria-labelledby="tab-animation" style="display:none;">
+        <iframe src="linear-search-animation.html" width="100%" height="780"
+                frameborder="0" title="Interactive animation"
+                loading="lazy"></iframe>
+        <div class="viz-animation-footer">
+            <a href="linear-search-animation.html" target="_blank"
+               rel="noopener" class="viz-fullscreen-link">
+<p>Open full screen &#8599;</p>
+            </a>
+        </div>
+    </div>
+
+</div>
+</div>
+</details>
+
+<details class="collapsible-section" open>
+<summary><h2 id="implementation">Implementation</h2></summary>
+<div class="section-content">
+
+<div class="code-tab-bar" role="tablist">
+    <button class="code-tab active" role="tab" aria-selected="true" data-lang="python">Python</button>
+    <button class="code-tab" role="tab" aria-selected="false" data-lang="java">Java</button>
+    <button class="code-tab" role="tab" aria-selected="false" data-lang="cpp">C++</button>
+</div>
+<div class="code-panel active" id="code-python">
+<pre><code class="language-python"># Time: O(n) | Space: O(1)
+def linear_search(arr: list, target: int) -&gt; int:
+    &quot;&quot;&quot;Return index of target in arr, or -1 if not found.&quot;&quot;&quot;
+    for i, val in enumerate(arr):
+        if val == target:
+            return i
+    return -1
+
+# Time: O(n) | Space: O(n)
+def linear_search_all(arr: list, target: int) -&gt; list[int]:
+    &quot;&quot;&quot;Return list of all indices where target appears.&quot;&quot;&quot;
+    return [i for i, val in enumerate(arr) if val == target]
+
+# Time: O(n) | Space: O(1)  — sentinel variant
+def linear_search_sentinel(arr: list, target: int) -&gt; int:
+    &quot;&quot;&quot;Sentinel linear search — avoids bounds check inside loop.&quot;&quot;&quot;
+    n = len(arr)
+    if n == 0:
+        return -1
+    last = arr[n - 1]
+    arr[n - 1] = target          # place sentinel
+    i = 0
+    while arr[i] != target:
+        i += 1
+    arr[n - 1] = last            # restore original value
+    if i &lt; n - 1 or last == target:
+        return i
+    return -1</code></pre>
+</div>
+<div class="code-panel" id="code-java" style="display:none;">
+<pre><code class="language-java">// Time: O(n) | Space: O(1)
+public class LinearSearch {
+
+    public static int linearSearch(int[] arr, int target) {
+        for (int i = 0; i &lt; arr.length; i++) {
+            if (arr[i] == target) return i;
+        }
+        return -1;
+    }
+
+    // Time: O(n) | Space: O(n)
+    public static List&lt;Integer&gt; linearSearchAll(int[] arr, int target) {
+        List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; arr.length; i++) {
+            if (arr[i] == target) result.add(i);
+        }
+        return result;  // empty list if not found
+    }
+
+    // Time: O(n) | Space: O(1) — sentinel variant
+    public static int linearSearchSentinel(int[] arr, int target) {
+        int n = arr.length;
+        if (n == 0) return -1;
+        int last = arr[n - 1];
+        arr[n - 1] = target;       // place sentinel
+        int i = 0;
+        while (arr[i] != target) i++;
+        arr[n - 1] = last;         // restore
+        if (i &lt; n - 1 || last == target) return i;
+        return -1;
+    }
+}</code></pre>
+</div>
+<div class="code-panel" id="code-cpp" style="display:none;">
+<pre><code class="language-cpp">// Time: O(n) | Space: O(1)
+#include &lt;vector&gt;
+using namespace std;
+
+int linearSearch(const vector&lt;int&gt;&amp; arr, int target) {
+    for (int i = 0; i &lt; (int)arr.size(); i++) {
+        if (arr[i] == target) return i;
+    }
+    return -1;
+}
+
+// Time: O(n) | Space: O(n)
+vector&lt;int&gt; linearSearchAll(const vector&lt;int&gt;&amp; arr, int target) {
+    vector&lt;int&gt; result;
+    for (int i = 0; i &lt; (int)arr.size(); i++) {
+        if (arr[i] == target) result.push_back(i);
+    }
+    return result;  // empty if not found
+}
+
+// Time: O(n) | Space: O(1) — sentinel variant
+int linearSearchSentinel(vector&lt;int&gt;&amp; arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    int last = arr[n - 1];
+    arr[n - 1] = target;           // place sentinel
+    int i = 0;
+    while (arr[i] != target) i++;
+    arr[n - 1] = last;             // restore
+    if (i &lt; n - 1 || last == target) return i;
+    return -1;
+}</code></pre>
+</div>
+
+<h3 id="dry-run">Dry Run</h3>
+
+<p>Trace <code>linear_search([3, 7, 1, 9, 4, 6, 2, 8], 4)</code>:</p>
+
+<p><code>i = 0</code>: <code>arr[0] = 3</code>, <code>3 ≠ 4</code>, continue. <code>i = 1</code>: <code>arr[1] = 7</code>, <code>7 ≠ 4</code>, continue. <code>i = 2</code>: <code>arr[2] = 1</code>, <code>1 ≠ 4</code>, continue. <code>i = 3</code>: <code>arr[3] = 9</code>, <code>9 ≠ 4</code>, continue. <code>i = 4</code>: <code>arr[4] = 4</code>, <code>4 == 4</code> — match found, return <code>4</code>.</p>
+
+<p>Five iterations, four misses, one hit. The function returns <code>4</code>, which is the index in the original array where value <code>4</code> lives.</p>
+
+<p>Now trace the not-found case: <code>linear_search([3, 7, 1, 9, 4, 6, 2, 8], 5)</code>. Every comparison fails — <code>3≠5</code>, <code>7≠5</code>, <code>1≠5</code>, <code>9≠5</code>, <code>4≠5</code>, <code>6≠5</code>, <code>2≠5</code>, <code>8≠5</code>. The loop exits naturally after eight comparisons and the function returns <code>-1</code>.</p>
+
+<h3 id="variations">Variations</h3>
+
+<pre><code class="language-python">
+# Variation: Reverse linear search (find last occurrence)
+# Time: O(n) | Space: O(1)
+def linear_search_last(arr: list, target: int) -&gt; int:
+    &quot;&quot;&quot;Return index of LAST occurrence of target, or -1.&quot;&quot;&quot;
+    for i in range(len(arr) - 1, -1, -1):
+        if arr[i] == target:
+            return i
+    return -1
+
+
+# Variation: Linear search with custom comparator (generic)
+# Time: O(n) | Space: O(1)
+def linear_search_if(arr: list, predicate) -&gt; int:
+    &quot;&quot;&quot;Return first index where predicate(arr[i]) is True.&quot;&quot;&quot;
+    for i, val in enumerate(arr):
+        if predicate(val):
+            return i
+    return -1
+
+# Usage: find first number &gt; 5
+# linear_search_if([1, 3, 7, 2], lambda x: x &gt; 5)  → 2
+</code></pre>
+
+</div>
+</details>
+
+<details class="collapsible-section" open>
+<summary><h2 id="summary">Summary</h2></summary>
+<div class="section-content">
+
+<p>Linear search is the foundational search algorithm: scan every element in order, return on match, report -1 on exhaustion. It costs O(n) time and O(1) space, requires no preprocessing, and works on any data structure that supports sequential access — including unsorted arrays, linked lists, and data streams.</p>
+
+<div class="highlight-box">
+    <p><strong>Key Takeaways:</strong></p>
+    <ul>
+        <li>Linear search is O(n) worst-case and O(1) best-case; average is n/2 comparisons when the element is present</li>
+        <li>It requires no preprocessing and works on unsorted data — making it the only general search for linked lists and streams</li>
+        <li>The sentinel variant places the target at position n before looping, eliminating the bounds check for a constant-factor speedup</li>
+        <li>In interviews, the key signal for linear search is: unsorted input, or you need all occurrences, or the dataset is small; always ask about sortedness before defaulting to O(n)</li>
+        <li>When searching the same collection repeatedly and k queries dominate, sort once and switch to O(log n) binary search — the crossover is roughly k &gt; n / log n</li>
+    </ul>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="glossary">Glossary</h2></summary>
+<div class="section-content">
+<div id="glossaryContainer"
+     data-glossary-source="json/glossary.json">
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="interview-questions">Interview Questions</h2></summary>
+<div class="section-content">
+<p class="interview-intro">Test your understanding with these questions.</p>
+<div class="interview-progress">
+    <p id="interviewProgress">Progress: 0/? (0%)</p>
+</div>
+<div class="flashcard-navigation">
+    <button onclick="previousInterviewQuestion()" class="nav-btn" id="prevInterviewBtn">&#8592; Previous</button>
+    <span id="interviewCounter" class="card-counter">1 / ?</span>
+    <button onclick="nextInterviewQuestion()" class="nav-btn" id="nextInterviewBtn">Next &#8594;</button>
+</div>
+<div class="flashcard-deck" id="interviewContainer" data-interview-source="json/interview.json"></div>
+<div class="quiz-reset-container">
+    <button onclick="resetInterviewProgress()" class="quiz-reset-btn">Reset Progress</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="multiple-choice-questions">Multiple Choice Questions</h2></summary>
+<div class="section-content">
+<div class="quiz-header-info">
+    <p>Test your knowledge with immediate feedback.</p>
+</div>
+<div class="quiz-navigation">
+    <button onclick="previousQuestion()" class="quiz-nav-btn" id="prevBtn">&#8592; Previous</button>
+    <div class="quiz-info">
+        <span class="quiz-counter" id="quizCounter">Question 1 of ?</span>
+        <span class="quiz-score-display" id="quizScoreDisplay">Score: 0/0 (0%)</span>
+    </div>
+    <button onclick="nextQuestion()" class="quiz-nav-btn" id="nextBtn">Next &#8594;</button>
+</div>
+<div class="quiz-carousel-container" id="quizContainer" data-mcq-source="json/mcq.json"></div>
+<div class="quiz-summary-section">
+    <button onclick="showQuizSummary()" class="quiz-summary-btn">View Summary</button>
+    <div class="quiz-reset-container">
+        <button onclick="resetEntireQuiz()" class="quiz-reset-btn">Reset Quiz</button>
+    </div>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="visual-questions">Visual Questions</h2></summary>
+<div class="section-content">
+<div class="quiz-header-info">
+    <span id="visualMcqCounter">Question 1 of ?</span>
+    <span id="visualMcqProgress">Answered: 0/0</span>
+</div>
+<div id="visualMcqContainer"
+     data-visual-mcq-source="json/visual-mcq.json">
+</div>
+<div class="quiz-navigation">
+    <button id="visualPrevBtn" class="quiz-nav-btn" disabled>&#8592; Prev</button>
+    <button id="visualNextBtn" class="quiz-nav-btn">Next &#8594;</button>
+</div>
+<div class="quiz-reset-container">
+    <button onclick="resetVisualMcq()" class="quiz-reset-btn">Reset Progress</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="leetcode-problems">LeetCode Problems</h2></summary>
+<div class="section-content">
+<div id="problemsContainer"
+     data-problems-source="json/problems.json">
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="contest-problems">Contest Problems</h2></summary>
+<div class="section-content">
+<div id="contestContainer"
+     data-contest-source="json/contest.json">
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="learning-checklist">Learning Checklist</h2></summary>
+<div class="section-content">
+<div class="checklist-progress">
+    <p>Progress: <span id="checklistProgress">0/0</span></p>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+    </div>
+</div>
+<div id="checklistContainer"
+     data-checklist-source="json/checklist.json">
+</div>
+<div class="quiz-reset-container">
+    <button onclick="resetChecklist()" class="quiz-reset-btn">Reset Checklist</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="youtube-recommendations">YouTube Recommendations</h2></summary>
+<div class="section-content">
+
+<div class="interview-question">
+    <strong>Linear Search Algorithm</strong> &mdash; Abdul Bari<br>
+    <span>Beginner</span> &middot; Clean blackboard walkthrough with concrete trace and complexity derivation — ideal first exposure before touching code<br>
+    <a href="https://www.youtube.com/watch?v=C46QfTjVCNU" target="_blank" rel="noopener">Watch &#8599;</a>
+</div>
+
+<div class="interview-question">
+    <strong>Linear Search vs Binary Search</strong> &mdash; CS Dojo<br>
+    <span>Intermediate</span> &middot; Side-by-side comparison with practical worked examples; bridges the gap between "knowing both" and "knowing which to pick"<br>
+    <a href="https://www.youtube.com/watch?v=TwsgCHYmbbA" target="_blank" rel="noopener">Watch &#8599;</a>
+</div>
+
+<div class="interview-question">
+    <strong>Searching Algorithms and Their Complexities</strong> &mdash; MIT OpenCourseWare<br>
+    <span>Advanced</span> &middot; Formal lower-bound proof for comparison-based search and connection to information theory — builds the rigorous foundation for why O(n) cannot be beaten on unsorted data<br>
+    <a href="https://www.youtube.com/watch?v=P3YID7liBug" target="_blank" rel="noopener">Watch &#8599;</a>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="links-references">Links & References</h2></summary>
+<div class="section-content">
+<ul>
+    <li><a href="https://www.geeksforgeeks.org/linear-search/" target="_blank" rel="noopener">GeeksForGeeks — Linear Search</a></li>
+    <li>CLRS Chapter 2 — Insertion Sort and Loop Invariants (sequential scan fundamentals)</li>
+    <li><a href="https://cses.fi/book/book.pdf" target="_blank" rel="noopener">Competitive Programmer's Handbook — Chapter 3: Sorting and Searching (linear scan baseline)</a></li>
+    <li><a href="https://cses.fi/problemset/" target="_blank" rel="noopener">CSES Problem Set — Sorting and Searching</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Linear_search" target="_blank" rel="noopener">Wikipedia — Linear Search</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Sentinel_value" target="_blank" rel="noopener">Wikipedia — Sentinel Value</a></li>
+</ul>
+</div>
+</details>
+
+</div><!-- end note-content -->
+
+</div><!-- end note-container -->
+
+<script src="../../../../js/notes/dsa/dsa-page.js" async="false"></script>
+
+</body>
+</html>

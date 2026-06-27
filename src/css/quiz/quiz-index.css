@@ -1,0 +1,23 @@
+/* ============================================================
+   QUIZ LIST PAGE  (quiz-index.html)
+   ============================================================ */
+
+.quiz-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.quiz-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--card-shadow);
+}
+.quiz-card:hover  { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); border-color: var(--primary); }
+.quiz-card:focus  { outline: 2px solid var(--primary); outline-offset: 2px; }
+.quiz-card h3     { font-size: 1.25rem; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 700; }
+.quiz-card p      { color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5; }

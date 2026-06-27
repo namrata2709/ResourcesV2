@@ -1,0 +1,132 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "type": "fillblank",
+      "difficulty": "beginner",
+      "question": "Complete the missing return statement so this linear search correctly signals \"not found\".",
+      "code": "def linear_search(arr, target):\n    for i in range(len(arr)):\n        if arr[i] == target:\n            return i\n    return ____",
+      "image": "",
+      "options": [
+        "0",
+        "-1",
+        "None",
+        "len(arr)"
+      ],
+      "correct": 1,
+      "explanation": "-1 is the universal sentinel for \"not found\" in index-returning search. 0 is a valid index (the first element). None is used in Python but -1 is the conventional numeric sentinel. len(arr) is outside valid indices but not the standard."
+    },
+    {
+      "id": 2,
+      "type": "fillblank",
+      "difficulty": "beginner",
+      "question": "Fill in the blank so the loop scans every element in the array exactly once.",
+      "code": "def linear_search(arr, target):\n    for i in range(____):\n        if arr[i] == target:\n            return i\n    return -1",
+      "image": "",
+      "options": [
+        "len(arr) - 1",
+        "len(arr)",
+        "len(arr) + 1",
+        "0"
+      ],
+      "correct": 1,
+      "explanation": "range(len(arr)) generates indices 0, 1, …, n-1 — exactly n iterations covering every element. range(len(arr)-1) misses the last element. range(len(arr)+1) accesses index n which is out of bounds."
+    },
+    {
+      "id": 3,
+      "type": "trace",
+      "difficulty": "intermediate",
+      "question": "The array [6, 3, 8, 2, 5] is searched for target = 2. At which index is the match found, and how many comparisons were made?",
+      "code": "",
+      "image": "images/visual-trace-01-search-for-2.png",
+      "options": [
+        "Index 2, 3 comparisons",
+        "Index 3, 4 comparisons",
+        "Index 3, 3 comparisons",
+        "Index 4, 4 comparisons"
+      ],
+      "correct": 1,
+      "explanation": "Comparisons: index 0 (6≠2), index 1 (3≠2), index 2 (8≠2), index 3 (2==2). Four comparisons, found at index 3."
+    },
+    {
+      "id": 4,
+      "type": "trace",
+      "difficulty": "intermediate",
+      "question": "The array [1, 4, 7, 10, 13] is searched for target = 6 using linear search (no early exit). What is returned and how many comparisons occur?",
+      "code": "",
+      "image": "images/visual-trace-02-not-found.png",
+      "options": [
+        "-1, 4 comparisons",
+        "-1, 5 comparisons",
+        "6, 5 comparisons",
+        "-1, 3 comparisons"
+      ],
+      "correct": 1,
+      "explanation": "Linear search (without early exit) checks all 5 elements before reporting -1: 1≠6, 4≠6, 7≠6, 10≠6, 13≠6 — five comparisons, then return -1."
+    },
+    {
+      "id": 5,
+      "type": "output",
+      "difficulty": "intermediate",
+      "question": "What does this function return when called with arr = [5, 3, 5, 1, 5] and target = 5?",
+      "code": "def search(arr, target):\n    for i in range(len(arr)):\n        if arr[i] == target:\n            return i\n    return -1",
+      "image": "",
+      "options": [
+        "0",
+        "[0, 2, 4]",
+        "2",
+        "4"
+      ],
+      "correct": 0,
+      "explanation": "The function returns on the first match. Index 0 holds value 5 — the very first comparison succeeds and the function returns 0 immediately."
+    },
+    {
+      "id": 6,
+      "type": "output",
+      "difficulty": "intermediate",
+      "question": "What is the output of the following code?",
+      "code": "arr = [9, 4, 7, 2, 6]\nresult = -1\nfor i in range(len(arr) - 1, -1, -1):\n    if arr[i] == 7:\n        result = i\n        break\nprint(result)",
+      "image": "",
+      "options": [
+        "1",
+        "2",
+        "-1",
+        "7"
+      ],
+      "correct": 1,
+      "explanation": "The loop runs right to left: i=4 (6≠7), i=3 (2≠7), i=2 (7==7) — result = 2, break. Output is 2."
+    },
+    {
+      "id": 7,
+      "type": "spotbug",
+      "difficulty": "advanced",
+      "question": "What is the bug in this linear search implementation?",
+      "code": "def linear_search(arr, target):\n    for i in range(len(arr) - 1):\n        if arr[i] == target:\n            return i\n    return -1",
+      "image": "",
+      "options": [
+        "The function never returns -1",
+        "The last element is never checked",
+        "The loop runs one extra iteration",
+        "The equality check is backwards"
+      ],
+      "correct": 1,
+      "explanation": "range(len(arr) - 1) generates indices 0 through n-2, skipping the last element at index n-1. If the target is the last element, the function returns -1 incorrectly. The fix is range(len(arr))."
+    },
+    {
+      "id": 8,
+      "type": "spotbug",
+      "difficulty": "advanced",
+      "question": "Identify the bug in this sentinel linear search.",
+      "code": "def sentinel_search(arr, target):\n    n = len(arr)\n    arr[n - 1] = target          # place sentinel\n    i = 0\n    while arr[i] != target:\n        i += 1\n    if i < n - 1 or arr[n - 1] == target:\n        return i\n    return -1",
+      "image": "",
+      "options": [
+        "The sentinel is placed at the wrong index",
+        "The original last element is never saved or restored",
+        "The while condition is inverted",
+        "The return -1 is unreachable"
+      ],
+      "correct": 1,
+      "explanation": "The function overwrites arr[n-1] with the target sentinel but never saves the original last element. It cannot restore it after the search, permanently mutating the caller's array. The fix: save `last = arr[n-1]` before placing the sentinel, then restore `arr[n-1] = last` before returning."
+    }
+  ]
+}

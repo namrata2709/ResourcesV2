@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Browse AWS quiz answer keys covering EC2, S3, VPC, IAM, and more. Interactive quiz answers with detailed explanations for certification preparation.">
+    <meta name="keywords" content="AWS quizzes, AWS quiz answers, AWS certification practice, Cloud Practitioner questions, Solutions Architect practice, AWS MCQ answers">
+
+    <meta property="og:title" content="Quizzes - Learning Dashboard">
+    <meta property="og:description" content="Interactive quiz answer guides for AWS services with detailed explanations.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/quiz-index.html">
+    <meta property="og:image" content="https://namrata2709.github.io/Resources/images/quiz-preview.png">
+
+    <meta name="twitter:title" content="Quizzes - Learning Dashboard">
+    <meta name="twitter:description" content="Interactive quiz answer guides for AWS services.">
+    <meta name="twitter:image" content="https://namrata2709.github.io/Resources/images/quiz-preview.png">
+
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/quiz-index.html">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+
+    <title>Quizzes - Learning Dashboard</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/quiz/quiz-index.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "AWS Quizzes",
+      "description": "Interactive quiz answer guides for AWS services with detailed explanations",
+      "url": "https://namrata2709.github.io/Resources/quiz-index.html",
+      "author": { "@type": "Person", "name": "Namrata Mulwani", "email": "awslecturenotes@gmail.com" },
+      "publisher": { "@type": "Person", "name": "Namrata Mulwani" },
+      "inLanguage": "en",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Learning Dashboard",
+        "url": "https://namrata2709.github.io/Resources/"
+      },
+      "educationalUse": "Assessment",
+      "educationalLevel": "Beginner to Intermediate"
+    }
+    </script>
+</head>
+<body
+    data-subject="aws"
+    data-page-title="📝 Quizzes"
+>
+    <div id="pageLoader" class="page-loader">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Loading quizzes...</p>
+    </div>
+
+    <div class="page-container">
+        <!-- .page-header injected here by page-header.js -->
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Search quizzes..."
+                   oninput="filterQuizzes()" aria-label="Search quizzes">
+        </div>
+
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label for="topicFilter">Filter by Topic:</label>
+                <select id="topicFilter" onchange="filterQuizzes()">
+                    <option value="">All Topics</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="sortSelect">Sort by:</label>
+                <select id="sortSelect" onchange="sortQuizzes()">
+                    <option value="title-asc">Title (A-Z)</option>
+                    <option value="title-desc">Title (Z-A)</option>
+                    <option value="topic-asc">Topic (A-Z)</option>
+                    <option value="topic-desc">Topic (Z-A)</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="quizListContainer" class="quiz-list">
+            <div class="loading">Loading quizzes...</div>
+        </div>
+    </div>
+
+    <div id="footerRoot"></div>
+
+    <script src="js/shared/shared-meta.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/breadcrumb.js"></script>
+    <script src="js/shared/page-header.js"></script>
+    <script src="js/shared/footer.js"></script>
+    <script src="js/shared/analytics.js"></script>
+    <script src="js/shared/page-loader.js"></script>
+
+    <script src="js/quiz/quiz-index.js" defer></script>
+</body>
+</html>

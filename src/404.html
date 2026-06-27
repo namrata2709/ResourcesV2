@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- This page should not be indexed, but its links should still be followed -->
+    <meta name="robots" content="noindex, follow">
+
+    <title>Page Not Found | Learning Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+</head>
+<body>
+    <!-- Loading State -->
+    <div id="pageLoader" class="page-loader">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Loading...</p>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+        <span class="theme-icon"></span>
+    </button>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>🔍 Page Not Found</h1>
+            <p class="subtitle">That page doesn't exist — but here's everything that does.</p>
+        </header>
+
+        <!--
+            Same dashboard cards as index.html, rendered dynamically by
+            js/dashboard.js from data/index/dashboard-cards.json. Keeps this
+            page in sync automatically — no separate link list to maintain.
+        -->
+        <div id="modulesGrid" class="modules-grid">
+            <div class="loading">Loading...</div>
+        </div>
+
+        <p class="text-center mt-4">
+            <a href="index.html">← Back to the homepage</a>
+        </p>
+    </div>
+
+    <!-- Footer with License & Disclaimer (injected by js/shared/footer.js) -->
+    <div id="footerRoot"></div>
+
+    <!-- External JS -->
+    <!-- Shared meta tags injected here too, EXCEPT robots — this page
+         overrides robots to noindex above, since a 404 shouldn't be
+         indexed even though its links should still be followed. -->
+    <script src="js/shared/shared-meta.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/shared/footer.js"></script>
+    <script src="js/shared/analytics.js"></script>
+    <script src="js/shared/page-loader.js"></script>
+</body>
+</html>

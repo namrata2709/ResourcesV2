@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="AWS and DSA training notes with session summaries, hands-on lab guides, and visual resources. Free study materials for Cloud Practitioner and Solutions Architect certifications.">
+    <meta name="keywords" content="AWS notes, DSA notes, AWS study guide, AWS training materials, AWS certification notes, Cloud Practitioner notes, Solutions Architect notes, data structures notes">
+    <meta name="author" content="Namrata Mulwani">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Notes - Learning Dashboard">
+    <meta property="og:description" content="AWS and DSA training notes with session summaries and visual resources for certification preparation.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/notes-index.html">
+    <meta property="og:image" content="https://namrata2709.github.io/Resources/images/notes-preview.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Notes - Learning Dashboard">
+    <meta name="twitter:description" content="AWS and DSA training notes with session summaries and visual resources.">
+    <meta name="twitter:image" content="https://namrata2709.github.io/Resources/images/notes-preview.png">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/notes-index.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+    <title>Notes - Learning Dashboard</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/notes/notes-index.css">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Training Notes",
+      "description": "AWS and DSA training notes with session summaries and visual resources",
+      "url": "https://namrata2709.github.io/Resources/notes-index.html",
+      "author": {
+        "@type": "Person",
+        "name": "Namrata Mulwani",
+        "email": "awslecturenotes@gmail.com"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Namrata Mulwani"
+      },
+      "inLanguage": "en",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Learning Dashboard",
+        "url": "https://namrata2709.github.io/Resources/"
+      },
+      "educationalUse": "Study Guide",
+      "educationalLevel": "Beginner to Intermediate"
+    }
+    </script>
+</head>
+<body data-page-title="📓 Notes">
+
+    <!-- Loading State -->
+    <div id="pageLoader" class="page-loader">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Loading notes...</p>
+    </div>
+
+    <div class="page-container">
+
+        <!-- Search -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Search notes..." oninput="filterNotes()" aria-label="Search notes">
+        </div>
+
+        <!-- Filter and Sort Controls -->
+        <div class="filter-controls">
+            <!-- Session filter: injected by JS only when relevant -->
+
+            <div class="filter-group">
+                <label for="categoryFilter">Filter by Category:</label>
+                <select id="categoryFilter" onchange="filterNotes()">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="tagFilter">Filter by Tag:</label>
+                <select id="tagFilter" onchange="filterNotes()">
+                    <option value="">All Tags</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="sortSelect">Sort by:</label>
+                <select id="sortSelect" onchange="sortNotes()">
+                    <option value="date-desc">Date (Newest First)</option>
+                    <option value="date-asc">Date (Oldest First)</option>
+                    <option value="title-asc">Title (A-Z)</option>
+                    <option value="title-desc">Title (Z-A)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Notes Grid -->
+        <div id="notesContainer" class="notes-grid">
+            <div class="loading">Loading notes...</div>
+        </div>
+
+    </div>
+
+    <!-- Folder Modal -->
+    <div id="folderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button class="modal-close" onclick="closeModal()" aria-label="Close modal">✕</button>
+            </div>
+            <div id="modalBody" class="modal-body"></div>
+        </div>
+    </div>
+
+    <div id="footerRoot"></div>
+
+    <!-- Shared scripts -->
+    <script src="js/shared/shared-meta.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/breadcrumb.js"></script>
+    <script src="js/shared/page-header.js"></script>
+    <script src="js/shared/footer.js"></script>
+    <script src="js/shared/analytics.js"></script>
+    <script src="js/shared/page-loader.js"></script>
+
+    <!-- Notes index logic -->
+    <script src="js/notes/notes-index.js" defer></script>
+
+</body>
+</html>

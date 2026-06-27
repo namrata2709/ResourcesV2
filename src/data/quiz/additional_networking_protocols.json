@@ -1,0 +1,662 @@
+{
+  "title": "Additional Networking Protocols",
+  "topic": "Networking",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Which remote desktop protocol is popular with remote support technicians and is a proprietary Microsoft protocol?",
+      "multiSelect": false,
+      "evaluationStatus": "conclusive",
+      "options": [
+        {
+          "id": "A",
+          "text": "Virtual Network Computing (VNC)",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "VNC uses an open remote access protocol rather than a Microsoft proprietary one.",
+            "why": "VNC operates using the Remote Framebuffer (RFB) protocol, which is platform-independent and not owned or developed by Microsoft, making it distinct from Microsoft's remote desktop solutions.",
+            "learnMore": [
+              {
+                "title": "VNC Protocol (RFB)",
+                "url": "https://www.realvnc.com/en/connect/docs/what-is-vnc/"
+              }
+            ],
+            "keyPoints": [
+              "Uses RFB protocol",
+              "Cross-platform compatibility",
+              "Open standard compared to RDP"
+            ],
+            "examples": [
+              "Connecting to a Linux desktop remotely using VNC Viewer",
+              "Using TightVNC to access a Raspberry Pi"
+            ],
+            "analogy": "Like a universal remote that works across many devices, rather than a brand-specific remote.",
+            "comparison": "Unlike RDP which is tightly integrated with Windows, VNC works across multiple operating systems without vendor lock-in.",
+            "keyDistinction": "Not proprietary to Microsoft",
+            "confusion": "Often confused with RDP because both provide remote desktop access"
+          }
+        },
+        {
+          "id": "B",
+          "text": "Remote Desktop Protocol (RDP)",
+          "isCorrect": true,
+          "explanation": {
+            "summary": "RDP is Microsoft's proprietary protocol for remote desktop connectivity.",
+            "why": "Microsoft developed Remote Desktop Protocol to allow users to remotely access Windows systems with full graphical interface support, making it widely used in enterprise IT and remote support.",
+            "learnMore": [
+              {
+                "title": "Remote Desktop Protocol",
+                "url": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/remote-desktop-protocol"
+              }
+            ],
+            "keyPoints": [
+              "Developed by Microsoft",
+              "Optimized for Windows environments",
+              "Supports full GUI remote sessions"
+            ],
+            "examples": [
+              "Remote troubleshooting a Windows server",
+              "Accessing a corporate desktop from home using Remote Desktop"
+            ],
+            "analogy": "Like sitting in front of another computer screen from a distance.",
+            "comparison": "More optimized for Windows compared to VNC, which is more generic.",
+            "identification": "Keyword 'Microsoft proprietary' directly points to RDP",
+            "performanceImpact": "Efficient compression and bandwidth optimization for remote sessions"
+          }
+        },
+        {
+          "id": "C",
+          "text": "Independent Computing Architecture (ICA)",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "ICA is a proprietary remote protocol developed by Citrix, not Microsoft.",
+            "why": "ICA is used in Citrix environments for delivering virtual apps and desktops, and is not related to Microsoft's RDP protocol.",
+            "learnMore": [
+              {
+                "title": "Citrix ICA Protocol Overview",
+                "url": "https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/technical-overview/hdx/ica.html"
+              }
+            ],
+            "keyPoints": [
+              "Developed by Citrix",
+              "Used in virtual desktop infrastructure",
+              "Different ecosystem than Microsoft RDP"
+            ],
+            "examples": [
+              "Accessing applications via Citrix Workspace",
+              "Enterprise virtual desktop deployments"
+            ],
+            "comparison": "ICA is to Citrix what RDP is to Microsoft.",
+            "confusion": "Often mistaken as Microsoft protocol due to similar use case"
+          }
+        },
+        {
+          "id": "D",
+          "text": "Remote Framebuffer (RFB)",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "RFB is the underlying protocol used by VNC rather than a Microsoft solution.",
+            "why": "RFB defines how screen updates and input are transmitted in VNC systems and is not associated with Microsoft's proprietary technologies.",
+            "learnMore": [
+              {
+                "title": "Remote Framebuffer Protocol",
+                "url": "https://www.rfc-editor.org/rfc/rfc6143"
+              }
+            ],
+            "keyPoints": [
+              "Protocol behind VNC",
+              "Not user-facing in most cases",
+              "Not tied to Microsoft"
+            ],
+            "examples": [
+              "Used internally when running VNC sessions",
+              "RFB packets transmitting screen updates"
+            ],
+            "analogy": "Like the engine inside a car (VNC), not the car itself.",
+            "comparison": "RFB is lower-level compared to RDP which is a complete remote desktop solution"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "question": "A network administrator wants to analyze packets to view TCP/IP and other packet information. Which command should they use?",
+      "multiSelect": false,
+      "evaluationStatus": "conclusive",
+      "options": [
+        {
+          "id": "A",
+          "text": "netstat",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "netstat provides connection statistics rather than packet-level inspection.",
+            "why": "netstat displays active connections, ports, and routing information but does not capture or analyze individual packets.",
+            "learnMore": [
+              {
+                "title": "netstat Manual",
+                "url": "https://man7.org/linux/man-pages/man8/netstat.8.html"
+              }
+            ],
+            "keyPoints": [
+              "Shows connections and ports",
+              "No packet capture",
+              "Useful for diagnostics"
+            ],
+            "examples": [
+              "netstat -an",
+              "Checking open ports on a server"
+            ],
+            "comparison": "netstat shows summaries, tcpdump shows raw packets",
+            "analogy": "Like viewing a summary report instead of raw data logs"
+          }
+        },
+        {
+          "id": "B",
+          "text": "ifconfig",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "ifconfig manages network interfaces rather than analyzing traffic.",
+            "why": "ifconfig is used to configure IP addresses and interface states, not to inspect network traffic or packets.",
+            "learnMore": [
+              {
+                "title": "ifconfig Manual",
+                "url": "https://man7.org/linux/man-pages/man8/ifconfig.8.html"
+              }
+            ],
+            "keyPoints": [
+              "Interface configuration tool",
+              "Displays IP settings",
+              "No traffic analysis"
+            ],
+            "examples": [
+              "ifconfig eth0",
+              "Assigning an IP address"
+            ],
+            "analogy": "Like configuring a network card rather than monitoring traffic"
+          }
+        },
+        {
+          "id": "C",
+          "text": "tcpdump",
+          "isCorrect": true,
+          "explanation": {
+            "summary": "tcpdump captures and inspects packet-level network traffic.",
+            "why": "tcpdump is a packet analyzer that captures live network packets and displays detailed TCP/IP headers and payloads for troubleshooting.",
+            "learnMore": [
+              {
+                "title": "tcpdump Manual",
+                "url": "https://www.tcpdump.org/manpages/tcpdump.1.html"
+              }
+            ],
+            "keyPoints": [
+              "Packet capture tool",
+              "Supports filtering",
+              "Detailed protocol inspection"
+            ],
+            "examples": [
+              "tcpdump -i eth0",
+              "tcpdump port 80",
+              "tcpdump -nn -v"
+            ],
+            "analogy": "Like a microscope for network traffic",
+            "comparison": "Unlike netstat, tcpdump shows actual packets instead of summaries",
+            "performanceImpact": "Can impact performance on high-traffic systems if not filtered"
+          }
+        },
+        {
+          "id": "D",
+          "text": "whoami",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "whoami identifies the current user rather than interacting with network traffic.",
+            "why": "whoami simply prints the effective username and has no capability related to networking or packet inspection.",
+            "learnMore": [
+              {
+                "title": "whoami Manual",
+                "url": "https://man7.org/linux/man-pages/man1/whoami.1.html"
+              }
+            ],
+            "keyPoints": [
+              "User identity command",
+              "No networking function"
+            ],
+            "examples": [
+              "whoami"
+            ],
+            "analogy": "Like checking your ID badge instead of analyzing network data"
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "question": "Which messages are included in a TCP handshake? (Select THREE)",
+      "multiSelect": true,
+      "evaluationStatus": "conclusive",
+      "options": [
+        {
+          "id": "A",
+          "text": "Synchronize (SYN)",
+          "isCorrect": true,
+          "explanation": {
+            "summary": "SYN initiates the TCP connection establishment process.",
+            "why": "The TCP three-way handshake begins with the client sending a SYN packet to synchronize sequence numbers and initiate a connection with the server.",
+            "learnMore": [
+              {
+                "title": "RFC 793 - TCP",
+                "url": "https://www.rfc-editor.org/rfc/rfc793"
+              }
+            ],
+            "keyPoints": [
+              "First step of handshake",
+              "Initiates connection",
+              "Synchronizes sequence numbers"
+            ],
+            "examples": [
+              "Client sends SYN to server on port 80",
+              "Initial request when opening a website"
+            ],
+            "analogy": "Like knocking on a door to start a conversation",
+            "comparison": "Unlike ACK which confirms, SYN initiates",
+            "identification": "First step in TCP handshake",
+            "confusion": "Sometimes confused with SYN/ACK as both contain SYN"
+          }
+        },
+        {
+          "id": "B",
+          "text": "Resend",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "Resend is not a defined TCP handshake message.",
+            "why": "TCP handshake messages are strictly defined as SYN, SYN/ACK, and ACK in RFC 793, and there is no 'resend' message in the handshake process.",
+            "learnMore": [
+              {
+                "title": "RFC 793 - TCP",
+                "url": "https://www.rfc-editor.org/rfc/rfc793"
+              }
+            ],
+            "keyPoints": [
+              "Not part of TCP spec",
+              "No such handshake message"
+            ],
+            "examples": [
+              "Retransmissions exist but are not handshake steps"
+            ],
+            "analogy": "Like repeating a message, not a formal step in a process",
+            "confusion": "Confused with retransmission mechanisms"
+          }
+        },
+        {
+          "id": "C",
+          "text": "Finalized (FYN)",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "FIN is used for connection termination rather than setup.",
+            "why": "TCP uses FIN packets during the connection teardown phase to gracefully close a session, not during the handshake phase.",
+            "learnMore": [
+              {
+                "title": "RFC 793 - TCP",
+                "url": "https://www.rfc-editor.org/rfc/rfc793"
+              }
+            ],
+            "keyPoints": [
+              "Used in termination",
+              "Not part of handshake"
+            ],
+            "examples": [
+              "Closing a TCP connection after data transfer"
+            ],
+            "analogy": "Like saying goodbye at the end of a conversation",
+            "comparison": "FIN closes connection, SYN opens it"
+          }
+        },
+        {
+          "id": "D",
+          "text": "SYN/ACK",
+          "isCorrect": true,
+          "explanation": {
+            "summary": "SYN/ACK acknowledges the SYN and continues connection setup.",
+            "why": "The server responds to the client's SYN with a SYN/ACK packet, acknowledging the request and sending its own synchronization data.",
+            "learnMore": [
+              {
+                "title": "RFC 793 - TCP",
+                "url": "https://www.rfc-editor.org/rfc/rfc793"
+              }
+            ],
+            "keyPoints": [
+              "Second step of handshake",
+              "Server response",
+              "Combines SYN and ACK"
+            ],
+            "examples": [
+              "Server replies to client connection request"
+            ],
+            "analogy": "Like answering the door and acknowledging the knock",
+            "comparison": "Unlike SYN alone, this confirms and responds",
+            "identification": "Middle step of handshake"
+          }
+        },
+        {
+          "id": "E",
+          "text": "Acknowledge (ACK)",
+          "isCorrect": true,
+          "explanation": {
+            "summary": "ACK completes the TCP handshake and establishes the connection.",
+            "why": "The client sends an ACK packet back to the server to acknowledge the SYN/ACK, completing the three-way handshake and establishing a reliable connection.",
+            "learnMore": [
+              {
+                "title": "RFC 793 - TCP",
+                "url": "https://www.rfc-editor.org/rfc/rfc793"
+              }
+            ],
+            "keyPoints": [
+              "Final step",
+              "Confirms connection",
+              "Completes handshake"
+            ],
+            "examples": [
+              "Client confirms server response before data transfer begins"
+            ],
+            "analogy": "Like saying 'got it, let's start talking'",
+            "comparison": "ACK confirms while SYN initiates",
+            "identification": "Last step of handshake"
+          }
+        },
+        {
+          "id": "F",
+          "text": "Repeat",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "Repeat is not a valid TCP handshake message.",
+            "why": "TCP handshake is strictly defined and does not include any 'repeat' message in its process.",
+            "learnMore": [
+              {
+                "title": "RFC 793 - TCP",
+                "url": "https://www.rfc-editor.org/rfc/rfc793"
+              }
+            ],
+            "keyPoints": [
+              "Not defined in TCP",
+              "Invalid option"
+            ],
+            "examples": [
+              "No such TCP message exists"
+            ],
+            "analogy": "Like adding an extra step that doesn't exist in instructions",
+            "confusion": "May be mistaken for retransmission behavior"
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "question": "Which statements regarding HTTP are true? (Select TWO)",
+      "multiSelect": true,
+      "evaluationStatus": "conclusive",
+      "options": [
+        {
+          "id": "A",
+          "text": "HTTP works on layer 5 of the OSI model",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "HTTP operates at the application layer rather than layer 5.",
+            "why": "HTTP is defined as an application layer (Layer 7) protocol in the OSI model, responsible for communication between web clients and servers.",
+            "learnMore": [
+              {
+                "title": "HTTP Overview",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+              }
+            ],
+            "keyPoints": [
+              "Layer 7 protocol",
+              "Application layer",
+              "Not session layer"
+            ],
+            "examples": [
+              "Web browser requesting a webpage"
+            ],
+            "analogy": "Like the language used in a conversation, not the connection itself",
+            "comparison": "Layer 5 manages sessions, HTTP manages application data"
+          }
+        },
+        {
+          "id": "B",
+          "text": "HTTP is a client-server protocol",
+          "isCorrect": true,
+          "explanation": {
+            "summary": "HTTP follows a client-server request-response model.",
+            "why": "In HTTP, clients send requests to servers and servers respond, forming the foundation of web communication.",
+            "learnMore": [
+              {
+                "title": "RFC 9110 - HTTP Semantics",
+                "url": "https://www.rfc-editor.org/rfc/rfc9110"
+              }
+            ],
+            "keyPoints": [
+              "Request-response model",
+              "Client initiates communication",
+              "Server responds"
+            ],
+            "examples": [
+              "Browser requesting HTML from a web server"
+            ],
+            "analogy": "Like ordering food where the client orders and the server delivers",
+            "comparison": "Different from peer-to-peer communication",
+            "identification": "Core HTTP architecture"
+          }
+        },
+        {
+          "id": "C",
+          "text": "The default port number for HTTP is 80",
+          "isCorrect": true,
+          "explanation": {
+            "summary": "HTTP uses TCP port 80 as its standard default port.",
+            "why": "Port 80 is officially assigned by IANA for HTTP traffic and is used by default for unencrypted web communication.",
+            "learnMore": [
+              {
+                "title": "IANA Port Registry",
+                "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml"
+              }
+            ],
+            "keyPoints": [
+              "Default HTTP port",
+              "Used for unencrypted traffic"
+            ],
+            "examples": [
+              "http://example.com uses port 80 by default"
+            ],
+            "analogy": "Like a default doorway used for standard access",
+            "comparison": "Port 80 vs 443 for HTTPS",
+            "identification": "Common exam keyword: default port"
+          }
+        },
+        {
+          "id": "D",
+          "text": "The default port number for HTTP is 443",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "Port 443 is used for HTTPS rather than HTTP.",
+            "why": "HTTPS uses port 443 because it provides encrypted communication over TLS, while HTTP uses port 80.",
+            "learnMore": [
+              {
+                "title": "IANA Port Registry",
+                "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml"
+              }
+            ],
+            "keyPoints": [
+              "HTTPS port",
+              "Encrypted communication"
+            ],
+            "examples": [
+              "https://example.com uses port 443"
+            ],
+            "comparison": "443 = secure, 80 = non-secure",
+            "confusion": "Commonly confused due to similarity"
+          }
+        },
+        {
+          "id": "E",
+          "text": "HTTP is more secure than HTTPS",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "HTTP transmits data without encryption unlike HTTPS.",
+            "why": "HTTP sends data in plaintext, while HTTPS uses TLS encryption to protect data confidentiality and integrity.",
+            "learnMore": [
+              {
+                "title": "HTTPS Overview",
+                "url": "https://developer.mozilla.org/en-US/docs/Glossary/HTTPS"
+              }
+            ],
+            "keyPoints": [
+              "HTTP is plaintext",
+              "HTTPS is encrypted"
+            ],
+            "examples": [
+              "Passwords sent over HTTP can be intercepted"
+            ],
+            "analogy": "Like sending a postcard vs a sealed envelope",
+            "comparison": "HTTPS adds encryption layer",
+            "securityImplication": "Using HTTP exposes sensitive data"
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "question": "Which protocols are used to secure web applications? (Select TWO)",
+      "multiSelect": true,
+      "evaluationStatus": "conclusive",
+      "options": [
+        {
+          "id": "A",
+          "text": "Transport Layer Security (TLS)",
+          "isCorrect": true,
+          "explanation": {
+            "summary": "TLS encrypts data to secure communication between web clients and servers.",
+            "why": "TLS is the modern cryptographic protocol used to secure HTTP traffic by encrypting data in transit, forming HTTPS.",
+            "learnMore": [
+              {
+                "title": "RFC 8446 - TLS 1.3",
+                "url": "https://www.rfc-editor.org/rfc/rfc8446"
+              }
+            ],
+            "keyPoints": [
+              "Modern encryption standard",
+              "Used in HTTPS",
+              "Ensures confidentiality and integrity"
+            ],
+            "examples": [
+              "HTTPS websites using TLS",
+              "Secure login pages"
+            ],
+            "analogy": "Like putting data in a locked safe during transport",
+            "comparison": "TLS replaces SSL",
+            "performanceImpact": "Minimal overhead with modern hardware acceleration"
+          }
+        },
+        {
+          "id": "B",
+          "text": "File Transfer Protocol (FTP)",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "FTP does not provide encryption for transmitted data.",
+            "why": "FTP transmits data in plaintext and lacks built-in encryption, making it unsuitable for securing web applications unless extended with FTPS.",
+            "learnMore": [
+              {
+                "title": "RFC 959 - FTP",
+                "url": "https://www.rfc-editor.org/rfc/rfc959"
+              }
+            ],
+            "keyPoints": [
+              "Plaintext transmission",
+              "Not secure by default"
+            ],
+            "examples": [
+              "Transferring files over FTP without encryption"
+            ],
+            "analogy": "Like sending files in an open envelope",
+            "comparison": "FTPS adds security, FTP does not",
+            "securityImplication": "Credentials can be intercepted"
+          }
+        },
+        {
+          "id": "C",
+          "text": "Secure Sockets Layer (SSL)",
+          "isCorrect": true,
+          "explanation": {
+            "summary": "SSL provides encrypted communication for web traffic.",
+            "why": "SSL was designed to encrypt web communications and is the predecessor to TLS, forming the basis for HTTPS despite being deprecated.",
+            "learnMore": [
+              {
+                "title": "RFC 6101 - SSL",
+                "url": "https://www.rfc-editor.org/rfc/rfc6101"
+              }
+            ],
+            "keyPoints": [
+              "Predecessor to TLS",
+              "Provides encryption",
+              "Deprecated but exam-relevant"
+            ],
+            "examples": [
+              "Older HTTPS implementations",
+              "Legacy systems using SSL"
+            ],
+            "analogy": "Like an older lock system replaced by a stronger one",
+            "comparison": "TLS is more secure than SSL",
+            "additionalInfo": "SSL is deprecated but still appears in exams"
+          }
+        },
+        {
+          "id": "D",
+          "text": "Wi-Fi Protected Access (WPA2)",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "WPA2 secures wireless networks rather than web applications.",
+            "why": "WPA2 operates at the network layer to secure Wi-Fi communication, not application-layer web protocols like HTTP.",
+            "learnMore": [
+              {
+                "title": "IEEE 802.11 Security",
+                "url": "https://www.ieee802.org/11/"
+              }
+            ],
+            "keyPoints": [
+              "Wireless security protocol",
+              "Not application-layer"
+            ],
+            "examples": [
+              "Securing home Wi-Fi networks"
+            ],
+            "analogy": "Like locking your house, not securing the conversation inside",
+            "comparison": "Protects network access, not web data",
+            "confusion": "Often mistaken as general security solution"
+          }
+        },
+        {
+          "id": "E",
+          "text": "Hypertext Transfer Protocol (HTTP)",
+          "isCorrect": false,
+          "explanation": {
+            "summary": "HTTP does not encrypt transmitted web data.",
+            "why": "HTTP transmits data in plaintext and requires TLS to provide encryption, forming HTTPS.",
+            "learnMore": [
+              {
+                "title": "HTTP Overview",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+              }
+            ],
+            "keyPoints": [
+              "No encryption",
+              "Base web protocol"
+            ],
+            "examples": [
+              "Accessing http:// websites"
+            ],
+            "analogy": "Like sending a message without sealing it",
+            "comparison": "HTTP vs HTTPS (secure)",
+            "securityImplication": "Data can be intercepted easily"
+          }
+        }
+      ]
+    }
+  ]
+}

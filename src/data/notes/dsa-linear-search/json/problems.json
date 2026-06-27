@@ -1,0 +1,52 @@
+{
+  "problems": [
+    {
+      "id": 1,
+      "number": "1",
+      "title": "Two Sum",
+      "url": "https://leetcode.com/problems/two-sum/",
+      "diff": "easy",
+      "pattern": "Linear scan with complement lookup — a direct extension of searching for a target"
+    },
+    {
+      "id": 2,
+      "number": "268",
+      "title": "Missing Number",
+      "url": "https://leetcode.com/problems/missing-number/",
+      "diff": "easy",
+      "pattern": "Linear scan to find the absent element in a range 0..n"
+    },
+    {
+      "id": 3,
+      "number": "153",
+      "title": "Find Minimum in Rotated Sorted Array",
+      "url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
+      "diff": "medium",
+      "pattern": "Linear scan works as O(n) brute force; contrast with O(log n) binary variant"
+    },
+    {
+      "id": 4,
+      "number": "169",
+      "title": "Majority Element",
+      "url": "https://leetcode.com/problems/majority-element/",
+      "diff": "medium",
+      "pattern": "Linear scan counting occurrences — brute-force linear search per candidate"
+    },
+    {
+      "id": 5,
+      "number": "41",
+      "title": "First Missing Positive",
+      "url": "https://leetcode.com/problems/first-missing-positive/",
+      "diff": "hard",
+      "pattern": "Linear scan with in-place marking to find the first absent value"
+    },
+    {
+      "id": 6,
+      "number": "295",
+      "title": "Find Median from Data Stream",
+      "url": "https://leetcode.com/problems/find-median-from-data-stream/",
+      "diff": "hard",
+      "pattern": "Demonstrates why linear scan (O(n) per query) is inadequate for streams at scale, motivating heap-based solutions"
+    }
+  ]
+}

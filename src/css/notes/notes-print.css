@@ -1,0 +1,551 @@
+/* ============================================
+   NOTES PRINT STYLESHEET v1.0
+   Loaded only by the print window (executePrint)
+   File: css/notes-print.css
+   ============================================ */
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 2rem;
+    background: white;
+    color: #111;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
+}
+
+.note-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.note-header h1 {
+    font-size: 20pt;
+    font-weight: 700;
+    color: #111;
+    border-bottom: 2pt solid #333;
+    padding-bottom: 0.3cm;
+    margin-bottom: 0.5cm;
+}
+
+.note-date {
+    font-size: 10pt;
+    color: #444;
+    margin-bottom: 1rem;
+}
+
+/* ============================================
+   SECTION STRUCTURE
+   ============================================ */
+
+.print-section {
+    margin-bottom: 2rem;
+}
+
+.print-section-heading {
+    font-size: 16pt;
+    font-weight: 700;
+    color: #111;
+    border-bottom: 2px solid #333;
+    padding-bottom: 0.3rem;
+    margin: 1.5rem 0 0.75rem 0;
+    page-break-after: avoid;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+h3 {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #111;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+    page-break-after: avoid;
+}
+
+h4 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #111;
+    margin-top: 0.75rem;
+    margin-bottom: 0.3rem;
+    page-break-after: avoid;
+}
+
+p {
+    font-size: 11pt;
+    color: #111;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+    orphans: 3;
+    widows: 3;
+}
+
+ul, ol {
+    margin-left: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+li {
+    font-size: 10pt;
+    color: #111;
+    line-height: 1.5;
+    margin-bottom: 0.2rem;
+}
+
+strong { font-weight: 700; }
+em     { font-style: italic; }
+
+a {
+    color: #111;
+    text-decoration: underline;
+}
+
+blockquote {
+    border-left: 3pt solid #999;
+    background: #f9f9f9;
+    padding: 0.3cm 0.5cm;
+    margin: 0.4cm 0;
+    font-style: italic;
+    color: #333;
+    page-break-inside: avoid;
+}
+
+/* ============================================
+   CODE
+   ============================================ */
+
+pre {
+    background: #f5f5f5;
+    border: 1pt solid #ccc;
+    padding: 0.5rem;
+    font-size: 9pt;
+    line-height: 1.4;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: visible;
+}
+
+code {
+    background: #f5f5f5;
+    border: 1pt solid #ddd;
+    padding: 0.1rem 0.2rem;
+    font-size: 9pt;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+pre code {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+}
+
+thead { display: table-header-group; }
+
+th {
+    background: #e0e0e0;
+    border: 1pt solid #999;
+    padding: 0.3rem 0.5rem;
+    font-weight: 700;
+    text-align: left;
+}
+
+td {
+    border: 1pt solid #ccc;
+    padding: 0.3rem 0.5rem;
+    color: #111;
+}
+
+tbody tr:nth-child(even) { background: #f9f9f9; }
+
+/* ============================================
+   INFO BOXES
+   ============================================ */
+
+.highlight-box,
+.info-box,
+.success-box,
+.error-box {
+    border: 1pt solid #333;
+    border-left-width: 4pt;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0;
+    background: #f9f9f9;
+    page-break-inside: avoid;
+}
+
+.highlight-box { border-left-color: #ffd700; }
+.info-box      { border-left-color: #2196f3; }
+.success-box   { border-left-color: #4caf50; }
+.error-box     { border-left-color: #f44336; }
+
+.highlight-box p,
+.info-box p,
+.success-box p,
+.error-box p {
+    margin: 0;
+    color: #111;
+}
+
+/* ============================================
+   IMAGES
+   ============================================ */
+
+img {
+    max-width: 100%;
+    height: auto;
+    border: 1pt solid #ccc;
+    margin: 0.3cm 0;
+    display: block;
+    page-break-inside: avoid;
+}
+
+.diagram-container {
+    text-align: center;
+    margin: 0.5cm 0;
+    page-break-inside: avoid;
+}
+
+.diagram-caption,
+.image-caption {
+    font-size: 9pt;
+    color: #333;
+    font-style: italic;
+    text-align: center;
+    margin-top: 0.2cm;
+}
+
+/* ============================================
+   EXAM HIGHLIGHTS
+   ============================================ */
+
+.exam-highlight-sentence {
+    background: #fff9c4 !important;
+    color: #000 !important;
+    padding: 1px 4px;
+    font-weight: 600;
+    border-bottom: 1pt solid #fdd835;
+    page-break-inside: avoid;
+}
+
+.exam-highlight-term {
+    background: #ffeb3b !important;
+    color: #000 !important;
+    padding: 1px 4px;
+    font-weight: 700;
+    border-bottom: 2pt solid #f57f17;
+    page-break-inside: avoid;
+}
+
+/* Hide the hover tooltip in print */
+.exam-highlight-term::after { display: none !important; }
+
+/* ============================================
+   QUIZ
+   ============================================ */
+
+.quiz-slide {
+    display: block !important;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    border: 1pt solid #ccc;
+    page-break-inside: avoid;
+}
+
+.question-header {
+    border-bottom: 1pt solid #ccc;
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.question-badge {
+    font-size: 9pt;
+    color: #555;
+    font-weight: 600;
+}
+
+.question-text {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.quiz-options { margin-left: 0.5cm; }
+
+.quiz-option-card {
+    display: flex;
+    align-items: center;
+    padding: 0.35rem 0.5rem;
+    margin-bottom: 0.3rem;
+    border: 1pt solid #ddd;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.quiz-option-card[data-correct="true"] {
+    background: #c8e6c9 !important;
+    border-color: #4caf50 !important;
+}
+
+.quiz-option-card[data-correct="true"]::after {
+    content: " ✓ CORRECT";
+    color: #2e7d32;
+    font-weight: 700;
+    font-size: 9pt;
+    margin-left: auto;
+}
+
+.option-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    background: #e0e0e0;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 10pt;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+.quiz-option-card[data-correct="true"] .option-letter {
+    background: #a5d6a7;
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.option-text {
+    font-size: 10pt;
+    color: #111;
+    line-height: 1.4;
+}
+
+.quiz-feedback {
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    page-break-inside: avoid;
+}
+
+.quiz-feedback.correct {
+    background: #e8f5e9;
+    border: 1pt solid #4caf50;
+}
+
+.quiz-feedback.incorrect {
+    background: #ffebee;
+    border: 1pt solid #f44336;
+}
+
+.feedback-icon  { display: none; }
+.feedback-result { font-size: 10pt; font-weight: 700; }
+
+.explanation-box {
+    background: #f5f5f5;
+    border-left: 3pt solid #2196f3;
+    padding: 0.4rem 0.5rem;
+    margin-top: 0.4rem;
+    font-size: 10pt;
+    page-break-inside: avoid;
+}
+
+/* ============================================
+   FLASHCARDS
+   ============================================ */
+
+.flashcard-slide {
+    display: block !important;
+    margin-bottom: 1rem;
+    page-break-inside: avoid;
+}
+
+.flashcard-content {
+    border: 1pt solid #ccc;
+    padding: 0.75rem;
+}
+
+.question-side { margin-bottom: 0.5rem; }
+
+.question-side h4 {
+    color: #1565c0;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.3rem;
+}
+
+.answer-side {
+    border-top: 1pt solid #ccc;
+    padding-top: 0.5rem;
+}
+
+.answer-side h4 {
+    color: #2e7d32;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.3rem;
+}
+
+/* ============================================
+   CHECKLIST
+   ============================================ */
+
+.checklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+}
+
+.checklist-table th {
+    background: #e0e0e0;
+    border: 1pt solid #999;
+    padding: 0.3rem;
+    font-weight: 700;
+}
+
+.checklist-table td {
+    border: 1pt solid #ccc;
+    padding: 0.3rem;
+}
+
+/* Replace checkbox with printable square */
+.checklist-item { display: none !important; }
+
+.checklist-table td:first-child::after {
+    content: "☐";
+    font-size: 12pt;
+    display: block;
+    text-align: center;
+}
+
+/* ============================================
+   GLOSSARY
+   ============================================ */
+
+#glossaryContainer table { page-break-inside: auto; }
+#glossaryContainer tr    { page-break-inside: avoid; page-break-after: auto; }
+
+/* ============================================
+   INTERVIEW QUESTIONS
+   ============================================ */
+
+.interview-question {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1pt solid #ddd;
+    page-break-inside: avoid;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.content-footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 2pt solid #333;
+    font-size: 8pt;
+    color: #333;
+    page-break-before: always;
+}
+
+.footer-copyright  { font-size: 8pt; display: block; margin-bottom: 0.2rem; }
+.footer-license    { font-size: 8pt; display: block; margin-bottom: 0.5rem; }
+.footer-list       { list-style: none; padding: 0; margin: 0 0 0.5rem 0; }
+.footer-list li    { font-size: 8pt; margin-bottom: 0.15rem; line-height: 1.4; }
+.footer-contact    { font-size: 8pt; }
+.footer-heading    { font-size: 9pt; font-weight: 700; margin-bottom: 0.3rem; }
+.footer-disclaimer { display: none !important; }
+
+.content-footer a { color: #333; }
+
+/* ============================================
+   HIDE ALL UI ELEMENTS
+   ============================================ */
+
+button,
+nav,
+.breadcrumb,
+.reading-time-badge,
+.reading-progress-bar,
+.floating-menu-btn,
+.actions-menu-btn,
+.floating-menu-panel,
+.actions-menu-panel,
+.jump-to-top-btn,
+.study-timer-display,
+.bookmark-btn,
+.copy-code-btn,
+.search-container,
+.toast-notification,
+.keyboard-shortcuts-help,
+.quiz-navigation,
+.quiz-nav-btn,
+.quiz-bottom-navigation,
+.quiz-bottom-nav-btn,
+.quiz-summary-section,
+.quiz-summary-btn,
+.quiz-reset-btn,
+.quiz-header-info,
+.submit-quiz-btn,
+.flashcard-navigation,
+.nav-btn,
+.show-answer-btn,
+.card-counter,
+.checklist-progress,
+.progress-bar,
+input[type="checkbox"],
+input[type="radio"],
+.theme-toggle,
+.print-answer-key-container,
+.tags,
+.skip-link,
+.aria-live-region { display: none !important; }
+
+/* ============================================
+   PAGE SETUP
+   ============================================ */
+
+@page {
+    margin: 20mm 15mm 25mm 15mm;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+    orphans: 3;
+    widows: 3;
+}
+
+h1 + p, h2 + p, h3 + p { page-break-before: avoid; }
+
+p, li { orphans: 3; widows: 3; }

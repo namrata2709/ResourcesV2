@@ -1,0 +1,844 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What does linear search return when the target element is not found in the array?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The last element of the array"
+        },
+        {
+          "letter": "B",
+          "text": "-1 (or a sentinel indicating absence)"
+        },
+        {
+          "letter": "C",
+          "text": "0"
+        },
+        {
+          "letter": "D",
+          "text": "The length of the array"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "By convention, linear search returns -1 when the target is absent, signalling \"not found\" without ambiguity (since -1 is not a valid array index).",
+        "why": "The last element of the array would be confusing — that's a real value, not a status. 0 is a valid index (element found at position 0). Array length n is also not a standard sentinel because it's outside valid indices but not the universal convention."
+      }
+    },
+    {
+      "id": 2,
+      "question": "What is the worst-case time complexity of linear search on an array of n elements?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(1)"
+        },
+        {
+          "letter": "B",
+          "text": "O(log n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(n)"
+        },
+        {
+          "letter": "D",
+          "text": "O(n²)"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "In the worst case the target is at the last index or absent, so all n elements are checked — O(n).",
+        "why": "O(1) is the best case (target at index 0). O(log n) is binary search. O(n²) would require a nested loop, which linear search does not have."
+      }
+    },
+    {
+      "id": 3,
+      "question": "What is the best-case time complexity of linear search?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n)"
+        },
+        {
+          "letter": "B",
+          "text": "O(log n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(n log n)"
+        },
+        {
+          "letter": "D",
+          "text": "O(1)"
+        }
+      ],
+      "correctAnswer": "D",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Best case occurs when the target is at index 0, requiring only one comparison — O(1).",
+        "why": "O(n) is the average and worst case. O(log n) describes binary search. O(n log n) describes sorting algorithms."
+      }
+    },
+    {
+      "id": 4,
+      "question": "Which of the following is a requirement for using linear search?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The array must be sorted in ascending order"
+        },
+        {
+          "letter": "B",
+          "text": "The array must contain unique elements"
+        },
+        {
+          "letter": "C",
+          "text": "The array must be stored in a hash table"
+        },
+        {
+          "letter": "D",
+          "text": "No special requirement — it works on any sequence"
+        }
+      ],
+      "correctAnswer": "D",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Linear search makes no assumptions about order, uniqueness, or data structure — it scans whatever sequence it is given.",
+        "why": "Sorted order is required by binary search, not linear search. Unique elements are required by some algorithms but not linear search. A hash table enables O(1) lookup — a completely different mechanism."
+      }
+    },
+    {
+      "id": 5,
+      "question": "How many comparisons does linear search make on [5, 3, 8, 1, 9] when searching for 8?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1"
+        },
+        {
+          "letter": "B",
+          "text": "2"
+        },
+        {
+          "letter": "C",
+          "text": "3"
+        },
+        {
+          "letter": "D",
+          "text": "5"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Index 0: 5≠8, index 1: 3≠8, index 2: 8==8 — found after 3 comparisons.",
+        "why": "1 comparison would mean 8 is at index 0, which it isn't. 2 comparisons would mean it's at index 1. 5 would mean it's absent or last."
+      }
+    },
+    {
+      "id": 6,
+      "question": "What space complexity does standard linear search use?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n)"
+        },
+        {
+          "letter": "B",
+          "text": "O(log n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(1)"
+        },
+        {
+          "letter": "D",
+          "text": "O(n²)"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Linear search uses only a loop counter and a comparand — constant extra memory regardless of n.",
+        "why": "O(n) would imply the algorithm allocates memory proportional to input size, which it does not. O(log n) is the stack space of recursive binary search. O(n²) applies to algorithms like bubble sort with certain implementations."
+      }
+    },
+    {
+      "id": 7,
+      "question": "On which data structure can linear search be used but binary search cannot?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Sorted array"
+        },
+        {
+          "letter": "B",
+          "text": "Hash table"
+        },
+        {
+          "letter": "C",
+          "text": "Singly-linked list"
+        },
+        {
+          "letter": "D",
+          "text": "Balanced BST"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "A singly-linked list supports only sequential access — reaching the midpoint takes O(n) time, making binary search impractical. Linear search only needs to advance one step at a time, which is exactly what linked lists support.",
+        "why": "Sorted array supports both. Hash table supports O(1) lookup directly — neither search algorithm is needed. Balanced BST supports O(log n) search by design."
+      }
+    },
+    {
+      "id": 8,
+      "question": "What is the average number of comparisons linear search makes when the target is present in an array of n elements (assuming uniform distribution)?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "n"
+        },
+        {
+          "letter": "B",
+          "text": "n/2"
+        },
+        {
+          "letter": "C",
+          "text": "(n+1)/2"
+        },
+        {
+          "letter": "D",
+          "text": "log n"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "With uniform distribution the target is equally likely to be at any index 1..n, so the expected comparisons are (1+2+…+n)/n = (n+1)/2.",
+        "why": "n is the worst case (element absent or last). n/2 is close but off by 0.5 — the exact formula is (n+1)/2. log n is binary search."
+      }
+    },
+    {
+      "id": 9,
+      "question": "In sentinel linear search, what does the sentinel accomplish?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It sorts the array before searching"
+        },
+        {
+          "letter": "B",
+          "text": "It eliminates the bounds check inside the loop"
+        },
+        {
+          "letter": "C",
+          "text": "It speeds up equality comparison"
+        },
+        {
+          "letter": "D",
+          "text": "It prevents duplicate elements"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "By placing the target at arr[n-1], the loop is guaranteed to find it eventually, so the condition i < n is never needed — only arr[i] != target drives the loop.",
+        "why": "Sentinel search does not sort. Equality comparison speed is unchanged. It does not prevent duplicates."
+      }
+    },
+    {
+      "id": 10,
+      "question": "After sentinel linear search places the target at arr[n-1] and the loop exits at index i, what additional check is needed?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Verify i < n"
+        },
+        {
+          "letter": "B",
+          "text": "Verify i < n-1 or arr[n-1] equals the original last element"
+        },
+        {
+          "letter": "C",
+          "text": "Verify arr[i] equals target again"
+        },
+        {
+          "letter": "D",
+          "text": "No additional check is needed"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "The loop exits at i when arr[i] equals the target (the sentinel or a real match). We need i < n-1 (real match before sentinel) or the original last element actually equals target — otherwise we only hit the sentinel and the element is absent.",
+        "why": "i < n is always true by construction. Checking arr[i] == target again is redundant (the loop already ensures this). Skipping the check would incorrectly return n-1 for absent elements."
+      }
+    },
+    {
+      "id": 11,
+      "question": "Which modification allows early termination during linear search on a sorted array?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Break when arr[i] < target"
+        },
+        {
+          "letter": "B",
+          "text": "Break when arr[i] > target (ascending)"
+        },
+        {
+          "letter": "C",
+          "text": "Break when arr[i] == arr[i-1]"
+        },
+        {
+          "letter": "D",
+          "text": "There is no valid early termination"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "In an ascending array, once arr[i] > target, all subsequent elements are also greater and the target cannot appear later — so we can exit immediately.",
+        "why": "Breaking when arr[i] < target would exit too soon (elements less than target are still before it). Breaking on duplicates is unrelated to the target. Early termination is valid and useful on sorted arrays."
+      }
+    },
+    {
+      "id": 12,
+      "question": "What is the time complexity of finding all occurrences of a target in an unsorted array?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(1)"
+        },
+        {
+          "letter": "B",
+          "text": "O(log n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(n)"
+        },
+        {
+          "letter": "D",
+          "text": "O(n log n)"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Every element must be checked because the target could appear anywhere, including the last position. Worst case: all n elements match or none match — both require n comparisons.",
+        "why": "O(1) and O(log n) are impossible without structure information. O(n log n) would require sorting, which is not needed here."
+      }
+    },
+    {
+      "id": 13,
+      "question": "How many searches k on an n-element array make it worth sorting first (to enable binary search)?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "k > 1"
+        },
+        {
+          "letter": "B",
+          "text": "k > log n"
+        },
+        {
+          "letter": "C",
+          "text": "k > n"
+        },
+        {
+          "letter": "D",
+          "text": "k > n log n"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Sort costs O(n log n). Each binary search costs O(log n). Total cost with sorting: O(n log n + k log n). Without sorting (linear): O(kn). Sorting wins when n log n + k log n < kn → k > n log n / (n - log n) ≈ log n for large n.",
+        "why": "k > 1 is too low — for small k, linear search wins even after sorting. k > n means waiting far too long. k > n log n is far too conservative."
+      }
+    },
+    {
+      "id": 14,
+      "question": "You call linearSearch([2, 4, 4, 7, 4], 4). What does the standard implementation return?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "4"
+        },
+        {
+          "letter": "B",
+          "text": "1"
+        },
+        {
+          "letter": "C",
+          "text": "2"
+        },
+        {
+          "letter": "D",
+          "text": "[1, 2, 4]"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Standard linear search returns the FIRST occurrence. Index 1 holds value 4 and is the first match; the algorithm returns immediately.",
+        "why": "4 is the value itself, not the index. 2 is the second occurrence (index 2). Returning a list requires the find-all variant."
+      }
+    },
+    {
+      "id": 15,
+      "question": "What is the primary advantage of linear search over hash table lookup?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Linear search is faster on average"
+        },
+        {
+          "letter": "B",
+          "text": "Linear search uses less space"
+        },
+        {
+          "letter": "C",
+          "text": "Linear search works on unsorted data while hash tables require a key"
+        },
+        {
+          "letter": "D",
+          "text": "Linear search has O(1) worst case"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "A linear scan over an array uses O(1) extra memory — no hash table overhead. Hash tables require O(n) extra space for the buckets and collision structures, plus O(n) time to build.",
+        "why": "Hash table is O(1) average — faster than O(n). Both work on unsorted data conceptually. Linear search is O(n) worst case, not O(1)."
+      }
+    },
+    {
+      "id": 16,
+      "question": "A data stream delivers elements one at a time and cannot be rewound. Which search strategy applies?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Binary search"
+        },
+        {
+          "letter": "B",
+          "text": "Linear search"
+        },
+        {
+          "letter": "C",
+          "text": "Hash table lookup"
+        },
+        {
+          "letter": "D",
+          "text": "B-tree search"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "A stream delivers elements sequentially with no way to jump to an arbitrary position or re-read earlier elements. Linear search naturally consumes elements one by one, making it the only applicable general search strategy.",
+        "why": "Binary search requires random access and re-reads. Hash table lookup requires the full dataset to be ingested first. B-tree search requires an indexed structure."
+      }
+    },
+    {
+      "id": 17,
+      "question": "What does the move-to-front heuristic do to improve linear search performance?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Sorts the array every time an element is found"
+        },
+        {
+          "letter": "B",
+          "text": "Moves the found element to index 0 after each successful search"
+        },
+        {
+          "letter": "C",
+          "text": "Removes duplicates during search"
+        },
+        {
+          "letter": "D",
+          "text": "Caches the last found index"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "After finding an element at index i, move it to position 0. Repeated searches for popular elements then cost O(1) because they sit at the front. Over many queries, access frequency self-sorts the list.",
+        "why": "Sorting the array each time would cost O(n log n) per search — far worse. Removing duplicates changes the data. Caching helps repeated searches for the same element but not for different popular elements."
+      }
+    },
+    {
+      "id": 18,
+      "question": "Which scenario makes linear search preferable to binary search even on sorted data?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "n = 10⁶ with 10⁶ queries"
+        },
+        {
+          "letter": "B",
+          "text": "n = 8 with 3 queries"
+        },
+        {
+          "letter": "C",
+          "text": "The array is never modified"
+        },
+        {
+          "letter": "D",
+          "text": "The array is stored in a database"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "For very small n (here n=8), linear search's constant overhead is lower than binary search's midpoint computation and conditional branching — linear search wins on tiny arrays.",
+        "why": "n=10⁶ with many queries strongly favors binary search (O(log n) per query vs O(n)). Mutability is unrelated to the choice. Database storage is also unrelated."
+      }
+    },
+    {
+      "id": 19,
+      "question": "What is the theoretical lower bound on search time for unsorted data?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(log n)"
+        },
+        {
+          "letter": "B",
+          "text": "O(√n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(n)"
+        },
+        {
+          "letter": "D",
+          "text": "O(n log n)"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Any deterministic algorithm must examine every element in the worst case because with one unseen element, an adversary can place the target there. This gives Ω(n) — and linear search achieves this bound, making it asymptotically optimal for unsorted data.",
+        "why": "O(log n) and O(√n) are below the lower bound and impossible for arbitrary unsorted data without additional structure. O(n log n) is an upper bound for sorting, not a lower bound for searching."
+      }
+    },
+    {
+      "id": 20,
+      "question": "SIMD linear search compares 8 elements per instruction. What is its time complexity?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n/8)"
+        },
+        {
+          "letter": "B",
+          "text": "O(n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(8)"
+        },
+        {
+          "letter": "D",
+          "text": "O(log n)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "O(n/8) simplifies to O(n) — the constant 8 disappears in big-O notation. SIMD provides a constant-factor speedup but does not change the asymptotic class.",
+        "why": "O(n/8) as a final answer is imprecise — big-O absorbs constants. O(8) would imply constant time. O(log n) is binary search."
+      }
+    },
+    {
+      "id": 21,
+      "question": "Why does linear search sometimes outperform binary search on modern hardware for medium-sized arrays?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Linear search has better asymptotic complexity"
+        },
+        {
+          "letter": "B",
+          "text": "Sequential memory access matches CPU cache prefetching, reducing cache misses"
+        },
+        {
+          "letter": "C",
+          "text": "Binary search uses more memory"
+        },
+        {
+          "letter": "D",
+          "text": "Linear search can be parallelised easily"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "CPUs prefetch cache lines sequentially. Linear search accesses arr[0], arr[1], arr[2]… in order, so the prefetcher loads upcoming elements ahead of time. Binary search jumps to random midpoints, causing cache misses that each stall the pipeline.",
+        "why": "Binary search has better asymptotic complexity. Both use O(1) extra memory. Parallelism is not the reason for cache-level wins."
+      }
+    },
+    {
+      "id": 22,
+      "question": "Parallel linear search divides an array of n elements among p threads. What is the ideal time complexity?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n)"
+        },
+        {
+          "letter": "B",
+          "text": "O(n/p)"
+        },
+        {
+          "letter": "C",
+          "text": "O(p)"
+        },
+        {
+          "letter": "D",
+          "text": "O(log n)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Each thread scans n/p elements. With p equal-sized chunks processed simultaneously, total time is O(n/p). Communication and synchronization overhead make the actual constant larger, but the ideal asymptotic is O(n/p).",
+        "why": "O(n) is the single-threaded time. O(p) would mean faster with more threads regardless of n — not true. O(log n) is binary search."
+      }
+    },
+    {
+      "id": 23,
+      "question": "What is the expected search length for linear search with move-to-front on highly skewed access distributions?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Always O(1)"
+        },
+        {
+          "letter": "B",
+          "text": "O(n) in the worst case for any single element"
+        },
+        {
+          "letter": "C",
+          "text": "Approaches O(1) for the most popular elements"
+        },
+        {
+          "letter": "D",
+          "text": "Degrades to O(n²) due to shuffling overhead"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Move-to-front self-organizes the list so the most frequently accessed elements cluster at the front. After enough queries, the top-k most popular elements are at positions 1..k and are found in O(k) comparisons. For the single most popular element, the expected cost approaches O(1).",
+        "why": "Always O(1) is false — rare elements stay near the back. O(n) worst-case for a single element is true but misses the optimization point. O(n²) is wrong; shuffling is O(n) but rarely triggered."
+      }
+    },
+    {
+      "id": 24,
+      "question": "Which statement correctly describes the relationship between linear search and comparison-based lower bounds?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Linear search beats the Ω(n) lower bound using comparison tricks"
+        },
+        {
+          "letter": "B",
+          "text": "Linear search is asymptotically optimal for searching unsorted data"
+        },
+        {
+          "letter": "C",
+          "text": "Linear search is suboptimal because hash tables are O(1)"
+        },
+        {
+          "letter": "D",
+          "text": "Linear search requires Ω(n log n) comparisons"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "The information-theoretic lower bound for searching unsorted data is Ω(n) — you must inspect every element in the worst case. Linear search achieves exactly O(n), making it optimal among comparison-based algorithms on unsorted inputs.",
+        "why": "No comparison-based algorithm beats Ω(n) on unsorted data. Hash tables are not comparison-based — they exploit numeric structure. Linear search is Θ(n), not Θ(n log n)."
+      }
+    },
+    {
+      "id": 25,
+      "question": "A function returns arr[i] instead of i when the target is found. Under what condition will callers notice the bug?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Always"
+        },
+        {
+          "letter": "B",
+          "text": "When the target value equals its own index"
+        },
+        {
+          "letter": "C",
+          "text": "When the target value does not equal its own index"
+        },
+        {
+          "letter": "D",
+          "text": "Never — value and index are equivalent"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Callers expecting an index receive the value instead. The bug is invisible only when arr[i] == i (the value happens to equal its index). In all other cases, the returned number is wrong — either a valid but incorrect index, or a value outside [0, n-1] entirely.",
+        "why": "Not always visible — if arr[3] == 3, returning 3 looks correct. When value equals index the bug is hidden. They are never equivalent in general."
+      }
+    },
+    {
+      "id": 26,
+      "question": "You implement linear search with the condition i <= n instead of i < n. What happens?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It silently skips the last element"
+        },
+        {
+          "letter": "B",
+          "text": "It accesses arr[n], causing an out-of-bounds error"
+        },
+        {
+          "letter": "C",
+          "text": "It returns the correct answer but wastes one comparison"
+        },
+        {
+          "letter": "D",
+          "text": "It works correctly in all languages"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "arr[n] is one past the end of a 0-indexed array of size n — an out-of-bounds access that causes undefined behaviour in C/C++ and an IndexError in Python/Java.",
+        "why": "i <= n does not skip the last element — it over-reads past it. The extra comparison is not harmless; it accesses invalid memory. Python/Java raise an exception, so \"works correctly\" is false."
+      }
+    },
+    {
+      "id": 27,
+      "question": "What happens if sentinel linear search forgets to restore arr[n-1] after the search?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The search returns a wrong index"
+        },
+        {
+          "letter": "B",
+          "text": "The array is permanently corrupted at its last position"
+        },
+        {
+          "letter": "C",
+          "text": "The algorithm runs in infinite loop"
+        },
+        {
+          "letter": "D",
+          "text": "Performance degrades to O(n²)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "The sentinel temporarily overwrites arr[n-1] with the target value. Failing to restore the original last element mutates the caller's array, causing hard-to-diagnose bugs in subsequent operations.",
+        "why": "The index returned is still correct — corruption happens after the return. No infinite loop results. Performance is unaffected."
+      }
+    },
+    {
+      "id": 28,
+      "question": "Linear search on a sorted array with early exit (break when arr[i] > target) reduces which complexity measure?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Worst-case time"
+        },
+        {
+          "letter": "B",
+          "text": "Average time for unsuccessful searches"
+        },
+        {
+          "letter": "C",
+          "text": "Space complexity"
+        },
+        {
+          "letter": "D",
+          "text": "Best-case time"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "For unsuccessful searches on sorted data, without early exit you always scan all n elements. With early exit you stop at the first element exceeding the target — on average halfway through, cutting unsuccessful-search time to n/2. Worst case (target would be the largest) still visits n elements.",
+        "why": "Worst-case time remains O(n) (target larger than all elements). Space is unchanged at O(1). Best case is already O(1) — target at index 0."
+      }
+    },
+    {
+      "id": 29,
+      "question": "Which input causes the maximum number of comparisons in linear search?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Target is at index 0"
+        },
+        {
+          "letter": "B",
+          "text": "Target is at index n/2"
+        },
+        {
+          "letter": "C",
+          "text": "Target is absent from the array"
+        },
+        {
+          "letter": "D",
+          "text": "Target appears at every index"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "When the target is absent, the loop runs to completion — all n comparisons are made without finding a match. This ties with the case where the target is at index n-1.",
+        "why": "Target at index 0 costs 1 comparison (best case). Target at index n/2 costs n/2+1. Target appearing everywhere costs 1 comparison (first element matches immediately)."
+      }
+    },
+    {
+      "id": 30,
+      "question": "What must be true of the equality operator used in linear search for the algorithm to be correct?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It must be a strict less-than comparison"
+        },
+        {
+          "letter": "B",
+          "text": "It must be reflexive, symmetric, and transitive (an equivalence relation)"
+        },
+        {
+          "letter": "C",
+          "text": "It must compare by memory address only"
+        },
+        {
+          "letter": "D",
+          "text": "It must sort elements before comparing"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Linear search relies on equality. For equality to behave predictably, it must satisfy: a==a (reflexive), a==b implies b==a (symmetric), and a==b and b==c implies a==c (transitive). Violating these (e.g. NaN != NaN in IEEE 754) causes linear search to miss elements even when they are present.",
+        "why": "Less-than is not needed — only equality. Address comparison would miss equal-valued objects at different addresses. Sorting before comparing would change O(n) to O(n log n)."
+      }
+    }
+  ]
+}

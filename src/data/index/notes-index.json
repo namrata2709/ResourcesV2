@@ -1,0 +1,124 @@
+{
+  "notes": [
+    {
+      "title": "Introduction To Ai & Machine Learning",
+      "folder": "aws-sample1-session-sample",
+      "subject": "aws",
+      "session": "Sample",
+      "date": "2026-06-27",
+      "category": "General",
+      "tags": [
+        "AWS",
+        "AI",
+        "Machine Learning",
+        "Generative AI",
+        "Bedrock",
+        "SageMaker",
+        "PartyRock",
+        "Responsible AI",
+        "LLM",
+        "re/Start"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Lab",
+          "file": "lab.html",
+          "type": "lab",
+          "icon": "🧪"
+        },
+        {
+          "name": "Presentation",
+          "file": "ppt.html",
+          "type": "ppt",
+          "icon": "📊"
+        }
+      ]
+    },
+    {
+      "title": "Introduction To Ai & Machine Learning",
+      "folder": "aws-sample2",
+      "subject": "aws",
+      "session": null,
+      "date": "2026-06-27",
+      "category": "General",
+      "tags": [
+        "AWS",
+        "AI",
+        "Machine Learning",
+        "Generative AI",
+        "Bedrock",
+        "SageMaker",
+        "PartyRock",
+        "Responsible AI",
+        "LLM",
+        "re/Start"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "📄"
+        }
+      ]
+    },
+    {
+      "title": "Linear Search",
+      "folder": "dsa-linear-search",
+      "subject": "dsa",
+      "session": null,
+      "date": "2026-06-27",
+      "category": "DSA",
+      "tags": [
+        "searching",
+        "arrays",
+        "beginner",
+        "brute force"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "📄"
+        }
+      ]
+    },
+    {
+      "title": "Introduction To Ai & Machine Learning",
+      "folder": "dsa-sample",
+      "subject": "dsa",
+      "session": null,
+      "date": "2026-06-27",
+      "category": "DSA",
+      "tags": [
+        "AWS",
+        "AI",
+        "Machine Learning",
+        "Generative AI",
+        "Bedrock",
+        "SageMaker",
+        "PartyRock",
+        "Responsible AI",
+        "LLM",
+        "re/Start"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "📄"
+        }
+      ]
+    }
+  ]
+}
