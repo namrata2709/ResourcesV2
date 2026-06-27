@@ -36,7 +36,7 @@ jobs:
         run: npm ci
 
       - name: Build website
-        run: node tools/minify.js
+        run: npm run build
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

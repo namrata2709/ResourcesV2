@@ -1,0 +1,19 @@
+{
+  "name": "python",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "clean-css": "^5.3.3",
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.3.5",
+    "html-minifier-terser": "^7.2.0",
+    "terser": "^5.48.0"
+  }
+}
