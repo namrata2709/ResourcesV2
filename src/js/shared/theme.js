@@ -1,12 +1,22 @@
 /**
- * theme.js — Universal theme manager
- * File: js/shared/theme.js
+ * =============================================================================
+ * File: theme.js
+ * Path: js/shared/theme.js
+ * Project: Learning Dashboard
  *
- * Responsibilities:
- *   1. Injects #themeToggle button if not already in DOM
- *   2. Applies saved theme on load (light / dark / comfort)
- *   3. Cycles theme on click and persists to localStorage
- *   4. Updates button tooltip to show next theme
+ * Description:
+ * Universal theme manager, loaded on every page. Injects #themeToggle if
+ * not already in the DOM (legacy pages that hardcode it keep working —
+ * injection is skipped). Applies the saved theme on load, cycles
+ * light → dark → comfort on click, persists to localStorage, and updates
+ * the button's tooltip to show the next theme in the cycle.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies: none (self-contained)
+ * =============================================================================
  */
 
 (function () {
