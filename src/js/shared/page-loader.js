@@ -1,16 +1,24 @@
 /**
- * Page Loader Handler (shared)
- * Single source of truth for hiding #pageLoader, used on every page that
- * has the loader markup. Replaces the duplicated inline
- * window.addEventListener('load', ...) snippet copy-pasted into every HTML file.
+ * =============================================================================
+ * File: page-loader.js
+ * Path: js/shared/page-loader.js
+ * Project: Learning Dashboard
  *
- * Includes a safety timeout: if a page script errors before the 'load'
- * event fires, the loader would otherwise spin forever. This forces it to
- * hide after 5s regardless.
+ * Description:
+ * Single source of truth for hiding #pageLoader, used on every page with
+ * the loader markup. Replaces the duplicated inline
+ * window.addEventListener('load', ...) snippet previously copy-pasted
+ * into every HTML file. Includes a 5-second safety timeout so the loader
+ * can't get stuck forever if a page script throws before 'load' fires.
  *
  * Usage: <script src="js/shared/page-loader.js"></script>
  *
- * File: js/shared/page-loader.js
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies: none
+ * =============================================================================
  */
 
 (function () {

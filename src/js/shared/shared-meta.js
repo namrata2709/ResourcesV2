@@ -1,20 +1,28 @@
 /**
- * Shared Meta Injector
- * Injects the <meta> tags that are identical on every page across the
- * entire site — author, robots, og:site_name, twitter:card, theme-color,
- * color-scheme. Replaces the copy-pasted versions of these five tags that
- * were duplicated in every HTML file's <head>.
+ * =============================================================================
+ * File: shared-meta.js
+ * Path: js/shared/shared-meta.js
+ * Project: Learning Dashboard
  *
- * Page-specific tags (title, description, keywords, canonical, og:title,
- * og:description, og:url, og:image, twitter:title, twitter:description,
- * twitter:image) are NOT included here — they genuinely differ per page
- * and stay written directly in each page's <head>.
+ * Description:
+ * Injects <meta> tags identical on every page — author, robots,
+ * og:site_name, twitter:card, theme-color, color-scheme — plus favicon
+ * <link> tags and the manifest link. Skips injecting any tag a page
+ * already declares statically (e.g. 404.html's robots override), so two
+ * conflicting tags never coexist. Page-specific tags (title, description,
+ * canonical, og:title, etc.) are NOT handled here — they stay hand-written
+ * per page.
  *
  * Usage: <script src="js/shared/shared-meta.js"></script>
- * Place early in <head>, alongside (or instead of) the static versions
- * of these five tags.
+ * Place early in <head>.
  *
- * File: js/shared/shared-meta.js
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - window.SiteConfig (js/shared/site-config.js) — used for favicon paths
+ * =============================================================================
  */
 
 (function () {
@@ -47,5 +55,26 @@
         meta.setAttribute('content', tagDef.content);
         head.appendChild(meta);
     });
+
+    // Favicons + manifest
+    const faviconBase = window.SiteConfig.basePath + 'favicon_io/';
+    
+
+    [['32x32', 'icon'], ['16x16', 'icon'], ['180x180', 'apple-touch-icon']].forEach(([size, rel]) => {
+        if (document.querySelector(`link[sizes="${size}"]`)) return;
+        const link = document.createElement('link');
+        link.rel = rel;
+        link.type = 'image/png';
+        link.sizes = size;
+        link.href = `${faviconBase}favicon-${size}.png`;
+        document.head.appendChild(link);
+    });
+
+    if (!document.querySelector('link[rel="manifest"]')) {
+        const manifest = document.createElement('link');
+        manifest.rel = 'manifest';
+        manifest.href = `${faviconBase}site.webmanifest`;
+        document.head.appendChild(manifest);
+    }
 
 })();

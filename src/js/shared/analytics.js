@@ -1,13 +1,24 @@
 /**
- * Analytics Loader (shared)
- * Single source of truth for Google Analytics across every page.
- * Replaces the duplicated inline <script async src="...gtag/js...">
- * + dataLayer/gtag boilerplate that was copy-pasted into every HTML file.
+ * =============================================================================
+ * File: analytics.js
+ * Path: js/shared/analytics.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Single source of truth for Google Analytics (gtag.js) across every
+ * page. Replaces the duplicated inline <script async src="...gtag/js...">
+ * + dataLayer/gtag boilerplate that was previously copy-pasted into every
+ * HTML file. No inline GA snippet should exist on any page anymore.
  *
  * Usage: <script src="js/shared/analytics.js"></script>
  * (No inline script needed on the page itself.)
  *
- * File: js/shared/analytics.js
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies: none (self-contained, injects its own <script> tag)
+ * =============================================================================
  */
 
 (function () {

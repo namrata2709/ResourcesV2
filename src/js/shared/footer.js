@@ -1,23 +1,32 @@
 /**
- * Footer Injector (shared)
- * Renders the full site footer (copyright, license, usage terms, and an
- * optional per-subject trademark disclaimer) into #footerRoot.
- * Replaces the duplicated <footer class="content-footer"> block that was
- * copy-pasted into every HTML file.
+ * =============================================================================
+ * File: footer.js
+ * Path: js/shared/footer.js
+ * Project: Learning Dashboard
  *
- * The disclaimer is looked up from data/config/disclaimers.json using the
- * subject named in #footerRoot's data-subject attribute. If that subject
- * has no entry (e.g. DSA today), no disclaimer is rendered — add an entry
- * to disclaimers.json whenever a subject needs one.
+ * Description:
+ * Renders the full site footer (copyright, license, usage terms, and an
+ * optional per-subject trademark disclaimer) into #footerRoot. Replaces
+ * the duplicated <footer class="content-footer"> block previously
+ * copy-pasted into every HTML file. The disclaimer is looked up from
+ * data/config/disclaimers.json using the subject named in #footerRoot's
+ * data-subject attribute — if that subject has no entry (e.g. DSA today),
+ * no disclaimer is rendered. Omit data-subject entirely on
+ * subject-agnostic pages (dashboard, quiz list) to render with no fetch
+ * and no disclaimer.
  *
  * Usage:
  *   <div id="footerRoot" data-subject="aws"></div>
  *   <script src="js/shared/footer.js"></script>
  *
- * Omit data-subject entirely on subject-agnostic pages (dashboard,
- * quiz list) to render the footer with no disclaimer.
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
  *
- * File: js/shared/footer.js
+ * Dependencies:
+ * - window.SiteConfig (js/shared/site-config.js)
+ * - data/config/disclaimers.json (only fetched if data-subject is present)
+ * =============================================================================
  */
 
 (function () {
@@ -47,7 +56,7 @@
         if (!subject) return null;
 
         try {
-            const response = await fetch('data/config/disclaimers.json');
+            const response = await fetch(window.SiteConfig.dataPath('config/disclaimers.json'));
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const data = await response.json();
@@ -59,6 +68,7 @@
     }
 
     function buildFooterHTML(disclaimer) {
+        const year = new Date().getFullYear();
         const disclaimerBlock = disclaimer ? `
             <!-- Disclaimer -->
             <div class="footer-disclaimer">
@@ -72,7 +82,7 @@
 
                     <!-- Copyright & License -->
                     <div class="footer-block">
-                        <p class="footer-copyright">© 2025 Namrata Mulwani. All rights reserved.</p>
+                        <p class="footer-copyright">© ${year} Namrata Mulwani. All rights reserved.</p>
                         <p class="footer-license">Licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)</a></p>
                     </div>
 
