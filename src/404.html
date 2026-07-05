@@ -1,5 +1,29 @@
+<!--
+==============================================================================
+File: 404.html
+Path: 404.html
+Project: Learning Dashboard
+
+Description:
+Custom 404 page. Shows the same dashboard cards as index.html (via
+js/dashboard.js) so a lost visitor can navigate anywhere without a back
+button. Overrides robots meta to "noindex, follow" — shared-meta.js
+respects the static tag and skips injection for this tag only.
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-06-30
+
+Dependencies:
+- css/styles.css
+- js/shared/site-config.js
+- js/dashboard.js
+- data/index/dashboard-cards.json (fetched at runtime by dashboard.js)
+==============================================================================
+-->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,13 +33,18 @@
 
     <title>Page Not Found | Learning Dashboard</title>
     <link rel="stylesheet" href="css/styles.css">
+    <script src="js/shared/site-config.js"></script>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
 </head>
+
 <body>
+    <noscript>
+        <div class="noscript">
+            <h2>JavaScript Required</h2>
+            <p>This website relies on JavaScript for navigation and interactive learning features.</p>
+            <p>Please enable JavaScript.</p>
+        </div>
+    </noscript>
     <!-- Loading State -->
     <div id="pageLoader" class="page-loader">
         <div class="loader-spinner"></div>
@@ -32,6 +61,19 @@
             <h1>🔍 Page Not Found</h1>
             <p class="subtitle">That page doesn't exist — but here's everything that does.</p>
         </header>
+
+        <!-- Search box — jumps straight to notes-index.html?q=<term>,
+             which pre-fills and runs the search on load. -->
+        <form id="notFoundSearchForm" class="search-bar" role="search">
+            <input type="text" id="notFoundSearchInput" placeholder="🔍 Search notes..."
+                aria-label="Search notes" autocomplete="off">
+        </form>
+
+        <!-- Recently Viewed — populated (or removed, if empty) by
+             js/404-recently-viewed.js from the same readingProgress-
+             folder-<folder> localStorage entries notes-index.js already
+             reads for its own "Recently Viewed" sort. -->
+        <div id="recentlyViewed" class="recently-viewed"></div>
 
         <!--
             Same dashboard cards as index.html, rendered dynamically by
@@ -54,11 +96,15 @@
     <!-- Shared meta tags injected here too, EXCEPT robots — this page
          overrides robots to noindex above, since a 404 shouldn't be
          indexed even though its links should still be followed. -->
-    <script src="js/shared/shared-meta.js"></script>
-    <script src="js/shared/theme.js"></script>
+    <script>callNavigation(['Home', '404']);</script>
     <script src="js/dashboard.js"></script>
-    <script src="js/shared/footer.js"></script>
-    <script src="js/shared/analytics.js"></script>
-    <script src="js/shared/page-loader.js"></script>
+    <script src="js/shared/recently-viewed.js"></script>
+    <script>
+        // Page-specific wiring — recently-viewed.js itself is generic and
+        // knows nothing about 404.html's element ids.
+        RecentlyViewed.initSearchRedirect('notFoundSearchForm', 'notFoundSearchInput');
+        RecentlyViewed.renderInto('recentlyViewed');
+    </script>
 </body>
+
 </html>
