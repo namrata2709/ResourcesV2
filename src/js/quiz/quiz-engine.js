@@ -1,4 +1,24 @@
-// @ts-nocheck
+/**
+ * =============================================================================
+ * File: quiz-engine.js
+ * Path: js/quiz/quiz-engine.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Core QuizEngine class — the heart of quiz.html. Owns quiz state
+ * (selected/answered questions, bookmarks, flags, ratings, question
+ * order), rendering, toast/ARIA-live announcements, and
+ * localStorage-backed save/restore (key: quiz_progress_<quizFile>).
+ * Other quiz-*.js files attach additional methods to
+ * QuizEngine.prototype after this file loads — must load first.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies: none (defines the QuizEngine class itself)
+ * =============================================================================
+ */
 class QuizEngine {
     constructor(containerId) {
         this.container  = document.getElementById(containerId);
@@ -898,10 +918,11 @@ window.QuizEngine = QuizEngine;
                 document.title = `${title} - Learning Dashboard`;
             }
         };
-        engine.loadFromJSON(`data/quiz/${file}.json`);
+        engine.loadFromJSON(window.SiteConfig.dataPath(`quiz/${file}.json`));
     }
 
     if (file) {
         document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
+       
     }
 }();

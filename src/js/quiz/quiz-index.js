@@ -1,6 +1,22 @@
 /**
- * Quiz List Manager
- * Handles loading, filtering, sorting, and rendering of the quiz listing page.
+ * =============================================================================
+ * File: quiz-index.js
+ * Path: js/quiz/quiz-index.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * quiz-index.html engine. Loads data/index/quiz-index.json, then handles
+ * search/topic filtering, sorting, and rendering the quiz card grid.
+ * Clicking a card navigates to quiz.html?quiz=<file>.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - window.SiteConfig, window.callNavigation (js/shared/site-config.js)
+ * - data/index/quiz-index.json
+ * =============================================================================
  */
 
 (function () {
@@ -17,13 +33,14 @@
 
     function init() {
         loadQuizList();
+        callNavigation(['Home', 'Quizzes']);
     }
 
     // ── Data ──────────────────────────────────────────────────────────────────
 
     async function loadQuizList() {
         try {
-            const response = await fetch('data/index/quiz-index.json');
+            const response = await fetch(window.SiteConfig.dataPath('index/quiz-index.json'));
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const data   = await response.json();

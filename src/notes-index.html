@@ -1,18 +1,48 @@
+<!--
+==============================================================================
+File: notes-index.html
+Path: notes-index.html
+Project: Learning Dashboard
+
+Description:
+Notes listing page, shared across all subjects. Reads ?subject=aws|dsa
+from the URL to filter the note grid and set page title/heading.
+Search, category/session/tag filters, sort, multi-file folder modal,
+and image gallery entry point are all driven by js/notes/notes-index.js.
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-06-30
+
+Dependencies:
+- css/styles.css
+- css/notes/notes-index.css
+- js/shared/site-config.js
+- js/notes/notes-index.js
+- data/index/notes-index.json (fetched at runtime)
+- https://cdn.jsdelivr.net/npm/flexsearch/dist/flexsearch.bundle.min.js (fuzzy/ranked search index)
+- https://cdn.jsdelivr.net/npm/mark.js/dist/mark.min.js (highlights matches in result cards)
+==============================================================================
+-->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="AWS and DSA training notes with session summaries, hands-on lab guides, and visual resources. Free study materials for Cloud Practitioner and Solutions Architect certifications.">
-    <meta name="keywords" content="AWS notes, DSA notes, AWS study guide, AWS training materials, AWS certification notes, Cloud Practitioner notes, Solutions Architect notes, data structures notes">
+    <meta name="description"
+        content="AWS and DSA training notes with session summaries, hands-on lab guides, and visual resources. Free study materials for Cloud Practitioner and Solutions Architect certifications.">
+    <meta name="keywords"
+        content="AWS notes, DSA notes, AWS study guide, AWS training materials, AWS certification notes, Cloud Practitioner notes, Solutions Architect notes, data structures notes">
     <meta name="author" content="Namrata Mulwani">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph -->
     <meta property="og:title" content="Notes - Learning Dashboard">
-    <meta property="og:description" content="AWS and DSA training notes with session summaries and visual resources for certification preparation.">
+    <meta property="og:description"
+        content="AWS and DSA training notes with session summaries and visual resources for certification preparation.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://namrata2709.github.io/Resources/notes-index.html">
     <meta property="og:image" content="https://namrata2709.github.io/Resources/images/notes-preview.png">
@@ -26,15 +56,11 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://namrata2709.github.io/Resources/notes-index.html">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-
     <title>Notes - Learning Dashboard</title>
 
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/notes/notes-index.css">
+    <script src="js/shared/site-config.js"></script>
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -64,8 +90,16 @@
     }
     </script>
 </head>
-<body data-page-title="📓 Notes">
 
+<body>
+    <noscript>
+        <style>#pageLoader { display: none; }</style>
+        <div class="noscript">
+            <h2>JavaScript Required</h2>
+            <p>This website relies on JavaScript for navigation and interactive learning features.</p>
+            <p>Please enable JavaScript.</p>
+        </div>
+    </noscript>
     <!-- Loading State -->
     <div id="pageLoader" class="page-loader">
         <div class="loader-spinner"></div>
@@ -76,35 +110,85 @@
 
         <!-- Search -->
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="🔍 Search notes..." oninput="filterNotes()" aria-label="Search notes">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="🔍 Search notes... (Press / to focus)"
+                    aria-label="Search notes" autocomplete="off" spellcheck="false" role="combobox"
+                    aria-expanded="false" aria-controls="searchSuggestions" aria-autocomplete="list">
+                <div id="searchSuggestions" class="search-suggestions" role="listbox"></div>
+            </div>
+            <button type="button" id="filtersToggleBtn" class="filters-toggle-btn" onclick="toggleFilterSheet()">⚙️
+                Filters</button>
         </div>
 
+        <div id="filterSheetOverlay" class="filter-sheet-overlay" onclick="closeFilterSheet()"></div>
+
         <!-- Filter and Sort Controls -->
-        <div class="filter-controls">
-            <!-- Session filter: injected by JS only when relevant -->
-
-            <div class="filter-group">
-                <label for="categoryFilter">Filter by Category:</label>
-                <select id="categoryFilter" onchange="filterNotes()">
-                    <option value="">All Categories</option>
-                </select>
+        <div class="filter-controls" id="filterControls">
+            <div class="filter-sheet-header">
+                <span>Filters</span>
+                <button type="button" class="filter-sheet-close" onclick="closeFilterSheet()"
+                    aria-label="Close filters">✕</button>
             </div>
+            <div class="filter-sheet-body" id="filterSheetBody">
+                <!-- Session filter: injected by JS only when relevant -->
 
-            <div class="filter-group">
-                <label for="tagFilter">Filter by Tag:</label>
-                <select id="tagFilter" onchange="filterNotes()">
-                    <option value="">All Tags</option>
-                </select>
+                <div class="filter-group favorites-filter-group">
+                    <label>Favorites:</label>
+                    <button type="button" id="favoritesOnlyToggle" class="favorites-filter-btn" aria-pressed="false"
+                        onclick="toggleFavoritesFilter()">
+                        <span class="favorites-filter-icon">♡</span> Only Favorites
+                    </button>
+                </div>
+
+                <div class="filter-group">
+                    <label for="categoryFilter">Category:</label>
+                    <select id="categoryFilter" onchange="selectCategoryChip(this.value)">
+                        <option value="">All Categories</option>
+                    </select>
+                    <div id="categoryChips" class="chip-row"></div>
+                </div>
+
+                <div class="filter-group">
+                    <label for="typeFilter">Type:</label>
+                    <select id="typeFilter" onchange="selectTypeChip(this.value)">
+                        <option value="">All Types</option>
+                    </select>
+                    <div id="typeChips" class="chip-row"></div>
+                </div>
+
+                <div class="filter-group">
+                    <label for="tagFilter">Tags:</label>
+                    <select id="tagFilter" onchange="addTagChip(this.value, this)">
+                        <option value="">Add tag…</option>
+                    </select>
+                    <div id="tagChips" class="chip-row"></div>
+                </div>
+
+                <div class="filter-group">
+                    <label for="sortSelect">Sort by:</label>
+                    <select id="sortSelect" onchange="sortNotes()">
+                        <option value="date-desc">Date (Newest First)</option>
+                        <option value="date-asc">Date (Oldest First)</option>
+                        <option value="title-asc">Title (A-Z)</option>
+                        <option value="title-desc">Title (Z-A)</option>
+                        <optgroup label="✅ Completion">
+                            <option value="completion-asc">Least Complete ↓ Completed</option>
+                            <option value="completion-desc">Completed ↓ Least Complete</option>
+                        </optgroup>
+                        <optgroup label="✅ Recently Viewed">
+                            <option value="viewed-desc">Most Recent ↓ Oldest</option>
+                            <option value="viewed-asc">Oldest ↓ Most Recent</option>
+                        </optgroup>
+                        <option value="random">✅ Random — Surprise Me</option>
+                    </select>
+                    <button type="button" id="shuffleAgainBtn" class="shuffle-again-btn" onclick="reshuffleRandom()"
+                        hidden>🔀 Shuffle Again</button>
+                </div>
+
             </div>
-
-            <div class="filter-group">
-                <label for="sortSelect">Sort by:</label>
-                <select id="sortSelect" onchange="sortNotes()">
-                    <option value="date-desc">Date (Newest First)</option>
-                    <option value="date-asc">Date (Oldest First)</option>
-                    <option value="title-asc">Title (A-Z)</option>
-                    <option value="title-desc">Title (Z-A)</option>
-                </select>
+            <div class="filter-sheet-actions">
+                <button type="button" class="filter-clear-btn" onclick="clearAllFilters()">Clear</button>
+                <button type="button" class="filter-apply-btn" onclick="closeFilterSheet()">Apply</button>
             </div>
         </div>
 
@@ -128,17 +212,14 @@
 
     <div id="footerRoot"></div>
 
-    <!-- Shared scripts -->
-    <script src="js/shared/shared-meta.js"></script>
-    <script src="js/shared/theme.js"></script>
-    <script src="js/shared/breadcrumb.js"></script>
-    <script src="js/shared/page-header.js"></script>
-    <script src="js/shared/footer.js"></script>
-    <script src="js/shared/analytics.js"></script>
-    <script src="js/shared/page-loader.js"></script>
+
+    <!-- Search engine deps — must resolve before notes-index.js (defer preserves order) -->
+    <script src="https://cdn.jsdelivr.net/npm/flexsearch/dist/flexsearch.bundle.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mark.js/dist/mark.min.js" defer></script>
 
     <!-- Notes index logic -->
     <script src="js/notes/notes-index.js" defer></script>
 
 </body>
+
 </html>

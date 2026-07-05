@@ -1,12 +1,228 @@
 {
   "notes": [
     {
+      "title": "Docker Migration",
+      "folder": "aws-docker-migration-session-restart-module-lab",
+      "subject": "aws",
+      "session": "Restart Module Lab",
+      "date": "2026-07-04",
+      "category": "Containers",
+      "tags": [
+        "Docker",
+        "Containers",
+        "Amazon ECR",
+        "AWS Labs"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "📄"
+        }
+      ]
+    },
+    {
+      "title": "Introduction To Computing",
+      "folder": "aws-introduction-to-computing",
+      "subject": "aws",
+      "session": null,
+      "date": "2026-07-02",
+      "category": "Fundamentals",
+      "tags": [
+        "Fundamentals"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Presentation",
+          "file": "slides.html",
+          "type": "slides",
+          "icon": "🖥️"
+        }
+      ]
+    },
+    {
+      "title": "Introduction To Computing",
+      "folder": "aws-introduction-to-computing-session-foundation-canvas-slides",
+      "subject": "aws",
+      "session": "Foundation Canvas Slides",
+      "date": "2026-07-02",
+      "category": "Fundamentals",
+      "tags": [
+        "Fundamentals"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Presentation",
+          "file": "slides.html",
+          "type": "slides",
+          "icon": "🖥️"
+        }
+      ]
+    },
+    {
+      "title": "Introduction To Linux",
+      "folder": "aws-introduction-to-linux-session-foundation-canvas-slides",
+      "subject": "aws",
+      "session": "Foundation Canvas Slides",
+      "date": "2026-07-02",
+      "category": "Fundamentals",
+      "tags": [
+        "Fundamentals"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Presentation",
+          "file": "slides.html",
+          "type": "slides",
+          "icon": "🖥️"
+        }
+      ]
+    },
+    {
+      "title": "Openclaw Agents",
+      "folder": "aws-openclaw-agents-session-aws-user-group-mumbai",
+      "subject": "aws",
+      "session": "Aws User Group Mumbai",
+      "date": "2026-07-02",
+      "category": "Machine Learning",
+      "tags": [
+        "AI Agents",
+        "AWS",
+        "OpenClaw",
+        "Bedrock AgentCore",
+        "Security"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "📄"
+        },
+        {
+          "name": "Presentation",
+          "file": "slides-overview.html",
+          "type": "slides",
+          "icon": "🖥️"
+        }
+      ]
+    },
+    {
+      "title": "Openclaw Skill",
+      "folder": "aws-openclaw-skill",
+      "subject": "aws",
+      "session": null,
+      "date": "2026-07-02",
+      "category": "Machine Learning",
+      "tags": [
+        "OpenClaw",
+        "AI Agents",
+        "DevOps",
+        "AWS SDK",
+        "Monitoring"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "📄"
+        }
+      ]
+    },
+    {
+      "title": "Openclaw Skill",
+      "folder": "aws-openclaw-skill-session-aws-user-group-mumbai",
+      "subject": "aws",
+      "session": "Aws User Group Mumbai",
+      "date": "2026-07-02",
+      "category": "Machine Learning",
+      "tags": [
+        "OpenClaw",
+        "AI Agents",
+        "DevOps",
+        "AWS SDK",
+        "Monitoring"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "📄"
+        }
+      ]
+    },
+    {
+      "title": "Merge Sort",
+      "folder": "dsa-merge-sort",
+      "subject": "dsa",
+      "session": null,
+      "date": "2026-07-02",
+      "category": "Sorting",
+      "tags": [
+        "sorting",
+        "divide and conquer",
+        "recursion",
+        "stable sort"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "📄"
+        }
+      ]
+    },
+    {
+      "title": "Linear Search",
+      "folder": "dsa-linear-search",
+      "subject": "dsa",
+      "session": null,
+      "date": "2026-06-30",
+      "category": "Searching",
+      "tags": [
+        "searching",
+        "arrays",
+        "beginner",
+        "brute force"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "📄"
+        }
+      ]
+    },
+    {
       "title": "Introduction To Ai & Machine Learning",
       "folder": "aws-sample1-session-sample",
       "subject": "aws",
       "session": "Sample",
-      "date": "2026-06-27",
-      "category": "General",
+      "date": "2026-06-29",
+      "category": "Serverless",
       "tags": [
         "AWS",
         "AI",
@@ -27,12 +243,6 @@
           "file": "lab.html",
           "type": "lab",
           "icon": "🧪"
-        },
-        {
-          "name": "Presentation",
-          "file": "ppt.html",
-          "type": "ppt",
-          "icon": "📊"
         }
       ]
     },
@@ -41,62 +251,8 @@
       "folder": "aws-sample2",
       "subject": "aws",
       "session": null,
-      "date": "2026-06-27",
-      "category": "General",
-      "tags": [
-        "AWS",
-        "AI",
-        "Machine Learning",
-        "Generative AI",
-        "Bedrock",
-        "SageMaker",
-        "PartyRock",
-        "Responsible AI",
-        "LLM",
-        "re/Start"
-      ],
-      "hasImages": false,
-      "images": [],
-      "files": [
-        {
-          "name": "Notes",
-          "file": "notes.html",
-          "type": "notes",
-          "icon": "📄"
-        }
-      ]
-    },
-    {
-      "title": "Linear Search",
-      "folder": "dsa-linear-search",
-      "subject": "dsa",
-      "session": null,
-      "date": "2026-06-27",
-      "category": "DSA",
-      "tags": [
-        "searching",
-        "arrays",
-        "beginner",
-        "brute force"
-      ],
-      "hasImages": false,
-      "images": [],
-      "files": [
-        {
-          "name": "Notes",
-          "file": "notes.html",
-          "type": "notes",
-          "icon": "📄"
-        }
-      ]
-    },
-    {
-      "title": "Introduction To Ai & Machine Learning",
-      "folder": "dsa-sample",
-      "subject": "dsa",
-      "session": null,
-      "date": "2026-06-27",
-      "category": "DSA",
+      "date": "2026-06-29",
+      "category": "Serverless",
       "tags": [
         "AWS",
         "AI",

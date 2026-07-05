@@ -1,0 +1,984 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is a Docker image?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A running instance of an application"
+        },
+        {
+          "letter": "B",
+          "text": "A read-only template used to create containers"
+        },
+        {
+          "letter": "C",
+          "text": "A virtual machine snapshot"
+        },
+        {
+          "letter": "D",
+          "text": "A network configuration file"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "A Docker image is the read-only, built template — created from a Dockerfile — that a container is launched from.",
+        "why": "A running instance is a container, not an image. Docker images are not VM snapshots. Networking is configured separately from the image itself."
+      }
+    },
+    {
+      "id": 2,
+      "question": "Which Dockerfile instruction sets the base image for a new image?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "RUN"
+        },
+        {
+          "letter": "B",
+          "text": "COPY"
+        },
+        {
+          "letter": "C",
+          "text": "FROM"
+        },
+        {
+          "letter": "D",
+          "text": "CMD"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "FROM declares the starting image (e.g. node:11-alpine) that the rest of the Dockerfile builds on top of.",
+        "why": "RUN executes build-time commands. COPY brings files into the image. CMD sets the container's startup command."
+      }
+    },
+    {
+      "id": 3,
+      "question": "What does the -d flag do when used with docker run?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Deletes the container after it exits"
+        },
+        {
+          "letter": "B",
+          "text": "Runs the container in detached (background) mode"
+        },
+        {
+          "letter": "C",
+          "text": "Downloads the image before running"
+        },
+        {
+          "letter": "D",
+          "text": "Disables networking for the container"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "-d launches the container in the background, immediately returning control of the terminal.",
+        "why": "There is no automatic delete behavior tied to -d. Downloading happens automatically if the image isn't local, regardless of -d. Networking is unaffected by -d."
+      }
+    },
+    {
+      "id": 4,
+      "question": "In this lab, which command builds a Docker image from a Dockerfile named node_app?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "docker run --tag node_app ."
+        },
+        {
+          "letter": "B",
+          "text": "docker build --tag node_app ."
+        },
+        {
+          "letter": "C",
+          "text": "docker create node_app ."
+        },
+        {
+          "letter": "D",
+          "text": "docker push node_app ."
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "docker build reads the Dockerfile in the specified directory (here, the current directory) and produces an image tagged node_app.",
+        "why": "docker run starts a container, it doesn't build an image. docker create makes a container without starting it. docker push uploads an already-built image to a registry."
+      }
+    },
+    {
+      "id": 5,
+      "question": "What is the purpose of the -p 3000:3000 flag on docker run?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It sets the container's process priority"
+        },
+        {
+          "letter": "B",
+          "text": "It maps host port 3000 to container port 3000"
+        },
+        {
+          "letter": "C",
+          "text": "It limits the container to 3000 MB of memory"
+        },
+        {
+          "letter": "D",
+          "text": "It sets a 3000-second timeout"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "The -p flag publishes a container port to a port on the host machine, in the format host:container.",
+        "why": "Process priority isn't controlled by -p. Memory limits use a different flag (--memory). Timeouts aren't configured with -p."
+      }
+    },
+    {
+      "id": 6,
+      "question": "Which command lists currently running Docker containers?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "docker images"
+        },
+        {
+          "letter": "B",
+          "text": "docker ps"
+        },
+        {
+          "letter": "C",
+          "text": "docker build"
+        },
+        {
+          "letter": "D",
+          "text": "docker network ls"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "docker ps (or the newer docker container ls) lists running containers along with their ID, image, and status.",
+        "why": "docker images lists images, not containers. docker build creates images. docker network ls lists networks, not containers."
+      }
+    },
+    {
+      "id": 7,
+      "question": "What command uploads a locally tagged image to Amazon ECR?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "docker upload"
+        },
+        {
+          "letter": "B",
+          "text": "docker save"
+        },
+        {
+          "letter": "C",
+          "text": "docker push"
+        },
+        {
+          "letter": "D",
+          "text": "docker export"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "docker push uploads a tagged local image to whatever registry the tag points at, such as an ECR repository URI.",
+        "why": "There is no docker upload command. docker save writes an image to a local tar archive, it doesn't upload anywhere. docker export produces a filesystem archive of a container, not an image push."
+      }
+    },
+    {
+      "id": 8,
+      "question": "In this lab, why did the containerized Node app initially fail to load the suppliers list?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The Dockerfile was missing the EXPOSE instruction"
+        },
+        {
+          "letter": "B",
+          "text": "The container was launched without the correct APP_DB_HOST environment variable"
+        },
+        {
+          "letter": "C",
+          "text": "The MySQL container wasn't built yet"
+        },
+        {
+          "letter": "D",
+          "text": "The security group blocked port 80"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "The app fell back to a hardcoded database IP because no APP_DB_HOST environment variable was passed to docker run, so it never reached the real MySQL host.",
+        "why": "EXPOSE was present in the Dockerfile. The MySQL migration happens in a later task and isn't the cause of this specific failure. The failure was a database connection error, not a blocked port."
+      }
+    },
+    {
+      "id": 9,
+      "question": "What does docker exec -ti <container-id sh do?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Deletes the container"
+        },
+        {
+          "letter": "B",
+          "text": "Opens an interactive shell session inside the running container"
+        },
+        {
+          "letter": "C",
+          "text": "Stops the container"
+        },
+        {
+          "letter": "D",
+          "text": "Rebuilds the container's image"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "docker exec runs a new process — here, an interactive shell — inside an already-running container, letting you inspect it from the inside.",
+        "why": "This command doesn't delete, stop, or rebuild anything; it only opens a shell session inside the running container."
+      }
+    },
+    {
+      "id": 10,
+      "question": "What is Amazon ECR primarily used for?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Running EC2 instances"
+        },
+        {
+          "letter": "B",
+          "text": "Storing and distributing Docker container images"
+        },
+        {
+          "letter": "C",
+          "text": "Hosting relational databases"
+        },
+        {
+          "letter": "D",
+          "text": "Managing IAM policies"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Amazon ECR is a managed container registry for storing, versioning, and distributing private Docker images.",
+        "why": "EC2 hosting, database hosting, and IAM policy management are all separate AWS services unrelated to ECR's core purpose."
+      }
+    },
+    {
+      "id": 11,
+      "question": "Which command creates a new Amazon ECR repository from the AWS CLI?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "aws ecr create-repository --repository-name node-app"
+        },
+        {
+          "letter": "B",
+          "text": "aws ecr new-repository --name node-app"
+        },
+        {
+          "letter": "C",
+          "text": "aws ecr init --repository node-app"
+        },
+        {
+          "letter": "D",
+          "text": "aws ecr add-repo --repository-name node-app"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "aws ecr create-repository --repository-name node-app is the correct AWS CLI command to create a new ECR repository.",
+        "why": "new-repository, init, and add-repo are not valid ECR CLI subcommands."
+      }
+    },
+    {
+      "id": 12,
+      "question": "What must you do before you can docker push an image to Amazon ECR?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Nothing — push works with no setup"
+        },
+        {
+          "letter": "B",
+          "text": "Authenticate the Docker client to ECR with docker login"
+        },
+        {
+          "letter": "C",
+          "text": "Manually create the image in the ECR console first"
+        },
+        {
+          "letter": "D",
+          "text": "Enable public access on the repository"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "You must authenticate with docker login using a token from aws ecr get-login-password before ECR will accept a push.",
+        "why": "Push always requires authentication. Images are created locally with docker build, not manually in the console. ECR repositories default to private and don't need to be public to push."
+      }
+    },
+    {
+      "id": 13,
+      "question": "What does the COPY . . instruction do in the node_app Dockerfile?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Copies the Dockerfile itself into the image"
+        },
+        {
+          "letter": "B",
+          "text": "Copies the contents of the build context into the image's working directory"
+        },
+        {
+          "letter": "C",
+          "text": "Copies environment variables into the container"
+        },
+        {
+          "letter": "D",
+          "text": "Duplicates the base image layer"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "COPY . . copies everything in the current build context (the app source directory) into the image's current WORKDIR.",
+        "why": "COPY doesn't specifically target the Dockerfile, environment variables, or duplicate base layers — it copies files from the build context."
+      }
+    },
+    {
+      "id": 14,
+      "question": "Why does node_app use node:11-alpine instead of a larger base image?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Alpine images support more npm packages"
+        },
+        {
+          "letter": "B",
+          "text": "Alpine images are much smaller, reducing image size and attack surface"
+        },
+        {
+          "letter": "C",
+          "text": "Alpine is required for Express apps"
+        },
+        {
+          "letter": "D",
+          "text": "Larger images can't be pushed to ECR"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Alpine-based images are stripped down to a minimal footprint, which keeps build and pull times fast and reduces the number of packages that could contain vulnerabilities.",
+        "why": "Alpine has no special npm compatibility advantage, Express has no Alpine requirement, and image size doesn't affect whether an image can be pushed to ECR."
+      }
+    },
+    {
+      "id": 15,
+      "question": "What happens if you run docker stop node_app_1 && docker rm node_app_1?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The image node_app is deleted"
+        },
+        {
+          "letter": "B",
+          "text": "The running container is stopped and then permanently removed"
+        },
+        {
+          "letter": "C",
+          "text": "The container is only paused"
+        },
+        {
+          "letter": "D",
+          "text": "The ECR repository is deleted"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "docker stop halts the container process, and docker rm deletes the stopped container object entirely; the underlying image is untouched.",
+        "why": "The image itself is not deleted by this command. This does more than pause — the container is removed. ECR is unaffected by local docker commands."
+      }
+    },
+    {
+      "id": 16,
+      "question": "Which command shows a container's internal Docker network IP address?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "docker logs"
+        },
+        {
+          "letter": "B",
+          "text": "docker inspect"
+        },
+        {
+          "letter": "C",
+          "text": "docker history"
+        },
+        {
+          "letter": "D",
+          "text": "docker tag"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "docker inspect returns detailed JSON about a container, including its NetworkSettings block with its internal IP address.",
+        "why": "docker logs shows output logs, docker history shows image build layers, and docker tag renames/retags an image — none report the container's IP."
+      }
+    },
+    {
+      "id": 17,
+      "question": "What does the mysqldump utility do?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Restarts a MySQL server"
+        },
+        {
+          "letter": "B",
+          "text": "Exports a database's schema and data to a portable SQL file"
+        },
+        {
+          "letter": "C",
+          "text": "Deletes a MySQL database"
+        },
+        {
+          "letter": "D",
+          "text": "Installs MySQL on a new host"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "mysqldump exports the contents of a database into a .sql file that can later be used to seed another MySQL instance.",
+        "why": "mysqldump doesn't restart, delete, or install MySQL — it only exports data."
+      }
+    },
+    {
+      "id": 18,
+      "question": "In the mysql_server Dockerfile, what does COPY ./my_sql.sql / accomplish?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It runs the SQL file immediately during the build"
+        },
+        {
+          "letter": "B",
+          "text": "It copies the SQL dump file into the image so it's available when the container starts"
+        },
+        {
+          "letter": "C",
+          "text": "It uploads the file to Amazon ECR"
+        },
+        {
+          "letter": "D",
+          "text": "It deletes the file from the build context"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "COPY places the SQL dump inside the image's filesystem; a later step in the lab actually loads it into the running database with docker exec.",
+        "why": "COPY does not execute SQL, interact with ECR, or delete files from the build context."
+      }
+    },
+    {
+      "id": 19,
+      "question": "What AWS CLI command authenticates the Docker client for pushing to Amazon ECR?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "aws ecr get-login-password (piped into docker login)"
+        },
+        {
+          "letter": "B",
+          "text": "docker login --username AWS with no token"
+        },
+        {
+          "letter": "C",
+          "text": "aws ecr authenticate"
+        },
+        {
+          "letter": "D",
+          "text": "aws ecr get-token"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "aws ecr get-login-password retrieves a short-lived authorization token, which is piped into docker login to authenticate the Docker client.",
+        "why": "docker login alone has no ECR-specific credentials without the piped token. aws ecr authenticate and aws ecr get-token are not valid ECR CLI subcommands."
+      }
+    },
+    {
+      "id": 20,
+      "question": "In this lab's own-account setup, why was an IAM role attached to DockerHost instead of running aws configure with an access key?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "aws configure doesn't exist in the AWS CLI"
+        },
+        {
+          "letter": "B",
+          "text": "An attached role provides temporary, auto-rotated credentials with nothing stored on disk"
+        },
+        {
+          "letter": "C",
+          "text": "Roles are required to install Docker"
+        },
+        {
+          "letter": "D",
+          "text": "Access keys can't authenticate to ECR"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "An IAM role attached as an instance profile supplies temporary credentials automatically, avoiding the risk of a long-lived access key sitting in a config file on the instance.",
+        "why": "aws configure is a real, commonly used command. Roles have nothing to do with installing Docker. Access keys can authenticate to ECR too — the role is simply the safer choice."
+      }
+    },
+    {
+      "id": 21,
+      "question": "What is the purpose of the docker-lab-sg security group's self-referencing rule on port 3306?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It blocks all traffic on port 3306"
+        },
+        {
+          "letter": "B",
+          "text": "It allows instances that are members of the security group to reach each other on port 3306, without exposing that port publicly"
+        },
+        {
+          "letter": "C",
+          "text": "It only allows traffic from the AWS root account"
+        },
+        {
+          "letter": "D",
+          "text": "It opens port 3306 to the entire internet"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "A self-referencing rule scopes the allowed source to \"anything using this same security group,\" letting AppServerNode and DockerHost reach MysqlServerNode's database port without opening it to the public internet.",
+        "why": "The rule allows specific traffic, it doesn't block everything. It has nothing to do with the root account specifically. It's the opposite of opening the port to the whole internet."
+      }
+    },
+    {
+      "id": 22,
+      "question": "What is the main functional difference between a Docker container and a virtual machine?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Containers can't run Linux applications"
+        },
+        {
+          "letter": "B",
+          "text": "Containers share the host OS kernel instead of running their own guest OS"
+        },
+        {
+          "letter": "C",
+          "text": "Containers require a hypervisor"
+        },
+        {
+          "letter": "D",
+          "text": "VMs start faster than containers"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Containers rely on the host's kernel for isolation, while VMs each boot an independent guest OS on top of a hypervisor — this is why containers are lighter and faster.",
+        "why": "Containers commonly run Linux applications. Containers don't require a hypervisor. VMs are typically slower to start than containers, not faster."
+      }
+    },
+    {
+      "id": 23,
+      "question": "A company wants their app's database host configurable per environment (dev/staging/prod) without rebuilding the Docker image. What's the correct approach?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Hardcode three different Dockerfiles, one per environment"
+        },
+        {
+          "letter": "B",
+          "text": "Pass the database host as a runtime environment variable via -e"
+        },
+        {
+          "letter": "C",
+          "text": "Store the host in the base image"
+        },
+        {
+          "letter": "D",
+          "text": "Rebuild the image each time the environment changes"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Passing configuration like a database host as a runtime environment variable keeps one image portable across every environment.",
+        "why": "Maintaining separate Dockerfiles per environment duplicates effort unnecessarily. Baking it into the base image reintroduces the original problem. Rebuilding per environment defeats the purpose of a portable image."
+      }
+    },
+    {
+      "id": 24,
+      "question": "Why did this lab need to discover the mysql_1 container's internal IP address before relaunching node_app_1?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Because ECR requires it for image tagging"
+        },
+        {
+          "letter": "B",
+          "text": "Because the app container connects to the database container using that internal IP as APP_DB_HOST"
+        },
+        {
+          "letter": "C",
+          "text": "Because Docker requires manual IP assignment for all containers"
+        },
+        {
+          "letter": "D",
+          "text": "Because the security group needed the container's IP"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Once the database was containerized, the app needed to reach it inside the Docker bridge network, which meant using the database container's internal IP as the APP_DB_HOST value.",
+        "why": "ECR tagging doesn't involve container internal IPs. Docker assigns container IPs automatically by default. Security groups apply to EC2 network interfaces, not individual container IPs on the host's internal bridge network."
+      }
+    },
+    {
+      "id": 25,
+      "question": "What is the practical difference between an image tag like \"latest\" and an image digest?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "They are functionally identical"
+        },
+        {
+          "letter": "B",
+          "text": "A tag is mutable and can be reassigned; a digest is an immutable content hash of one exact image"
+        },
+        {
+          "letter": "C",
+          "text": "A digest is only used for VM images"
+        },
+        {
+          "letter": "D",
+          "text": "Tags are only usable inside private registries"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "A tag is a movable pointer that can be reassigned to a different image build over time, while a digest permanently and uniquely identifies one specific image's exact contents.",
+        "why": "They behave very differently, digests apply to Docker images (not VM images specifically), and tags work in both public and private registries."
+      }
+    },
+    {
+      "id": 26,
+      "question": "Why is docker image prune useful after repeated docker build runs during development?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It deletes running containers"
+        },
+        {
+          "letter": "B",
+          "text": "It removes dangling/unused images that accumulate from repeated builds, freeing disk space"
+        },
+        {
+          "letter": "C",
+          "text": "It pushes images to ECR automatically"
+        },
+        {
+          "letter": "D",
+          "text": "It rebuilds the Dockerfile"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Every build can leave behind intermediate images no longer referenced by a tag; prune reclaims the disk space they occupy.",
+        "why": "prune doesn't touch running containers, push images, or rebuild anything — it only removes unused images/containers."
+      }
+    },
+    {
+      "id": 27,
+      "question": "What would happen to the data in the mysql_1 container if it were removed with docker rm without first exporting the data or attaching a volume?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The data automatically migrates to Amazon ECR"
+        },
+        {
+          "letter": "B",
+          "text": "The data is permanently lost"
+        },
+        {
+          "letter": "C",
+          "text": "The data is automatically backed up by Docker"
+        },
+        {
+          "letter": "D",
+          "text": "Nothing — data always persists across container removal"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Without a volume or bind mount, a container's writable-layer data disappears when the container is removed — this lab's data survives specifically because it was baked into the image via the mysqldump copy, not because containers preserve data by default.",
+        "why": "ECR stores images, not container runtime data. Docker doesn't auto-back-up container data. Data does not persist by default once a container without a volume is removed."
+      }
+    },
+    {
+      "id": 28,
+      "question": "Which of the following correctly explains why sed -i '1d' my_sql.sql was run before loading the dump into mysql_1?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "To compress the file before import"
+        },
+        {
+          "letter": "B",
+          "text": "To remove a line (commonly a CREATE DATABASE or version-specific line) that would conflict with the container's expected setup before import"
+        },
+        {
+          "letter": "C",
+          "text": "To encrypt the file"
+        },
+        {
+          "letter": "D",
+          "text": "To rename the database inside the file"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "sed -i '1d' deletes the first line of the file — a common cleanup step to strip out a line that would otherwise cause an import conflict.",
+        "why": "sed doesn't compress, encrypt, or rename database contents — it only edits text lines in place."
+      }
+    },
+    {
+      "id": 29,
+      "question": "What's the MOST cost-effective way to keep Amazon ECR storage costs low for images no longer being deployed?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Leave every pushed image tag indefinitely"
+        },
+        {
+          "letter": "B",
+          "text": "Set up ECR lifecycle policies to expire old/untagged images automatically"
+        },
+        {
+          "letter": "C",
+          "text": "Increase EC2 instance size"
+        },
+        {
+          "letter": "D",
+          "text": "Disable ECR entirely"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "ECR lifecycle policies can automatically expire untagged or old images based on rules you define, avoiding unbounded storage growth without manual cleanup.",
+        "why": "Leaving every image indefinitely increases storage cost over time. EC2 instance size is unrelated to ECR storage billing. Disabling ECR removes the ability to store any images at all."
+      }
+    },
+    {
+      "id": 30,
+      "question": "In production, why would a team commonly avoid running their primary MySQL database as a plain Docker container the way this lab does?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Docker cannot run MySQL at all"
+        },
+        {
+          "letter": "B",
+          "text": "Containers lack durable persistent storage and automated failover by default, which production databases typically require"
+        },
+        {
+          "letter": "C",
+          "text": "MySQL only runs on Windows containers"
+        },
+        {
+          "letter": "D",
+          "text": "Containers cannot expose port 3306"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Production databases need durable storage, backups, and high availability that a bare container doesn't provide out of the box — teams commonly use a managed service like Amazon RDS instead, or pair containers with well-configured persistent volumes.",
+        "why": "Docker can run MySQL fine, as shown in this lab. MySQL isn't restricted to Windows containers. Port 3306 can be exposed from a container exactly as done in this lab."
+      }
+    },
+    {
+      "id": 31,
+      "question": "Which AWS service would be the MOST appropriate next step for orchestrating this lab's two containers across multiple hosts with auto-scaling?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Amazon S3"
+        },
+        {
+          "letter": "B",
+          "text": "Amazon ECS"
+        },
+        {
+          "letter": "C",
+          "text": "Amazon Route 53"
+        },
+        {
+          "letter": "D",
+          "text": "AWS IAM"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Amazon ECS is a container orchestration service designed to run, scale, and manage containers like the ones built in this lab across a fleet of hosts.",
+        "why": "S3 is object storage, Route 53 is DNS, and IAM manages identity/permissions — none of them orchestrate containers."
+      }
+    },
+    {
+      "id": 32,
+      "question": "A security review flags that this lab's Dockerfiles and commands pass database credentials as plain command-line arguments and environment variables. What's the BEST production-grade fix?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Nothing needs to change"
+        },
+        {
+          "letter": "B",
+          "text": "Store credentials in a secrets manager (e.g. AWS Secrets Manager) and inject them at runtime rather than passing them as visible CLI arguments"
+        },
+        {
+          "letter": "C",
+          "text": "Hardcode the credentials into the Dockerfile instead"
+        },
+        {
+          "letter": "D",
+          "text": "Email the credentials to the team"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "A secrets manager keeps credentials out of shell history, image layers, and process listings, retrieving them securely at container runtime instead.",
+        "why": "Doing nothing leaves credentials exposed. Hardcoding into the Dockerfile is worse, since it bakes secrets into the image itself. Emailing credentials is an insecure distribution method."
+      }
+    },
+    {
+      "id": 33,
+      "question": "Why does pinning a deployment to a specific image digest rather than a tag like \"latest\" matter for reproducibility?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Digests deploy faster than tags"
+        },
+        {
+          "letter": "B",
+          "text": "\"latest\" can silently point to a different image tomorrow, while a digest always refers to one exact, unchanging set of image content"
+        },
+        {
+          "letter": "C",
+          "text": "Digests are required by Docker to run any container"
+        },
+        {
+          "letter": "D",
+          "text": "Tags cannot be used with Amazon ECR"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Because a tag is a mutable pointer, deploying by tag risks running a different image than what was tested; a digest guarantees byte-for-byte reproducibility.",
+        "why": "Digests don't affect deploy speed, aren't required to run a container, and tags are fully supported in Amazon ECR."
+      }
+    },
+    {
+      "id": 34,
+      "question": "This lab's node_app image installs npm dependencies with RUN npm install as a single layer combined with the full COPY . . of source code. What's the main downside of this layer ordering for iterative development builds?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It causes the app to run slower"
+        },
+        {
+          "letter": "B",
+          "text": "Any source code change invalidates the npm install layer's cache, forcing a full dependency reinstall on every rebuild"
+        },
+        {
+          "letter": "C",
+          "text": "It prevents the image from being pushed to ECR"
+        },
+        {
+          "letter": "D",
+          "text": "It breaks the EXPOSE instruction"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Because COPY . . happens before RUN npm install, Docker's layer cache is invalidated by any source file change — even ones unrelated to dependencies — forcing npm install to rerun. A more efficient pattern copies package.json first, runs npm install, then copies the rest of the source.",
+        "why": "Runtime speed, ECR push capability, and the EXPOSE instruction are unaffected by this layer ordering — the issue is purely build-cache efficiency."
+      }
+    },
+    {
+      "id": 35,
+      "question": "A team wants to run two replicas of node_app_1 on the same host for basic redundancy, both talking to the same mysql_1 container. Which change is REQUIRED beyond what this lab does?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Nothing, docker run can be repeated identically"
+        },
+        {
+          "letter": "B",
+          "text": "Each replica needs a unique container name and a unique host port mapping, since two containers can't bind the same host port"
+        },
+        {
+          "letter": "C",
+          "text": "mysql_1 must be duplicated as well"
+        },
+        {
+          "letter": "D",
+          "text": "The Dockerfile must be rewritten"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Docker will reject a second container trying to bind the same host port, so each replica needs its own --name and its own host-side port in the -p mapping (e.g. 3000:3000 and 3001:3000), while both can share the same backend database container.",
+        "why": "Repeating the exact command fails on the port conflict. The database doesn't need duplicating for this scenario. The Dockerfile itself doesn't need to change to add replicas."
+      }
+    }
+  ]
+}

@@ -1,7 +1,24 @@
 /**
- * Interview Questions Interactive Features v1.0
- * Loads questions from JSON and renders dynamically
- * File: js/notes-interview.js
+ * =============================================================================
+ * File: notes-interview.js
+ * Path: js/notes/notes-interview.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Interview-question flashcard deck for note pages (#interviewContainer).
+ * Loads questions from JSON, renders one flashcard slide per question
+ * with a show/hide answer toggle, tracks viewed-answer progress and
+ * current position in localStorage, and supports arrow-key/spacebar
+ * keyboard navigation when a flashcard deck is present.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - window.NotePageId (set by notes-page-core.js before this loads)
+ * - window.NotesSearch (notes-search.js, optional — rebuildIndex() call)
+ * =============================================================================
  */
 
 (function () {

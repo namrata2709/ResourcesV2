@@ -8,16 +8,15 @@
     <meta property="og:title" content="Linear Search - DSA Notes">
     <meta property="og:description" content="Linear Search — covers theory, implementation, complexity analysis, LeetCode problems, and interview questions. Keywords: linear search, sequential search, array traversal, unsorted search, brute force search, linear scan. Beginner to expert level.">
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://namrata2709.github.io/Resources/data/notes/dsa/linear-search/linear-search-notes.html">
-    <link rel="canonical" href="https://namrata2709.github.io/Resources/data/notes/dsa/linear-search/linear-search-notes.html">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/data/notes/dsa/dsa-linear-search/notes.html">
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/data/notes/dsa/dsa-linear-search/notes.html">
     <title>Linear Search - DSA Notes</title>
     <link rel="stylesheet" href="../../../../css/styles.css">
     <link rel="stylesheet" href="../../../../css/notes/notes.css">
     <link rel="stylesheet" href="../../../../css/notes/dsa/dsa-notes.css">
-    <!-- theme.js must be in head -- sets data-theme before paint -->
-    <script src="../../../../js/shared/theme.js"></script>
+    <script src="../../../../js/shared/site-config.js"></script>
 </head>
-<body class="complete-notes dsa-notes">
+<body  data-subject="dsa">
 
 <script type="application/ld+json">
 {
@@ -38,7 +37,7 @@
     },
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://namrata2709.github.io/Resources/data/notes/dsa/linear-search/linear-search-notes.html"
+        "@id": "https://namrata2709.github.io/Resources/data/notes/dsa/dsa-linear-search/notes.html"
     },
     "articleSection": "DSA Notes",
     "keywords": [
@@ -53,23 +52,16 @@
 }
 </script>
 
-<div class="note-container">
-
-<div class="note-header">
-    <h1>Linear Search</h1>
-    <div class="note-date">
-        Topic 17 of 200 &middot; Last updated 2026-06-27
-    </div>
-    <div class="tags" aria-label="Topic tags">
-        <span class="tag">searching</span>
-        <span class="tag">arrays</span>
-        <span class="tag">beginner</span>
-        <span class="tag">brute-force</span>
-    </div>
+<div id="pageLoader" class="page-loader">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Loading...</p>
 </div>
 
+<div class="note-container">
+
+
 <div class="highlight-box" role="note" aria-label="When to use">
-    <p><strong>When to use:</strong> Use when the input array or list is unsorted and you need to find a value, count occurrences, or confirm existence; also use when the dataset is small enough that O(n) is acceptable and avoiding a sort is preferable.</p>
+    <p><strong>When to use:</strong> Use when the problem gives an unsorted array, linked list, or data stream and asks to find a value, its position, or whether it exists; also when n ≤ ~20, the input cannot be mutated, or you need all occurrences rather than just the first.</p>
 </div>
 
 <div class="note-content">
@@ -78,7 +70,7 @@
 <summary><h2 id="introduction">Introduction</h2></summary>
 <div class="section-content">
 
-<p>Imagine you come home and can't find your keys. You don't know where they are, so you check the kitchen counter, then the entryway table, then your jacket pocket — one spot at a time, left to right, until you find them or run out of places to look. That, in its entirety, is linear search.</p>
+<p>Imagine you come home and can&#x27;t find your keys. You don&#x27;t know where they are, so you check the kitchen counter, then the entryway table, then your jacket pocket — one spot at a time, left to right, until you find them or run out of places to look. That, in its entirety, is linear search.</p>
 
 <span class="exam-highlight-sentence">Linear search (also called sequential search) scans a list from the first element to the last, comparing each element to the target and stopping the moment a match is found.</span> It makes no assumptions about order — the list can be scrambled in any way — and it is the most universally applicable search strategy precisely because it needs nothing from the data except the ability to read one element at a time.
 
@@ -107,22 +99,22 @@ procedure linearSearch(arr, target):
     <p>The key invariant: after checking index `i`, every element at indices `0` through `i` has been ruled out. The unseen suffix `arr[i+1…n-1]` is the remaining search space, and it shrinks by exactly one element per iteration.</p>
 </div>
 
-<p>A concrete trace on <code>arr = [4, 2, 7, 1, 9, 3]</code>, searching for <code>target = 9</code>:</p>
+<p>A concrete trace on <code>arr = [3, 7, 1, 9, 4, 6, 2, 8]</code>, searching for <code>target = 4</code>:</p>
 
 <ul>
-<li>Index 0: <code>4 ≠ 9</code> → continue</li>
-<li>Index 1: <code>2 ≠ 9</code> → continue</li>
-<li>Index 2: <code>7 ≠ 9</code> → continue</li>
-<li>Index 3: <code>1 ≠ 9</code> → continue</li>
-<li>Index 4: <code>9 == 9</code> → <span class="exam-highlight-term" data-term="return 4">return 4</span></li>
+<li>Index 0: <code>3 ≠ 4</code> → continue</li>
+<li>Index 1: <code>7 ≠ 4</code> → continue</li>
+<li>Index 2: <code>1 ≠ 4</code> → continue</li>
+<li>Index 3: <code>9 ≠ 4</code> → continue</li>
+<li>Index 4: <code>4 == 4</code> → &lt;span class=&quot;exam-highlight-term&quot; data-term=&quot;return 4&quot;&gt;return 4&lt;/span&gt;</li>
 </ul>
 
-<p>Five comparisons to find an element near the end of a six-element array — exactly what you'd expect from a left-to-right scan.</p>
+<p>Five comparisons to find the target near the middle of an eight-element array — exactly what you&#x27;d expect from a left-to-right scan.</p>
 
 <div class="diagram-container">
-<img src="images/inline-01-trace-example.png" alt="Linear search step-by-step on [4,2,7,1,9,3" class="provided-image">
-<p class="image-caption">Linear search step-by-step on [4,2,7,1,9,3</p>
-</div> searching for 9 — each cell is highlighted as it is compared, with the match highlighted in green at index 4]
+<img src="images/inline-01-trace-example.png" alt="Linear search step-by-step on [3,7,1,9,4,6,2,8" class="provided-image">
+<p class="image-caption">Linear search step-by-step on [3,7,1,9,4,6,2,8</p>
+</div> searching for 4 — each cell is highlighted as it is compared, with the match highlighted in green at index 4]
 
 </div>
 </details>
@@ -271,7 +263,7 @@ procedure sentinelSearch(arr, target):
 </tr>
 <tr>
 <td>Implementation complexity</td>
-<td>Trivial</td>
+<td>Minimal (one loop, one comparison)</td>
 <td>Moderate (off-by-one errors are common)</td>
 </tr>
 </tbody></table>
@@ -287,11 +279,11 @@ procedure sentinelSearch(arr, target):
 
 <ul>
 <li>**Returning the value instead of the index.** Most problems ask where the element is, not what it equals. Returning <code>arr[i]</code> instead of <code>i</code> is a silent bug that passes many tests by coincidence.</li>
-<li><span class="exam-highlight-term" data-term="Off-by-one at the boundary.">Off-by-one at the boundary.</span> Using <code>i &lt; n - 1</code> instead of <code>i &lt; n</code> misses the last element. Using <code>i &lt;= n</code> causes an index-out-of-bounds on the extra iteration.</li>
-<li><span class="exam-highlight-term" data-term="Assuming the first result is unique.">Assuming the first result is unique.</span> If the problem asks for the *last* occurrence or *all* occurrences, returning on the first match produces a wrong answer that is easy to overlook in testing.</li>
-<li><span class="exam-highlight-term" data-term="Forgetting to handle the not-found case.">Forgetting to handle the not-found case.</span> Falling through the loop without returning <code>-1</code> (or <code>None</code>) leaves the caller with an undefined or garbage value. Always have an explicit sentinel return after the loop.</li>
+<li>&lt;span class=&quot;exam-highlight-term&quot; data-term=&quot;Off-by-one at the boundary.&quot;&gt;Off-by-one at the boundary.&lt;/span&gt; Using <code>i &lt; n - 1</code> instead of <code>i &lt; n</code> misses the last element. Using <code>i &lt;= n</code> causes an index-out-of-bounds on the extra iteration.</li>
+<li>&lt;span class=&quot;exam-highlight-term&quot; data-term=&quot;Assuming the first result is unique.&quot;&gt;Assuming the first result is unique.&lt;/span&gt; If the problem asks for the *last* occurrence or *all* occurrences, returning on the first match produces a wrong answer that is straightforward to overlook in testing.</li>
+<li>&lt;span class=&quot;exam-highlight-term&quot; data-term=&quot;Forgetting to handle the not-found case.&quot;&gt;Forgetting to handle the not-found case.&lt;/span&gt; Falling through the loop without returning <code>-1</code> (or <code>None</code>) leaves the caller with an undefined or garbage value. Always have an explicit sentinel return after the loop.</li>
 <li>**Using linear search on a sorted array when n is large.** If the interviewer tells you the array is sorted and n can be 10⁶, they expect binary search. Defaulting to a loop signals unawareness of the sorted property.</li>
-<li>**Mutating input in sentinel search without restoring.** The sentinel trick places the target at <code>arr[n-1]</code> temporarily; forgetting to restore the original last element corrupts the caller's data.</li>
+<li>**Mutating input in sentinel search without restoring.** The sentinel trick places the target at <code>arr[n-1]</code> temporarily; forgetting to restore the original last element corrupts the caller&#x27;s data.</li>
 </ul>
 
 </div>
@@ -325,8 +317,8 @@ procedure sentinelSearch(arr, target):
         <div class="viz-nav" aria-label="Image navigation">
             <button id="viz-prev" aria-label="Previous step">&#8592; Prev</button>
             <span class="viz-counter">
-<p>Step <span id="viz-current">1</span></p>
-<p>of <span id="viz-total">5</span></p>
+<p>Step &lt;span id=&quot;viz-current&quot;&gt;1&lt;/span&gt;</p>
+<p>of &lt;span id=&quot;viz-total&quot;&gt;5&lt;/span&gt;</p>
             </span>
             <button id="viz-next" aria-label="Next step">Next &#8594;</button>
         </div>
@@ -510,7 +502,7 @@ def linear_search_if(arr: list, predicate) -&gt; int:
         <li>It requires no preprocessing and works on unsorted data — making it the only general search for linked lists and streams</li>
         <li>The sentinel variant places the target at position n before looping, eliminating the bounds check for a constant-factor speedup</li>
         <li>In interviews, the key signal for linear search is: unsorted input, or you need all occurrences, or the dataset is small; always ask about sortedness before defaulting to O(n)</li>
-        <li>When searching the same collection repeatedly and k queries dominate, sort once and switch to O(log n) binary search — the crossover is roughly k &gt; n / log n</li>
+        <li>When searching the same collection repeatedly and k queries dominate, sort once and switch to O(log n) binary search — the crossover is roughly k > n / log n</li>
     </ul>
 </div>
 
@@ -668,7 +660,17 @@ def linear_search_if(arr: list, predicate) -&gt; int:
 
 </div><!-- end note-container -->
 
-<script src="../../../../js/notes/dsa/dsa-page.js" async="false"></script>
+<div class="tags" aria-label="Topic tags">
+
+    <span class="tag">searching</span>
+    <span class="tag">arrays</span>
+    <span class="tag">beginner</span>
+    <span class="tag">brute-force</span>
+</div>
+
+<div id="footerRoot" data-subject="dsa"></div>
+
+<script src="../../../../js/notes/notes-page-core.js" async="false"></script>
 
 </body>
 </html>

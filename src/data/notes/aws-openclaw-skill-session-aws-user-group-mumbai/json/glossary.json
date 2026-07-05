@@ -1,0 +1,139 @@
+{
+  "terms": [
+    {
+      "term": "OpenClaw",
+      "definition": "An open-source AI agent that runs locally and connects LLMs to external tools through Skills",
+      "example": "e.g. The session's `aws-health` skill lets OpenClaw answer \"check my AWS health\" via WhatsApp"
+    },
+    {
+      "term": "Skill",
+      "definition": "A self-contained unit of agent capability made of one folder containing a SKILL.md file plus any scripts it references",
+      "example": "e.g. The `aws-health` skill folder contains SKILL.md, package.json, and scripts/aws-health.ts"
+    },
+    {
+      "term": "SKILL.md",
+      "definition": "The instruction file inside a skill that tells the agent its trigger phrases, invocation command, output format, and error handling",
+      "example": "e.g. SKILL.md tells the agent to run `npx tsx scripts/aws-health.ts` when a user asks about AWS health"
+    },
+    {
+      "term": "Gateway",
+      "definition": "The OpenClaw process that connects the agent to a chat channel and routes incoming messages to the correct skill",
+      "example": "e.g. `openclaw gateway restart` reloads the gateway after editing openclaw.json"
+    },
+    {
+      "term": "Main Agent",
+      "definition": "The conversational OpenClaw agent that actually executes skills, distinct from the configuration agent",
+      "example": "e.g. A user must run `talk to agent` to reach the main agent before a skill will trigger"
+    },
+    {
+      "term": "AWS SDK v3",
+      "definition": "The current modular version of the AWS JavaScript/TypeScript SDK, split into per-service client packages",
+      "example": "e.g. `@aws-sdk/client-ec2`, `@aws-sdk/client-ecs`, and `@aws-sdk/client-cloudwatch` are used in this skill"
+    },
+    {
+      "term": "tsx",
+      "definition": "A TypeScript execution tool that runs .ts files directly without a separate compile step",
+      "example": "e.g. `npx tsx scripts/aws-health.ts` runs the script with no build step"
+    },
+    {
+      "term": "Amazon EC2",
+      "definition": "AWS's resizable virtual server (compute) service",
+      "example": "e.g. The skill reports instance type, state, and CPU usage for every EC2 instance"
+    },
+    {
+      "term": "Amazon ECS",
+      "definition": "AWS's container orchestration service for running Docker containers as tasks and services",
+      "example": "e.g. The skill lists every cluster and reports running vs desired task counts per service"
+    },
+    {
+      "term": "Amazon CloudWatch",
+      "definition": "AWS's monitoring and observability service used to collect and retrieve metrics, logs, and alarms",
+      "example": "e.g. The skill calls CloudWatch's GetMetricStatistics to compute a 15-minute CPU average"
+    },
+    {
+      "term": "DescribeInstances",
+      "definition": "An EC2 API call that returns metadata and current state for EC2 instances",
+      "example": "e.g. Used to list instance name, type, AZ, and running/stopped state"
+    },
+    {
+      "term": "DescribeInstanceStatus",
+      "definition": "An EC2 API call that returns system and instance status checks",
+      "example": "e.g. Used to detect underlying hardware failures separate from OS-level problems"
+    },
+    {
+      "term": "System Status Check",
+      "definition": "An EC2 health check that detects problems with the underlying AWS hardware/infrastructure, as opposed to the guest OS",
+      "example": "e.g. A failed system status check usually means AWS needs to migrate the instance off failing hardware"
+    },
+    {
+      "term": "DescribeServices",
+      "definition": "An ECS API call that returns running/desired task counts and deployment state for a service",
+      "example": "e.g. Shows \"3/3 desired\" when a service is fully healthy"
+    },
+    {
+      "term": "DescribeTasks",
+      "definition": "An ECS API call returning detail on individual ECS tasks, including stop reason and stop code",
+      "example": "e.g. Used to list the last 5 stopped tasks and why each one stopped"
+    },
+    {
+      "term": "Deployment Rollout State",
+      "definition": "The ECS-reported status of a service deployment, either COMPLETED, IN_PROGRESS, or FAILED",
+      "example": "e.g. A FAILED rollout state signals the new task definition never reached a healthy state"
+    },
+    {
+      "term": "GetMetricStatistics",
+      "definition": "A CloudWatch API call used to retrieve aggregated metric data such as a CPU average over a time window",
+      "example": "e.g. The skill calls it to compute the 15-minute average CPU utilization per instance"
+    },
+    {
+      "term": "IAM",
+      "definition": "AWS's Identity and Access Management service for controlling who or what can call which APIs",
+      "example": "e.g. The skill authenticates as a dedicated IAM user named openclaw-bot"
+    },
+    {
+      "term": "Least Privilege",
+      "definition": "The security principle of granting only the exact permissions required to do a job, nothing more",
+      "example": "e.g. The skill's IAM policy contains only Describe/List/Get actions, never write actions"
+    },
+    {
+      "term": "Read-Only Policy",
+      "definition": "An IAM policy restricted to non-mutating actions like Describe*, List*, and Get*",
+      "example": "e.g. OpenClawAWSHealthReadOnly grants only those three action prefixes"
+    },
+    {
+      "term": "Access Key ID / Secret Access Key",
+      "definition": "The credential pair used to authenticate an IAM user programmatically against AWS APIs",
+      "example": "e.g. These two values are set as environment variables for the skill to authenticate"
+    },
+    {
+      "term": "AWS_SESSION_TOKEN",
+      "definition": "An additional environment variable required only when using temporary, assumed-role credentials",
+      "example": "e.g. Left unset for a standard long-lived IAM user, but required when assuming a role via STS"
+    },
+    {
+      "term": "Crash Loop",
+      "definition": "A pattern where a container repeatedly starts and stops or crashes shortly after starting",
+      "example": "e.g. Visible in ECS as several recently stopped tasks sharing the same stop reason"
+    },
+    {
+      "term": "AWS Health API",
+      "definition": "An AWS service reporting account- and service-level operational issues, distinct from per-resource Describe calls",
+      "example": "e.g. It would tell you \"ECS is degraded in ap-south-1\" but not which specific service of yours is unhealthy"
+    },
+    {
+      "term": "CredentialsProviderError",
+      "definition": "An SDK error indicating missing or invalid AWS credentials were supplied to a client",
+      "example": "e.g. Thrown when AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is unset"
+    },
+    {
+      "term": "AccessDeniedException",
+      "definition": "An AWS API error indicating the calling identity lacks the IAM permission required for that action",
+      "example": "e.g. Thrown if the openclaw-bot user's policy is missing an ecs:DescribeServices action"
+    },
+    {
+      "term": "ResourceNotFoundException",
+      "definition": "An AWS API error indicating the requested resource, such as an ECS cluster, does not exist under that name",
+      "example": "e.g. Thrown when --cluster is passed a typo'd or nonexistent cluster name"
+    }
+  ]
+}

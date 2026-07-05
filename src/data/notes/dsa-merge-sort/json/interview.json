@@ -1,0 +1,179 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the time complexity of Merge Sort and why is it always O(n log n)?",
+      "answer": "Merge Sort always runs in O(n log n) because the recursion tree has exactly log n levels (each level halves the problem size) and each level performs O(n) total work across all merge operations. Unlike Quick Sort, there is no pivot selection — the split is always at the midpoint, so no input can produce a skewed tree. Best, average, and worst cases are identical. An interviewer expects you to connect the tree structure to the complexity, not just recite the number.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 2,
+      "question": "How much extra space does Merge Sort use?",
+      "answer": "The standard implementation uses O(n) auxiliary space for the temporary array used during merges. The recursion stack adds O(log n) additional space for the call frames. In practice, the O(n) auxiliary array dominates. The bottom-up iterative variant avoids the stack overhead but still needs O(n) for the auxiliary array. True in-place merge sort exists but requires O(n log n) time for the merge step, degrading total complexity to O(n log² n).",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 3,
+      "question": "Why is Merge Sort preferred over Quick Sort for linked lists?",
+      "answer": "Merge Sort suits linked lists because it never needs random access — it only requires pointer manipulation. The midpoint is found with the slow-fast pointer technique in O(n), and merging two sorted lists requires only pointer rewiring, using O(1) auxiliary space. Quick Sort on a linked list requires scanning the whole list to partition, and random pivot selection is difficult without random access, making it awkward and often O(n²) in practice.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 4,
+      "question": "How would you implement Merge Sort without recursion?",
+      "answer": "Use the bottom-up iterative approach. Start with a merge size of 1, treating each element as a sorted run of length 1. In each pass, merge adjacent pairs of runs, doubling the run size each time (1→2→4→8→…). Continue until the run size exceeds the array length. This uses O(n) auxiliary space (same as recursive) but O(1) stack space. The total number of passes is log n, and each pass does O(n) work, giving the same O(n log n) overall complexity.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 5,
+      "question": "What makes Merge Sort a stable sort, and when does stability matter?",
+      "answer": "Merge Sort is stable because during the merge step, when left[i] == right[j], the algorithm always picks left[i] first. This preserves the original relative order of equal elements. Stability matters when records have multiple sort keys: if you sort a table of employees first by salary then by department, a stable sort on department will preserve the salary ordering within each department, enabling correct multi-key sorting with independent single-key passes.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 6,
+      "question": "How do you count the number of inversions in an array efficiently?",
+      "answer": "Modify the merge step: whenever you pick an element from the right subarray over a remaining element in the left subarray, it means all remaining left elements form inversions with that right element. Add (mid - i + 1) to the inversion count at that point. The overall algorithm runs in O(n log n) — the same complexity as regular Merge Sort. This is a canonical interview problem (LeetCode 315, 493) and demonstrates how Merge Sort can be extended to compute global properties of an array.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 7,
+      "question": "Explain how external merge sort works for a 1 TB file with 1 GB RAM.",
+      "answer": "Phase 1 (sort runs): read 1 GB chunks, sort each in RAM using an in-memory sort, write 1000 sorted runs to disk. Phase 2 (K-way merge): open all 1000 sorted run files simultaneously, use a 1000-element min-heap — one element from each run. Extract the minimum, write to output, and push the next element from the same run into the heap. The heap maintains O(log K) per extraction. Total I/O is O(n) reads + O(n) writes; total CPU is O(n log K) for the merge phase plus O(n log(n/K)) for sorting runs.",
+      "difficulty": "hard",
+      "category": "application"
+    },
+    {
+      "id": 8,
+      "question": "What is the recurrence relation for Merge Sort and how do you solve it?",
+      "answer": "The recurrence is T(n) = 2T(n/2) + O(n), where 2T(n/2) accounts for the two recursive halves and O(n) is the merge cost. Solving by the Master Theorem: a=2, b=2, f(n)=n, so log_b(a) = log_2(2) = 1, and f(n) = n = Θ(n^1 log^0 n). This is Case 2 of the Master Theorem, giving T(n) = Θ(n log n). You can also solve it by expansion: unrolling k levels gives k layers each costing O(n), and the tree has log n levels.",
+      "difficulty": "hard",
+      "category": "complexity"
+    },
+    {
+      "id": 9,
+      "question": "Why is Merge Sort slower than Quick Sort in practice despite the same asymptotic complexity?",
+      "answer": "Cache performance is the main reason. Quick Sort partitions in-place, accessing memory sequentially within each partition — modern CPUs can prefetch these accesses efficiently. Merge Sort reads from two separate subarray regions and writes to an auxiliary buffer, generating more cache misses. Additionally, each merge requires writing n elements to auxiliary memory and copying them back, doubling the number of memory operations compared to Quick Sort's swaps. For typical workloads on modern hardware, Quick Sort's constant factor is roughly 2× smaller.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 10,
+      "question": "Can Merge Sort be parallelised? How?",
+      "answer": "Yes — Merge Sort is naturally parallelisable because the two recursive halves are independent. The simplest approach spawns a separate thread for each half, joining before the merge step. With P processors, the divide phase parallelises perfectly to O(log n) levels, but the merge step itself is sequential (one thread produces one output). With parallel merge algorithms (partitioning the merge using binary search across subarrays), the total parallel complexity reduces to O(log² n) with O(n) processors, which is optimal for comparison-based sorting in parallel models.",
+      "difficulty": "expert",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 11,
+      "question": "What is the difference between top-down and bottom-up Merge Sort?",
+      "answer": "Top-down Merge Sort is recursive — it splits the array, recurses on both halves, then merges. Bottom-up is iterative — it starts with sorted runs of size 1 and doubles the run size each pass. Both are O(n log n) time and O(n) space. Bottom-up avoids recursion stack overhead (useful in environments with small stacks) and can be implemented without knowing the array size upfront. Top-down is easier to read and reason about. In competitive programming, the iterative version is preferred in tight memory constraints.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 12,
+      "question": "What are the two base cases in Merge Sort and why are both needed?",
+      "answer": "The primary base case is `length <= 1` — a single element is already sorted. Some implementations also check `length == 0` explicitly, though `length <= 1` covers it. Without the base case, the recursion never terminates because splitting a one-element array into two halves produces an empty array and a one-element array — the one-element call would split again infinitely. The base case is what gives the recursion its termination guarantee, and it's what makes the inductive correctness proof work: a one-element array is vacuously sorted.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 13,
+      "question": "How would you implement Merge Sort on a singly linked list?",
+      "answer": "Find the midpoint using slow-fast pointers (slow advances 1, fast advances 2; when fast hits null, slow is at the midpoint). Disconnect the list at the midpoint. Recursively sort both halves. Merge by comparing head values of both lists and splicing nodes without allocating new memory — just update next pointers. Base case: null or single node. This runs in O(n log n) time and O(log n) stack space, with O(1) auxiliary space (no array copying). It's the cleanest O(n log n) sort for singly linked lists.",
+      "difficulty": "hard",
+      "category": "implementation"
+    },
+    {
+      "id": 14,
+      "question": "How does Merge Sort demonstrate the divide-and-conquer correctness proof technique?",
+      "answer": "Proof by strong induction: Base case — an array of 0 or 1 elements is sorted. Inductive hypothesis — assume merge_sort correctly sorts any array of length less than n. Inductive step — for an array of length n, we split into two halves of length < n, apply the hypothesis to get two sorted halves, then show the merge step produces a sorted array from two sorted halves (trivially correct by the two-pointer argument). This is the standard structural induction on the recursion tree, and interviewers expect you to articulate why the merge step preserves sortedness.",
+      "difficulty": "expert",
+      "category": "complexity"
+    },
+    {
+      "id": 15,
+      "question": "What happens to Merge Sort's performance on already-sorted input?",
+      "answer": "Merge Sort performs the same O(n log n) operations on sorted input as on random input — it always splits and merges regardless. However, the actual comparison count is lower on sorted input: each merge will consume all left elements before any right elements, making only n/2 comparisons per merge (best case) instead of n-1 (worst case). Contrast this with Insertion Sort, which runs in O(n) on sorted input. For nearly-sorted data, Timsort detects natural runs and skips unnecessary merges, achieving near-O(n) performance.",
+      "difficulty": "medium",
+      "category": "complexity"
+    },
+    {
+      "id": 16,
+      "question": "Design a multi-threaded Merge Sort that doesn't create excessive threads.",
+      "answer": "Use a depth cutoff: spawn a new thread only when the recursion depth is below a threshold (e.g., log₂(P) where P is the number of CPU cores). Below the threshold, fall back to sequential Merge Sort. This creates at most O(P) threads, avoiding thread creation overhead. Use `std::async`/`Future` in Java or `concurrent.futures` in Python. Alternatively, use a thread pool with work-stealing: submit recursive tasks as futures, and workers steal tasks when idle. The merge step at each level must wait for both halves to complete before proceeding.",
+      "difficulty": "expert",
+      "category": "implementation"
+    },
+    {
+      "id": 17,
+      "question": "How is Merge Sort used in database systems?",
+      "answer": "Databases use external merge sort for operations like ORDER BY, GROUP BY, and sort-merge join when data exceeds buffer pool size. The first phase sorts pages that fit in memory; the second phase performs a multi-way merge using a priority queue. Sort-merge join takes two relations, sorts both on the join key using external merge sort, then merges in a single linear pass — O(n log n) overall versus O(n²) for nested loop join. Most commercial databases (PostgreSQL, SQL Server) use hybrid approaches that switch from hash join to sort-merge join based on cost estimation.",
+      "difficulty": "expert",
+      "category": "application"
+    },
+    {
+      "id": 18,
+      "question": "What is the significance of the `<=` vs `<` comparison in the merge step?",
+      "answer": "Using `<=` when comparing left[i] and right[j] means equal elements from the left subarray are always placed before equal elements from the right subarray, preserving stability. Using `<` instead would place equal right elements before equal left elements, breaking stability and reversing the original relative order of equals. This single character determines whether the sort is stable or not — it's a subtle but critical implementation detail that interviewers specifically test because it's a common bug in student implementations.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 19,
+      "question": "How would you sort a nearly-sorted array of 1 million elements efficiently?",
+      "answer": "For nearly-sorted data, Insertion Sort runs in O(n + k) where k is the number of inversions — excellent when k is small. Timsort (Python's sort) is optimal here because it detects natural ascending runs and merges only what's necessary, achieving O(n) on fully sorted input. If you must use standard Merge Sort, it still runs in O(n log n), which is perfectly fine for 1 million elements. The key interview signal: know that Merge Sort doesn't adapt to presortedness, and Timsort was specifically designed to exploit it.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 20,
+      "question": "What is the space complexity of Merge Sort on a linked list vs an array?",
+      "answer": "On an array, the standard implementation requires O(n) auxiliary space for the temporary merge buffer. On a linked list, merging is done by relinking pointers — no buffer is needed — so auxiliary space is O(1). Both array and linked list versions use O(log n) stack space for recursion. This is a key practical advantage: Merge Sort on a linked list achieves O(n log n) time with O(log n) total space (just the recursion stack), making it the only common O(n log n) sort that is both stable and near in-place for linked structures.",
+      "difficulty": "hard",
+      "category": "complexity"
+    },
+    {
+      "id": 21,
+      "question": "Explain how Merge Sort can be adapted to find the median of a large stream of numbers.",
+      "answer": "Merge Sort itself doesn't directly find the median of a stream, but its principles apply to external sort-based solutions. For a finite stream stored on disk: sort the entire dataset with external merge sort, then seek to position n/2. For an online stream requiring the running median, a two-heap approach (max-heap for lower half, min-heap for upper half) is more appropriate. However, the K-way merge technique from external Merge Sort appears in distributed median algorithms where each node holds a sorted partition and merge-finds the global median.",
+      "difficulty": "expert",
+      "category": "application"
+    },
+    {
+      "id": 22,
+      "question": "What is the comparison count for Merge Sort in the best case?",
+      "answer": "In the best case (input is already sorted), each merge of two subarrays of total length k makes exactly k/2 comparisons: all n/2 left elements are smaller than all n/2 right elements, so the algorithm picks all left elements without ever needing to compare a right element (except to confirm the left is smaller). Across all merges at one level totalling n elements, this is n/2 comparisons. Over log n levels, the best-case total is (n/2) log n = Ω(n log n). Even the best case is linearithmic — Merge Sort doesn't speed up for sorted input.",
+      "difficulty": "hard",
+      "category": "complexity"
+    },
+    {
+      "id": 23,
+      "question": "How do you merge K sorted arrays efficiently?",
+      "answer": "Use a min-heap of size K. Insert the first element from each array into the heap (storing the array index and element index). Repeatedly extract the minimum, write it to output, and push the next element from the same array into the heap. Each extraction and insertion is O(log K). Total elements processed: N (sum of all array lengths). Total complexity: O(N log K). This is the core of external merge sort's second phase and appears in problems like \"merge K sorted lists\" (LeetCode 23) and \"find the smallest range covering elements from K lists\" (LeetCode 632).",
+      "difficulty": "hard",
+      "category": "application"
+    },
+    {
+      "id": 24,
+      "question": "What optimisation can you apply to Merge Sort for small subarrays?",
+      "answer": "Switch to Insertion Sort for subarrays below a threshold (typically 10-32 elements). Insertion Sort has low overhead and is cache-friendly for small inputs, while Merge Sort's recursion overhead becomes significant when subarrays are tiny. This hybrid approach — used in Timsort and many production sort implementations — achieves the same O(n log n) asymptotic behaviour but significantly reduces constant factors. The threshold is determined empirically per hardware; 16 is a common default. This is the same principle behind Introsort switching strategies based on depth.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 25,
+      "question": "Can you implement Merge Sort without allocating a new array on every merge call?",
+      "answer": "Yes — allocate one auxiliary array of size n upfront at the top-level call, then pass it as a parameter to all recursive calls. Each merge uses a segment of this shared auxiliary array corresponding to the current [low, high] range. This reduces total allocations from O(n log n) to O(n), which is a significant practical improvement. The standard textbook implementation (allocating a new list on every merge in Python) allocates O(n log n) total memory due to the many small temporary arrays at each recursion level.",
+      "difficulty": "hard",
+      "category": "implementation"
+    }
+  ]
+}

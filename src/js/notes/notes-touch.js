@@ -1,7 +1,24 @@
 /**
- * Touch Gestures & Swipe Navigation v1.0
- * Adds swipe support for quiz carousel and interview flashcards
- * File: js/notes-touch.js
+ * =============================================================================
+ * File: notes-touch.js
+ * Path: js/notes/notes-touch.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Touch swipe gesture support for the in-page MCQ carousel and interview
+ * flashcard deck. Skips entirely on non-touch devices. Detects horizontal
+ * swipes (50px threshold, 0.3px/ms minimum velocity, max 100px vertical
+ * deviation) and translates them into next/prev button clicks, with
+ * haptic feedback (10ms vibration) where supported.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - #nextBtn/#prevBtn (quiz carousel) or #nextInterviewBtn/#prevInterviewBtn
+ *   (flashcards) — must exist in DOM for swipes to do anything
+ * =============================================================================
  */
 
 (function() {

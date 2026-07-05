@@ -386,7 +386,7 @@
         }
       ],
       "correctAnswer": "B",
-      "difficulty": "intermediate",
+      "difficulty": "basic",
       "explanation": {
         "correct": "Standard linear search returns the FIRST occurrence. Index 1 holds value 4 and is the first match; the algorithm returns immediately.",
         "why": "4 is the value itself, not the index. 2 is the second occurrence (index 2). Returning a list requires the find-all variant."
@@ -414,7 +414,7 @@
         }
       ],
       "correctAnswer": "B",
-      "difficulty": "intermediate",
+      "difficulty": "basic",
       "explanation": {
         "correct": "A linear scan over an array uses O(1) extra memory — no hash table overhead. Hash tables require O(n) extra space for the buckets and collision structures, plus O(n) time to build.",
         "why": "Hash table is O(1) average — faster than O(n). Both work on unsorted data conceptually. Linear search is O(n) worst case, not O(1)."
@@ -442,7 +442,7 @@
         }
       ],
       "correctAnswer": "B",
-      "difficulty": "intermediate",
+      "difficulty": "basic",
       "explanation": {
         "correct": "A stream delivers elements sequentially with no way to jump to an arbitrary position or re-read earlier elements. Linear search naturally consumes elements one by one, making it the only applicable general search strategy.",
         "why": "Binary search requires random access and re-reads. Hash table lookup requires the full dataset to be ingested first. B-tree search requires an indexed structure."
@@ -638,7 +638,7 @@
         }
       ],
       "correctAnswer": "C",
-      "difficulty": "advanced",
+      "difficulty": "intermediate",
       "explanation": {
         "correct": "Move-to-front self-organizes the list so the most frequently accessed elements cluster at the front. After enough queries, the top-k most popular elements are at positions 1..k and are found in O(k) comparisons. For the single most popular element, the expected cost approaches O(1).",
         "why": "Always O(1) is false — rare elements stay near the back. O(n) worst-case for a single element is true but misses the optimization point. O(n²) is wrong; shuffling is O(n) but rarely triggered."
@@ -778,7 +778,7 @@
         }
       ],
       "correctAnswer": "B",
-      "difficulty": "advanced",
+      "difficulty": "intermediate",
       "explanation": {
         "correct": "For unsuccessful searches on sorted data, without early exit you always scan all n elements. With early exit you stop at the first element exceeding the target — on average halfway through, cutting unsuccessful-search time to n/2. Worst case (target would be the largest) still visits n elements.",
         "why": "Worst-case time remains O(n) (target larger than all elements). Space is unchanged at O(1). Best case is already O(1) — target at index 0."

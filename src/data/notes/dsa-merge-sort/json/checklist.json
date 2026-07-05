@@ -1,0 +1,104 @@
+{
+  "categories": [
+    {
+      "title": "Understanding",
+      "items": [
+        {
+          "id": "c1",
+          "text": "I can explain Merge Sort using an everyday analogy (e.g., merging two sorted piles of cards) without using CS jargon"
+        },
+        {
+          "id": "c2",
+          "text": "I understand why the time complexity is always O(n log n) — log n levels times O(n) work per level"
+        },
+        {
+          "id": "c3",
+          "text": "I can explain why Merge Sort is stable and what single change in the merge step would break stability"
+        },
+        {
+          "id": "c4",
+          "text": "I can describe the difference between top-down (recursive) and bottom-up (iterative) Merge Sort"
+        },
+        {
+          "id": "c5",
+          "text": "I understand why Merge Sort uses O(n) auxiliary space and why true in-place merge is impractical"
+        }
+      ]
+    },
+    {
+      "title": "Implementation",
+      "items": [
+        {
+          "id": "c6",
+          "text": "I can implement the full recursive Merge Sort in Python, Java, and C++ from scratch without reference"
+        },
+        {
+          "id": "c7",
+          "text": "I can implement the merge step correctly with the <= comparison for stability"
+        },
+        {
+          "id": "c8",
+          "text": "I can implement the bottom-up iterative Merge Sort that avoids recursion entirely"
+        },
+        {
+          "id": "c9",
+          "text": "I can implement Merge Sort on a singly linked list using slow-fast pointer for midpoint detection"
+        },
+        {
+          "id": "c10",
+          "text": "I can implement the count-inversions variation that adds inversion counting to the merge step"
+        }
+      ]
+    },
+    {
+      "title": "Problem Solving",
+      "items": [
+        {
+          "id": "c11",
+          "text": "I solved Merge Sorted Array (LC #88) and can explain why it's the pure merge step"
+        },
+        {
+          "id": "c12",
+          "text": "I solved Sort List (LC #148) and can explain why Merge Sort is natural for linked lists"
+        },
+        {
+          "id": "c13",
+          "text": "I solved Count of Smaller Numbers After Self (LC #315) using the merge-step inversion technique"
+        },
+        {
+          "id": "c14",
+          "text": "I attempted Reverse Pairs (LC #493) and understand the modified merge condition"
+        },
+        {
+          "id": "c15",
+          "text": "I solved Merge K Sorted Lists (LC #23) and can explain the K-way merge with a min-heap"
+        }
+      ]
+    },
+    {
+      "title": "Expert Level",
+      "items": [
+        {
+          "id": "c16",
+          "text": "I know when NOT to use Merge Sort — when in-place sorting is required or cache performance is critical"
+        },
+        {
+          "id": "c17",
+          "text": "I can identify inversion-counting problems that reduce to a Merge Sort modification"
+        },
+        {
+          "id": "c18",
+          "text": "I can design an external merge sort strategy and explain the two-phase approach and K-way merge"
+        },
+        {
+          "id": "c19",
+          "text": "I can explain why Timsort is faster than naive Merge Sort on real-world data and what natural runs are"
+        },
+        {
+          "id": "c20",
+          "text": "I can discuss the Ω(n log n) lower bound and why Merge Sort is comparison-optimal"
+        }
+      ]
+    }
+  ]
+}

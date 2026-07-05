@@ -1,3 +1,151 @@
+/*
+==============================================================================
+File: notes-index.css
+Path: css/notes/notes-index.css
+Project: Learning Dashboard
+
+Description:
+Styling for the notes-index.html listing page only (not individual note
+pages — that's notes.css). Tag-chip styling for the folder modal, plus
+the session-badge and view-all-images-button used on note tiles.
+
+Sections:
+1. Tag Chips (folder modal)
+2. Session Badge / View-All-Images Button
+3. Search Suggestions Dropdown / Result Highlighting
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-07-04
+==============================================================================
+*/
+
+/* ── Search suggestions dropdown ────────────────────────────────────────── */
+
+.search-input-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+}
+
+.search-suggestions {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.search-suggestions.visible {
+    display: block;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-primary, #222);
+}
+
+.suggestion-item:not(:last-child) {
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.suggestion-item:hover,
+.suggestion-item.active {
+    background: var(--bg-hover, rgba(255, 153, 0, 0.1));
+}
+
+.suggestion-icon {
+    flex: 0 0 auto;
+    font-size: 15px;
+}
+
+.suggestion-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.suggestion-category {
+    flex: 0 0 auto;
+    font-size: 12px;
+    color: var(--text-muted, #888);
+}
+
+/* ── Result highlighting (mark.js output, matches notes-search.js styling) ── */
+
+#notesContainer mark.search-highlight {
+    background: #fff59d;
+    color: #111;
+    padding: 0 1px;
+    border-radius: 2px;
+}
+/* ── Favorites Only filter toggle ───────────────────────────────────────── */
+/* A real <button>, not a native checkbox — native checkboxes on this site
+   render as an unstyled solid box on some browser/OS combos and can end
+   up non-interactive, so this avoids that entirely and matches the same
+   outline-vs-filled language as .note-favorite-btn / the card hearts. */
+
+.favorites-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #ddd);
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #444);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    box-sizing: border-box;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.favorites-filter-btn:hover {
+    border-color: var(--primary, #ff9900);
+}
+
+.favorites-filter-btn.active {
+    background: var(--primary, #ff9900);
+    border-color: var(--primary, #ff9900);
+    color: #fff;
+}
+
+.favorites-filter-btn:focus {
+    outline: none;
+}
+
+.favorites-filter-btn:focus-visible {
+    outline: 2px solid var(--primary, #ff9900);
+    outline-offset: 2px;
+}
+
+.favorites-filter-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
 /* ── Tag chips (shown in folder modal) ─────────────────────────────────── */
 
 .modal-tags {
@@ -41,4 +189,309 @@
     color: var(--info, #2b6cb0);
     font-weight: 500;
     white-space: nowrap;
+}
+
+/* ── Reading progress badge (shown on tiles once a note has been opened) ── */
+
+.progress-badge {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--success-bg, rgba(72, 187, 120, 0.15));
+    color: var(--success, #2f855a);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* ── Shuffle Again (Random sort) ─────────────────────────────────────────── */
+
+.shuffle-again-btn {
+    margin-top: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #ddd);
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #444);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    align-self: flex-start;
+}
+
+.shuffle-again-btn:hover {
+    border-color: var(--primary, #ff9900);
+    color: var(--primary, #ff9900);
+}
+
+.view-all-images-btn {
+    margin-left: auto;
+    font-size: 0.9rem;
+    color: var(--primary);
+    text-decoration: none;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.view-all-images-btn:hover {
+    background: var(--bg-card);
+}
+
+.type-badges {
+    display: inline-flex;
+    gap: 4px;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+.type-badge {
+    font-size: 0.8em;
+    opacity: 0.8;
+}
+
+/* ── Card quick actions (Open / Bookmark / Copy Link / Gallery) ─────────── */
+
+.card-quick-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.qa-btn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #ddd);
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #444);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.qa-btn:hover {
+    background: var(--primary, #ff9900);
+    color: #fff;
+    border-color: var(--primary, #ff9900);
+}
+
+.qa-favorite.active {
+    background: var(--primary, #ff9900);
+    color: #fff;
+    border-color: var(--primary, #ff9900);
+}
+
+/* Note: the note-PAGE'S OWN favorite button (.note-favorite-btn) is
+   styled by notes-favorite.js itself via an injected <style> tag, not
+   here — this stylesheet is only loaded on notes-index.html per the file
+   header above, so a rule here would never reach the individual note
+   pages that button actually lives on. */
+
+.qa-btn.copied {
+    background: var(--info, #2b6cb0);
+    color: #fff;
+    border-color: var(--info, #2b6cb0);
+}
+
+.chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.selected-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    padding: 4px 8px 4px 12px;
+    border-radius: 999px;
+    background: var(--primary, #ff9900);
+    color: #fff;
+}
+
+.chip-remove {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    padding: 2px;
+    opacity: 0.85;
+}
+
+.chip-remove:hover {
+    opacity: 1;
+}
+
+.filter-controls {
+    align-items: flex-start;
+}
+
+.chip-row:empty {
+    margin-top: 0;
+}
+
+/* ── Mobile filter drawer (side panel) ──────────────────────────────────── */
+
+.filters-toggle-btn {
+    display: none;
+}
+
+.filter-sheet-header,
+.filter-sheet-actions {
+    display: none;
+}
+
+.filter-sheet-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 998;
+}
+
+.filter-sheet-overlay.active {
+    display: block;
+}
+
+body.filter-sheet-locked {
+    overflow: hidden;
+}
+
+.filter-sheet-body {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .search-bar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .filters-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color, #ddd);
+        background: var(--bg-card, #fff);
+        color: var(--text-primary, #222);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .filter-controls {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        height: 100%;
+        width: 85%;
+        max-width: 340px;
+        background: var(--bg-card, #fff);
+        display: block;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.2);
+        z-index: 999;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        overflow: scroll;
+    }
+
+    .filter-controls.open {
+        transform: translateX(0);
+    }
+
+    .filter-sheet-header {
+        display: inline-flex;
+        flex: 0 0 auto;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 16px;
+        font-weight: 700;
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color, #eee);
+    }
+
+    .filter-sheet-close {
+        background: none;
+        align-self: flex-end;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: var(--text-secondary, #444);
+    }
+
+    .filter-sheet-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: inline-flex;
+        flex-direction: column;
+        gap: 16px;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+        padding: 16px;
+    }
+
+    .filter-sheet-body .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .filter-sheet-body select {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .filter-sheet-body .chip-row {
+        width: 100%;
+    }
+
+    .filter-sheet-actions {
+        display: inline-flex;
+        flex: 0 0 auto;
+        gap: 12px;
+        padding: 16px;
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+        border-top: 1px solid var(--border-color, #eee);
+    }
+
+    .filter-clear-btn,
+    .filter-apply-btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color, #ddd);
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .filter-apply-btn {
+        background: var(--primary, #ff9900);
+        border-color: var(--primary, #ff9900);
+        color: #fff;
+        font-weight: 600;
+    }
 }

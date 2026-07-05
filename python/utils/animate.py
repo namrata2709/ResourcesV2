@@ -146,7 +146,7 @@ def build_input_panel(input_boxes: list, defaults: dict) -> str:
 </div>"""
 
 
-def build_animation_html(fm: dict, anim: dict, output_path_depth: str) -> str:
+def build_animation_html(fm: dict, anim: dict, output_path_depth: str = "../../../") -> str:
     """
     Assembles complete animation HTML.
     fm: topic frontmatter (for title)
@@ -162,7 +162,12 @@ def build_animation_html(fm: dict, anim: dict, output_path_depth: str) -> str:
     """
     title = fm.get("title", "Animation")
     anim_type = anim["type"]
-    depth = "../../../"  # data/notes/dsa/[slug]/[file]-animation.html -> project root
+    # src/data/notes/dsa-[slug]/[animation_name].html -> project root is 3
+    # levels up (dsa-[slug] -> notes -> data -> root); css/ and js/ are
+    # siblings of data/ at the root. Kept as a parameter (rather than
+    # hardcoded) so the caller's project_root stays the single source of
+    # truth instead of two independently-maintained constants drifting.
+    depth = output_path_depth
 
     input_panel = build_input_panel(anim["input_boxes"], anim["defaults"])
 
@@ -193,8 +198,8 @@ def build_animation_html(fm: dict, anim: dict, output_path_depth: str) -> str:
 <div class="status-bar" id="statusBar"></div>
 
 <div class="controls">
-    <button class="ctrl-btn" id="btnPrev" onclick="goStep(-1)" disabled>&#9664; Prev</button>
-    <button class="ctrl-btn primary" id="btnPlayPause" onclick="togglePlay()">&#9654; Play</button>
+    <button class="ctrl-btn" id="btnPrev" onclick="goStep(-1)" disabled> &#9664; Prev</button>
+    <button class="ctrl-btn primary" id="btnPlayPause" onclick="togglePlay()"> &#9654; Play</button>
     <button class="ctrl-btn" id="btnNext" onclick="goStep(1)" disabled>Next &#9654;</button>
     <button class="ctrl-btn" onclick="initAnimation()">&#8635; Restart</button>
     <div class="step-counter" id="stepCounter">Step 0 / 0</div>
@@ -224,7 +229,7 @@ def read_shared_file(filename: str, sub_dir: str, project_root: str) -> str:
 
 
 def run(md_path: str, project_root: str = ".."):
-    from  generate_dsa_notes import parse_frontmatter, read_file  # reuse existing parser
+    from generate_notes import parse_frontmatter, read_file  # reuse unified parser
 
     raw = read_file(md_path)
     fm, body = parse_frontmatter(raw)
@@ -237,10 +242,15 @@ def run(md_path: str, project_root: str = ".."):
     slug = fm.get("slug", "topic")
     animation_name = fm.get("animation_name") or f"{slug}-animation"
 
-    html = build_animation_html(fm, anim, project_root)
+    # project_root is a filesystem path (used below for os.path.join), not
+    # the href-relative depth the animation page needs for its <link>/<script>
+    # tags — those are two different things and must not be conflated.
+    # src/data/notes/dsa-[slug]/[animation_name].html is 3 levels above the
+    # project root, matching generate_notes.py's path_depth for notes.html.
+    html = build_animation_html(fm, anim, output_path_depth="../../../")
 
     out_dir = os.path.join(project_root,"src", "data", "notes", f"dsa-{slug}")
-    print(project_root)
+    
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, f"{animation_name}.html")
 

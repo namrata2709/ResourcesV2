@@ -2,7 +2,7 @@
 
 ## Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
 
-Copyright (c) 2025 Namrata Mulwani
+Copyright (c) 2026 Namrata Mulwani
 
 This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
 

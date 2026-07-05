@@ -1,20 +1,23 @@
 /**
- * renderer-grid.js — Renders 2D grid visualizations.
- * Covers 11 topics: Knapsack, LCS, Matrix DP, Bitmask DP, Digit DP,
- * Matrix Exponentiation, Gaussian Elimination, Sparse Table, Hungarian.
+ * =============================================================================
+ * File: renderer-grid.js
+ * Path: js/notes/dsa/animation/renderer-grid.js
+ * Project: Learning Dashboard
  *
- * Step schema:
- * {
- *   grid: [[...], [...]],          // full grid values, updated each step
- *   activeCell: [r, c],             // current cell being computed
- *   dependsOn: [[r,c], [r,c], ...], // cells this depends on (amber outline)
- *   rowLabels: [...],                // optional — left side labels
- *   colLabels: [...],                // optional — top labels
- *   label: "",
- *   decision: ""
- * }
+ * Description:
+ * 2D grid visualization renderer — covers 11 topics (Knapsack, LCS,
+ * Matrix DP, Bitmask DP, Digit DP, Matrix Exponentiation, Gaussian
+ * Elimination, Sparse Table, Hungarian). Defines
+ * buildVisual(input)/renderStep(step,idx) as globals, consumed by
+ * animation-core.js.
  *
- * Exposes: buildVisual(input), renderStep(step, idx)
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - js/notes/dsa/animation-core.js (must load first)
+ * =============================================================================
  */
 
 let _rows = 0;

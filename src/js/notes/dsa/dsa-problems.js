@@ -1,6 +1,20 @@
 /**
- * dsa-problems.js — Loads problems.json, renders LeetCode problems table.
- * File: js/notes/dsa/dsa-problems.js
+ * =============================================================================
+ * File: dsa-problems.js
+ * Path: js/notes/dsa/dsa-problems.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Loads problems.json and renders the LeetCode practice problems table
+ * (#problemsContainer) — number, title/link, difficulty badge, pattern.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - window.NotesSearch (notes-search.js, optional — rebuildIndex() call)
+ * =============================================================================
  */
 
 (function () {

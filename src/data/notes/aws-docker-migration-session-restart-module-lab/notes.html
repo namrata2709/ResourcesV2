@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Migrating a Web Application to Docker Containers — a beginner-friendly introduction to AWS, covering core concepts, architecture, and practical use cases. Keywords: Docker, Docker containers, Amazon ECR, Dockerfile, container migration, Docker image, EC2, Node.js containerization, IAM, personal AWS account.">
+    <meta name="keywords" content="Docker, Docker containers, Amazon ECR, Dockerfile, container migration, Docker image, EC2, Node.js containerization, IAM, personal AWS account, AWS, cloud, certification">
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/data/notes/aws-docker-migration-session-restart-module-lab/notes.html">
+    <meta property="og:title" content="Migrating a Web Application to Docker Containers - AWS Notes">
+    <meta property="og:description" content="Migrating a Web Application to Docker Containers — a beginner-friendly introduction to AWS, covering core concepts, architecture, and practical use cases. Keywords: Docker, Docker containers, Amazon ECR, Dockerfile, container migration, Docker image, EC2, Node.js containerization, IAM, personal AWS account.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/data/notes/aws-docker-migration-session-restart-module-lab/notes.html">
+    <title>Migrating a Web Application to Docker Containers - AWS Notes</title>
+    <link rel="stylesheet" href="../../../css/styles.css">
+    <link rel="stylesheet" href="../../../css/notes/notes.css">
+    <script src="../../../js/shared/site-config.js"></script>
+</head>
+<body data-subject="aws" data-mode="lab">
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Migrating a Web Application to Docker Containers - AWS Notes",
+    "description": "Migrating a Web Application to Docker Containers — a beginner-friendly introduction to AWS, covering core concepts, architecture, and practical use cases. Keywords: Docker, Docker containers, Amazon ECR, Dockerfile, container migration, Docker image, EC2, Node.js containerization, IAM, personal AWS account.",
+    "author": {
+        "@type": "Person",
+        "name": "Namrata Mulwani",
+        "email": "awslecturenotes@gmail.com"
+    },
+    "datePublished": "2026-07-01",
+    "dateModified": "2026-07-01",
+    "publisher": {
+        "@type": "Person",
+        "name": "Namrata Mulwani"
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://namrata2709.github.io/Resources/data/notes/aws-docker-migration-session-restart-module-lab/notes.html"
+    },
+    "articleSection": "AWS Notes",
+    "keywords": [
+        "Docker",
+        "Docker containers",
+        "Amazon ECR",
+        "Dockerfile",
+        "container migration",
+        "Docker image",
+        "EC2",
+        "Node.js containerization",
+        "IAM",
+        "personal AWS account"
+    ],
+    "educationalLevel": "Beginner"
+}
+</script>
+
+<div id="pageLoader" class="page-loader">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Loading...</p>
+</div>
+
+<div class="note-container">
+
+<div class="success-box">
+    <p>
+        💬 <strong>Session:</strong> Module 8 — Containers — Lab 8.1 (Personal AWS Account Edition)
+    </p>
+</div>
+
+<div class="highlight-box" role="note" aria-label="When to use">
+    <p><strong>When to use:</strong> Use this lab when you need hands-on practice — entirely in your own AWS account, with nothing pre-provisioned for you — building source infrastructure from scratch, migrating an app and its database into Docker containers, and publishing the image to Amazon ECR.</p>
+</div>
+
+<div class="note-content">
+
+<details class="collapsible-section" open>
+<summary><h2 id="introduction">Introduction</h2></summary>
+<div class="section-content">
+
+<p>Sofía, the developer at the café's newly acquired coffee-supplier business, has an inventory app that only runs because two specific servers happen to have Node.js and MySQL installed exactly right. In this lab you'll fix that fragility: you'll package the app and its database into <span class="exam-highlight-term" data-term="Docker containers">Docker containers</span> so they can run anywhere the Docker engine runs, then push the finished image to <span class="exam-highlight-term" data-term="Amazon ECR">Amazon ECR</span> so it's ready for future deployment.</p>
+
+<div class="info-box">
+    <p>This version of the lab runs entirely in <span class="exam-highlight-term" data-term="your own AWS account">your own AWS account</span> — there is no pre-built sandbox environment, no temporary IDE, and no auto-graded submission. You will provision every piece of infrastructure yourself, including the two source servers a hosted version of this lab would normally hand you already configured. Every resource you create is real and billable, so <span class="exam-highlight-term" data-term="Cleanup at the end is not optional">Cleanup at the end is not optional</span>.</p>
+</div>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="background">Background</h2></summary>
+<div class="section-content">
+
+
+<details class="collapsible-section">
+<summary><h3 id="what-is-docker">What is Docker?</h3></summary>
+<div class="section-content">
+
+<p><span class="exam-highlight-sentence">Docker is a platform that packages an application together with everything it needs to run — code, runtime, system libraries, configuration — into a single portable unit called a <span class="exam-highlight-term" data-term="container">container</span>.</span> Think of it like a shipping container in global freight: before standardized containers, every cargo ship had to be loaded differently depending on what it carried — barrels, crates, sacks, machinery — all needing custom handling. Standard containers meant any crane, ship, or truck could move any cargo the same way. Docker does the same thing for software: any machine with the Docker engine installed can run your app the same way, regardless of what's installed on that machine's operating system.</p>
+
+<p>A <span class="exam-highlight-term" data-term="Docker image">Docker image</span> is the sealed shipping container itself — a read-only template built from instructions in a <span class="exam-highlight-term" data-term="Dockerfile">Dockerfile</span>. A <span class="exam-highlight-term" data-term="Docker container">Docker container</span> is what you get when you actually run that image — a live, running instance of it. One image can produce many running containers, the same way one shipping-container blueprint can produce thousands of identical physical containers.</p>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h3 id="containers-vs-virtual-machines">Containers vs Virtual Machines</h3></summary>
+<div class="section-content">
+
+<p>Learners frequently confuse containers with virtual machines because both "isolate" an application. The difference is what gets duplicated:</p>
+
+<table>
+<thead><tr>
+<th>Aspect</th>
+<th>Container</th>
+<th>Virtual Machine</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>What's virtualized</td>
+<td>The application layer, on top of a shared host OS kernel</td>
+<td>An entire guest OS, on top of a hypervisor</td>
+</tr>
+<tr>
+<td>Startup time</td>
+<td>Seconds</td>
+<td>Minutes</td>
+</tr>
+<tr>
+<td>Image size</td>
+<td>Megabytes</td>
+<td>Gigabytes</td>
+</tr>
+<tr>
+<td>Resource overhead</td>
+<td>Low — no duplicate OS kernel</td>
+<td>Higher — each VM runs a full OS</td>
+</tr>
+<tr>
+<td>Isolation strength</td>
+<td>Process-level isolation</td>
+<td>Full hardware-level isolation</td>
+</tr>
+<tr>
+<td>Portability</td>
+<td>Runs identically anywhere Docker runs</td>
+<td>Tied to the hypervisor/format used</td>
+</tr>
+</tbody></table>
+
+<p><span class="exam-highlight-sentence">Containers share the host machine's OS kernel, while virtual machines each run their own full guest operating system</span> — this is the single fact most exam questions and interview questions are testing when they ask "why are containers lighter than VMs?"</p>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h3 id="why-does-this-matter-for-this-lab">Why does this matter for this lab?</h3></summary>
+<div class="section-content">
+
+<p>Right now the coffee-supplier app is installed directly on the guest OS of an EC2 instance — if that instance's OS, Node.js version, or system libraries ever changed, the app could silently break. <span class="exam-highlight-sentence">Moving the app into a container decouples the application from the specific server it happens to run on</span>, which is exactly the problem Sofía needs solved before the café can confidently scale, redeploy, or hand this application off to another team.</p>
+
+<p>Running this lab in your own account adds a second, very practical lesson on top of the Docker one: everything you spin up (three EC2 instances, a security group, a key pair, an IAM role, an ECR repository) has a real cost profile and a real blast radius. Provisioning it deliberately — and tearing it all down afterward — is itself part of what a cloud engineer does every day.</p>
+
+<div class="diagram-container">
+<img src="images/aws-docker-migration-lab8-1-before-after.png" alt="Before/after: app and database installed directly on two EC2 guest OSes, versus both running as portable Docker containers on a single container host" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Before/after: app and database installed directly on two EC2 guest OSes, versus both running as portable Docker containers on a single container host</em></p>
+</div>
+
+
+
+
+</div>
+</details>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="lab-overview">Lab Overview</h2></summary>
+<div class="section-content">
+
+<p><span class="exam-highlight-term" data-term="What you're building:">What you're building:</span> From a completely empty AWS account, you'll provision the identity, network, and compute resources the lab needs; stand up two "legacy" EC2 instances that run a Node.js/Express inventory application and its MySQL backend directly on the guest OS (recreating the fragile starting point); containerize both with Docker on a third EC2 instance acting as your container host; and finally push the finished application image to a new Amazon ECR repository.</p>
+
+<ul>
+<li><span class="exam-highlight-term" data-term="Time estimate:">Time estimate:</span> ~45-60 minutes for account/infrastructure setup (Tasks 1-3), ~60 minutes for the core migration (Tasks 4-8). Add 45-90 minutes if you work through the Extended Tasks and bonus projects.</li>
+<li><span class="exam-highlight-term" data-term="Cost estimate:">Cost estimate:</span> This lab uses real AWS resources in your own account. Three <code>t3.micro</code> EC2 instances are Free Tier eligible (750 instance-hours/month combined, for 12 months on a new account) — outside Free Tier, budget roughly <span class="exam-highlight-term" data-term="$0.01-0.02/hour per instance">$0.01-0.02/hour per instance</span> (~$0.03-0.06/hour for all three running together) in <code>us-east-1</code>. Amazon ECR gives 500 MB-month of private storage free; this lab's images comfortably fit inside that. There is no charge for the IAM user, IAM role, key pair, or security group themselves.</li>
+<li><span class="exam-highlight-term" data-term="Prerequisites:">Prerequisites:</span> An AWS account where you can sign in as the root user at least once (to create an IAM user), basic command-line comfort, and a rough idea of what an EC2 instance and a public/private IP address are. No prior Docker experience needed.</li>
+</ul>
+
+<div class="diagram-container">
+<img src="images/aws-docker-migration-lab8-1-build-flow.png" alt="End-to-end flow: source code + Dockerfile → docker build → Docker image → docker run → running container" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>End-to-end flow: source code + Dockerfile → docker build → Docker image → docker run → running container</em></p>
+</div>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="what-you-will-accomplish">What You Will Accomplish</h2></summary>
+<div class="section-content">
+
+<div class="highlight-box">
+    <p><strong>Key Takeaways:</strong></p>
+    <ul>
+        <li>Create a least-privilege-minded IAM user and an IAM role for EC2-to-ECR authentication, instead of using the root user or long-lived access keys</li>
+        <li>Provision a key pair and a security group from scratch and reason about which ports actually need to be open</li>
+        <li>Launch and manually configure two "legacy" EC2 instances that run a Node.js app and a MySQL database directly on their guest OS</li>
+        <li>Launch a container host EC2 instance and install Docker, Git, and the AWS CLI on it</li>
+        <li>Write a Dockerfile that packages a Node.js application into a Docker image</li>
+        <li>Build a Docker image from a Dockerfile and run it as a container</li>
+        <li>Diagnose and fix a container networking/configuration problem using environment variables</li>
+        <li>Migrate a MySQL database's data into a Docker container using `mysqldump`</li>
+        <li>Connect two containers so the app container can reach the database container</li>
+        <li>Create an Amazon ECR repository and authenticate the Docker client to it using an IAM role instead of static credentials</li>
+        <li>Tag and push a Docker image to Amazon ECR</li>
+        <li>Fully tear down every resource you created, leaving no ongoing charges</li>
+    </ul>
+</div>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="task-1-setting-up-your-aws-environment">Task 1: Setting Up Your AWS Environment</h2></summary>
+<div class="section-content">
+
+<p>This task exists because a hosted version of this lab would normally do all of this for you before you ever see it. In your own account, you're doing it yourself — which is also where most of the transferable, job-relevant skill in this lab actually lives.</p>
+
+
+<p>Create an IAM user for this lab (don't work as the root user).</p>
+
+<p>Sign in to the AWS Management Console as the account root user, only for this one step.</p>
+<p>Open the IAM console, choose Users → Create user.</p>
+<p>Name it docker-lab-admin, enable console access with a custom password, and un-check "require password reset" for a personal lab account.</p>
+<p>On the permissions step, choose Attach policies directly and attach AdministratorAccess.</p>
+<div class="info-box">
+    <p>`AdministratorAccess` is a convenience for a personal learning account so you don't get blocked mid-lab by a missing permission. In a real team environment you would scope this down to only the EC2, IAM, and ECR actions this lab actually needs — least privilege, not administrator, is the production default.</p>
+</div>
+
+<p>Finish creating the user, then sign out of the root user and sign back in as docker-lab-admin for the rest of this lab.</p>
+
+
+<p>screenshot: screenshot-iam-user-created.png | IAM console showing the newly created docker-lab-admin user with AdministratorAccess attached</p>
+
+
+
+<p>Create an EC2 key pair.</p>
+
+<p>Open the EC2 console → Key Pairs (under Network &amp; Security) → Create key pair.</p>
+<p>Name it docker-lab-key, type RSA, format .pem (use .ppk only if you're connecting with PuTTY on Windows).</p>
+<p>Download the file when prompted — this is your only chance to get it; AWS does not store a copy.</p>
+<p>On macOS/Linux, lock down its permissions so SSH will accept it:</p>
+<p>chmod 400 ~/Downloads/docker-lab-key.pem</p>
+
+
+<div class="info-box">
+    <p>If you'd rather not manage a key file locally at all, you can skip key-pair-based SSH entirely and use EC2 Instance Connect (a browser-based terminal in the EC2 console) for every SSH step in this lab instead. Create the key pair anyway — some EC2 launch flows require selecting one.</p>
+</div>
+
+
+<p>Create a shared security group.</p>
+
+<p>EC2 console → Security Groups → Create security group.</p>
+<p>Name: docker-lab-sg. Description: "Shared SG for the Docker migration lab — SSH, app ports, and internal DB traffic."</p>
+<p>VPC: your account's default VPC.</p>
+<p>Add these inbound rules:</p>
+
+
+<table>
+<thead><tr>
+<th>Type</th>
+<th>Port</th>
+<th>Source</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SSH</td>
+<td>22</td>
+<td>My IP</td>
+<td>Connect to any lab instance from your machine</td>
+</tr>
+<tr>
+<td>Custom TCP</td>
+<td>80</td>
+<td>My IP</td>
+<td>Browse the app directly on AppServerNode (Task 4)</td>
+</tr>
+<tr>
+<td>Custom TCP</td>
+<td>3000</td>
+<td>My IP</td>
+<td>Browse the containerized app on the container host (Task 5+)</td>
+</tr>
+<tr>
+<td>Custom TCP</td>
+<td>3306</td>
+<td>Self (this security group's ID)</td>
+<td>Let the container host and app instance reach MySQL on MysqlServerNode, without exposing 3306 to the internet</td>
+</tr>
+</tbody></table>
+
+
+<p>You'll attach this one security group to all three EC2 instances in this lab — it's simpler to reason about than three separate groups, and the self-referencing rule means any instance in the group can reach any other instance in the group on port 3306 without opening that port publicly.</p>
+
+
+<p>screenshot: screenshot-security-group-rules.png | EC2 security group inbound rules table showing SSH, port 80, port 3000 from My IP, and port 3306 with itself as the source</p>
+
+
+
+<p>Create an IAM role so EC2 can authenticate to Amazon ECR without stored credentials.</p>
+
+<p>IAM console → Roles → Create role.</p>
+<p>Trusted entity type: AWS service. Use case: EC2.</p>
+<p>Attach the AmazonElasticContainerRegistryFullAccess managed policy.</p>
+<p>Name the role docker-lab-ecr-role and create it.</p>
+
+<div class="highlight-box">
+    <p>This role — not a username/password or a long-lived access key pair — is what will let your container host authenticate to Amazon ECR in Task 8. You'll attach it directly to that instance when you launch it in Task 3. This is the AWS-recommended pattern: EC2 instances get temporary, automatically-rotated credentials from an attached role instead of static keys stored on disk.</p>
+</div>
+
+<p>screenshot: screenshot-iam-role-created.png | IAM console showing the docker-lab-ecr-role summary with EC2 as the trusted entity and AmazonElasticContainerRegistryFullAccess attached</p>
+
+
+
+
+<div class="diagram-container">
+<img src="images/aws-docker-migration-lab8-1-account-setup.png" alt="Relationship between the IAM user, the IAM role/instance profile, the shared security group, and the three EC2 instances this lab provisions" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Relationship between the IAM user, the IAM role/instance profile, the shared security group, and the three EC2 instances this lab provisions</em></p>
+</div>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="task-2-launching-and-configuring-the-source-instances">Task 2: Launching and Configuring the Source Instances</h2></summary>
+<div class="section-content">
+
+<p>In a hosted version of this lab, <code>AppServerNode</code> and <code>MysqlServerNode</code> already exist and are already configured when you start. Here, you're building the fragile "before" state yourself — which is exactly what makes the later migration meaningful instead of abstract.</p>
+
+
+<p>Launch MysqlServerNode first (the app instance will need its address).</p>
+
+<p>EC2 console → Launch instance.</p>
+<p>Name: MysqlServerNode.</p>
+<p>AMI: Amazon Linux 2023.</p>
+<p>Instance type: t3.micro (Free Tier eligible).</p>
+<p>Key pair: docker-lab-key.</p>
+<p>Network settings → Select existing security group → docker-lab-sg.</p>
+<p>Leave storage at the default 8 GiB gp3 volume.</p>
+<p>Choose Launch instance, then wait for its status check to pass.</p>
+
+
+
+<p>Connect to MysqlServerNode.</p>
+
+<p>Copy its Public IPv4 address from the instance details.</p>
+<p>From your terminal: ssh -i ~/Downloads/docker-lab-key.pem ec2-user@&lt;MysqlServerNode-public-ip&gt;</p>
+<p>Or, from the EC2 console, select the instance → Connect → EC2 Instance Connect → Connect for a browser-based shell with no key needed.</p>
+
+
+
+<p>Install and configure MariaDB (MySQL-compatible) on MysqlServerNode.</p>
+<p>sudo dnf update -y</p>
+<p>sudo dnf install -y mariadb105-server</p>
+<p>sudo systemctl enable --now mariadb</p>
+<p>By default MariaDB only listens on <code>127.0.0.1</code>. Allow connections from other instances in the lab:</p>
+<p>sudo sed -i 's/^bind-address.*/bind-address=0.0.0.0/' /etc/my.cnf.d/mariadb-server.cnf</p>
+<p>sudo systemctl restart mariadb</p>
+
+
+<p>Create the database, seed a sample record, and create the app's database user.</p>
+<p>sudo mysql &lt;&lt;'SQL'</p>
+<p>CREATE DATABASE COFFEE;</p>
+<p>USE COFFEE;</p>
+<p>CREATE TABLE suppliers (</p>
+<p>id INT AUTO_INCREMENT PRIMARY KEY,</p>
+<p>name VARCHAR(100),</p>
+<p>address VARCHAR(200),</p>
+<p>city VARCHAR(100),</p>
+<p>state VARCHAR(50),</p>
+<p>email VARCHAR(100),</p>
+<p>phone VARCHAR(20)</p>
+<p>);</p>
+<p>INSERT INTO suppliers (name, address, city, state, email, phone)</p>
+<p>VALUES ('Nikki Wolf', '100 Main Street', 'Anytown', 'CA', 'nwolf@example.com', '4155551212');</p>
+<p>CREATE USER 'nodeapp'@'%' IDENTIFIED BY 'coffee';</p>
+<p>GRANT ALL PRIVILEGES ON COFFEE.* TO 'nodeapp'@'%';</p>
+<p>FLUSH PRIVILEGES;</p>
+<p>SQL</p>
+<div class="info-box">
+    <p>This recreates, by hand, the database state a hosted version of this lab would give you pre-loaded. `coffee` is used as the password here to match the rest of this lab's steps — in any account you keep past today, replace it with a real secret and see the Extended Task on security review below.</p>
+</div>
+
+
+<p>Note the instance's private IPv4 address (EC2 console → instance details → Private IPv4 address) — you'll use this, not the public IP, as <code>APP_DB_HOST</code> from here on, since AppServerNode and the container host both reach it over the VPC's internal network at no data-transfer cost.</p>
+
+<p>Launch AppServerNode. Repeat the launch steps above with Name AppServerNode, same AMI, instance type, key pair, and docker-lab-sg security group.</p>
+
+<p>Connect to AppServerNode the same way you connected to MysqlServerNode.</p>
+
+<p>Install Node.js, Git, and unzip, then download the lab's application source.</p>
+<p>sudo dnf update -y</p>
+<p>sudo dnf install -y nodejs git unzip</p>
+<p>node --version</p>
+<p>wget https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/CUR-TF-200-ACCDEV-2-91558/06-lab-containers/code.zip</p>
+<p>unzip code.zip</p>
+<p>sudo mv resources/codebase_partner /opt/codebase_partner</p>
+<p>cd /opt/codebase_partner</p>
+<p>sudo npm install</p>
+<div class="info-box">
+    <p>This archive is AWS Training's own publicly hosted lab content bucket, used across multiple self-paced AWS courses — it isn't tied to any particular hosted lab session. If it's ever unavailable, use a copy of `codebase_partner` you saved from a previous run, or rebuild the app's structure from the `config.js` snippet shown in Task 4 (a small Express app with a `/suppliers` route backed by the `COFFEE` database).</p>
+</div>
+
+
+<p>Run the app directly on the guest OS, listening on port 80.</p>
+<p>Open /opt/codebase_partner/app/config/config.js and confirm it reads <code>APP_DB_HOST</code>, <code>APP_DB_USER</code>, <code>APP_DB_PASSWORD</code>, and <code>APP_DB_NAME</code> from environment variables when present (see Task 4 for exactly how this fallback logic works). Then create a systemd service so the app survives reboots and keeps running after you disconnect:</p>
+<p>sudo tee /etc/systemd/system/coffee-app.service &gt; /dev/null &lt;&lt;'UNIT'</p>
+<p>[Unit]</p>
+<p>Description=Coffee Supplier Node App (direct guest-OS install)</p>
+<p>After=network.target</p>
+
+<p>[Service]</p>
+<p>Type=simple</p>
+<p>WorkingDirectory=/opt/codebase_partner</p>
+<p>Environment=PORT=80</p>
+<p>Environment=APP_DB_HOST=&lt;MysqlServerNode-private-ip&gt;</p>
+<p>Environment=APP_DB_USER=nodeapp</p>
+<p>Environment=APP_DB_PASSWORD=coffee</p>
+<p>Environment=APP_DB_NAME=COFFEE</p>
+<p>ExecStart=/usr/bin/npm start</p>
+<p>Restart=on-failure</p>
+<p>User=root</p>
+
+<p>[Install]</p>
+<p>WantedBy=multi-user.target</p>
+<p>UNIT</p>
+<p>sudo systemctl daemon-reload</p>
+<p>sudo systemctl enable --now coffee-app</p>
+<div class="info-box">
+    <p>Replace `&lt;MysqlServerNode-private-ip&gt;` with the address you noted earlier. Binding to port 80 is why this unit runs as `root` — a deliberate, temporary shortcut typical of a "fragile legacy install," and one more reason containerizing this app (which will run on an unprivileged port) is an improvement, not just a lateral move.</p>
+</div>
+
+
+<p>Verify locally, then from your browser.</p>
+<p>curl -I http://localhost</p>
+<p>Then open http://&lt;AppServerNode-public-ip&gt; in your browser — the coffee-suppliers website should load over plain HTTP (your browser's "not secure" warning is expected; there is no TLS certificate in this lab).</p>
+
+<p>screenshot: screenshot-appservernode-live.png | Browser showing the coffee-suppliers homepage loaded from AppServerNode's public IP address</p>
+
+
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="task-3-launching-your-container-host-and-preparing-the">Task 3: Launching Your Container Host and Preparing the Development Environment</h2></summary>
+<div class="section-content">
+
+
+<p>Launch the container host instance.</p>
+
+<p>EC2 console → Launch instance. Name: DockerHost.</p>
+<p>AMI: Amazon Linux 2023. Instance type: t3.micro (use t3.small if you plan to also run the Docker Compose bonus project, for a little more headroom).</p>
+<p>Key pair: docker-lab-key. Security group: docker-lab-sg.</p>
+<p>Expand Advanced details → IAM instance profile → select docker-lab-ecr-role. This is what replaces the LabIDE's pre-authenticated environment from a hosted version of this lab.</p>
+<p>Launch the instance.</p>
+
+
+<p>screenshot: screenshot-dockerhost-iam-role.png | EC2 launch wizard Advanced details panel showing docker-lab-ecr-role selected as the IAM instance profile</p>
+
+
+
+<p>Connect to DockerHost the same way you connected to the other two instances.</p>
+
+<p>Install Docker, Git, and unzip.</p>
+<p>sudo dnf update -y</p>
+<p>sudo dnf install -y docker git unzip</p>
+<p>sudo systemctl enable --now docker</p>
+<p>sudo usermod -aG docker ec2-user</p>
+<p>Log out and reconnect (or run newgrp docker) so your shell picks up the new group membership, then confirm Docker works without <code>sudo</code>:</p>
+<p>docker run hello-world</p>
+
+
+<p>Verify the AWS CLI and the attached IAM role.</p>
+<p>Amazon Linux 2023 ships with the AWS CLI v2 preinstalled:</p>
+<p>aws --version</p>
+<p>aws sts get-caller-identity</p>
+<p><span class="exam-highlight-sentence"><code>aws sts get-caller-identity</code> should show an assumed-role ARN for <code>docker-lab-ecr-role</code>, not an IAM user</span> — confirmation that DockerHost is authenticating through its attached role rather than any stored access key, exactly as intended in Task 1.</p>
+
+
+<p>Download a fresh copy of the application source to build the Docker image from, using the same public archive as before:</p>
+<p>wget https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/CUR-TF-200-ACCDEV-2-91558/06-lab-containers/code.zip</p>
+<p>unzip code.zip</p>
+<p>mkdir -p ~/containers/node_app</p>
+<p>mv resources/codebase_partner ~/containers/node_app/</p>
+
+
+
+<div class="info-box">
+    <p>DockerHost is your stand-in for the hosted VS Code IDE — a plain EC2 instance with Docker, Git, and the AWS CLI, reachable over SSH or EC2 Instance Connect. Every remaining Docker command in this lab runs here.</p>
+</div>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="task-4-analyzing-the-existing-application-infrastructure">Task 4: Analyzing the Existing Application Infrastructure</h2></summary>
+<div class="section-content">
+
+
+<p>In a browser, open http://&lt;AppServerNode-public-ip&gt; and choose List of suppliers to confirm the record you seeded in Task 2 is visible.</p>
+<p>Test full CRUD: choose Add a new supplier, fill in the fields, submit, then edit and save a change (for example, modify the phone number) to confirm writes are working against the live database.</p>
+<p>On DockerHost, open ~/containers/node_app/codebase_partner/app/config/config.js. The top of the file contains:</p>
+<p>let config = {</p>
+<p>APP_DB_HOST: "3.82.161.206",</p>
+<p>APP_DB_USER: "nodeapp",</p>
+<p>APP_DB_PASSWORD: "coffee",</p>
+<p>APP_DB_NAME: "COFFEE"</p>
+<p>}</p>
+<p>followed by logic that overrides each key with an environment variable of the same name, if one is set:</p>
+<p>Object.keys(config).forEach(key = {</p>
+<p>if (process.env[key] === undefined) {</p>
+<p>console.log(<code>[NOTICE] Value for key '${key}' not found in ENV, using default value.</code>)</p>
+<p>} else {</p>
+<p>config[key] = process.env[key]</p>
+<p>}</p>
+<p>});</p>
+<p><span class="exam-highlight-sentence">This fallback pattern is exactly why AppServerNode needed an explicit <code>APP_DB_HOST</code> environment variable in Task 2 — without one, it silently falls back to whatever placeholder IP is hardcoded in the file, which almost certainly isn't your MysqlServerNode.</span> You'll rely on this same behavior to configure the containerized version in Task 5.</p>
+
+<p>Note the app's key facts for later: it's an Express app, written in Node.js, and — as configured in Task 2 — it currently runs on port 80 when installed directly on a guest OS.</p>
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="task-5-migrating-the-application-to-a-docker-container">Task 5: Migrating the Application to a Docker Container</h2></summary>
+<div class="section-content">
+
+
+<p>On DockerHost, move into the application directory:</p>
+<p>cd ~/containers/node_app/codebase_partner</p>
+
+<p>Create a Dockerfile:</p>
+<p>FROM node:11-alpine</p>
+<p>RUN mkdir -p /usr/src/app</p>
+<p>WORKDIR /usr/src/app</p>
+<p>COPY . .</p>
+<p>RUN npm install</p>
+<p>EXPOSE 3000</p>
+<p>CMD ["npm", "run", "start"]</p>
+<p><span class="exam-highlight-sentence"><code>FROM</code> sets the base image, <code>WORKDIR</code> sets the in-container working directory, <code>COPY</code> brings in your source code, <code>RUN</code> executes a build-time command, <code>EXPOSE</code> documents the container's listening port, and <code>CMD</code> is the command that runs when the container starts.</span></p>
+
+<p>Build the image:</p>
+<p>docker build --tag node_app .</p>
+<p>Verify it exists with docker images.</p>
+
+<p>Run a container from the image:</p>
+<p>docker run -d --name node_app_1 -p 3000:3000 node_app</p>
+<p><span class="exam-highlight-sentence">The <code>-d</code> flag runs the container in the background (detached mode); <code>-p 3000:3000</code> publishes container port 3000 to the same port on the host.</span> Confirm it's serving traffic with curl http://localhost:3000.</p>
+
+<p>Browse to http://&lt;DockerHost-public-ip&gt;:3000 (port 3000 is already open in <code>docker-lab-sg</code> from Task 1) to confirm the containerized app loads.</p>
+<p>Choose List of suppliers in the containerized app — it fails, for the same reason AppServerNode failed in Task 2 before you set <code>APP_DB_HOST</code>: this container was launched with no environment variables at all, so it falls back to the hardcoded placeholder IP in <code>config.js</code>.</p>
+<p>Stop and remove the broken container, then relaunch it with the correct database host passed in as an environment variable — this time pointing at MysqlServerNode's private IP, not AppServerNode's:</p>
+<p>docker stop node_app_1 &amp;&amp; docker rm node_app_1</p>
+<p>docker run -d --name node_app_1 -p 3000:3000 -e APP_DB_HOST="&lt;MysqlServerNode-private-ip&gt;" node_app</p>
+<div class="highlight-box">
+    <p>This is the core lesson of the lab: never bake environment-specific values (IPs, hostnames, credentials) into an image. Pass them at runtime with `-e` so the same image works in every environment.</p>
+</div>
+<p>Refresh the app and confirm List of suppliers now works, reading live from MysqlServerNode's database.</p>
+
+<p>screenshot: screenshot-containerized-app-working.png | Browser showing http://&lt;DockerHost-public-ip:3000/suppliers with the seeded supplier record loaded from the containerized app</p>
+
+
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="task-6-migrating-the-mysql-database-to-a-docker-container">Task 6: Migrating the MySQL Database to a Docker Container</h2></summary>
+<div class="section-content">
+
+
+<p>Dump the current database contents from MysqlServerNode, run from DockerHost:</p>
+<p>mysqldump -P 3306 -h &lt;MysqlServerNode-private-ip&gt; -u nodeapp -p --databases COFFEE  ~/containers/my_sql.sql</p>
+<p>Enter the password coffee when prompted. Open my_sql.sql and make a small edit to the INSERT INTO line (for example, change a street name) — this becomes your marker for confirming, later, that the app is really talking to the new containerized database and not the original one on MysqlServerNode.</p>
+<p>Create a Dockerfile for the database in a new containers/mysql directory:</p>
+<p>mkdir -p ~/containers/mysql &amp;&amp; cd ~/containers/mysql</p>
+<p>mv ~/containers/my_sql.sql .</p>
+<p>FROM mysql:8.0.23</p>
+<p>COPY ./my_sql.sql /</p>
+<p>EXPOSE 3306</p>
+
+<p>Free up disk space, then build the image:</p>
+<p>docker rmi -f $(docker image ls -a -q) 2/dev/null</p>
+<p>docker image prune -f &amp;&amp; docker container prune -f</p>
+<p>docker build --tag mysql_server .</p>
+<div class="info-box">
+    <p>The first command intentionally removes every local image, including `node_app` — that's fine, you already pushed nothing yet and can rebuild it from the Dockerfile in Task 5 if you ever need to. It exists here purely to mirror the original lab's disk-space step; skip it if disk space isn't a concern on your instance size.</p>
+</div>
+
+<p>Run a container from the new MySQL image:</p>
+<p>docker run --name mysql_1 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=rootpw -d mysql_server</p>
+
+<p>Load the dumped data and create an app-facing database user:</p>
+<p>sed -i '1d' my_sql.sql</p>
+<p>docker exec -i mysql_1 mysql -u root -prootpw &lt; my_sql.sql</p>
+<p>docker exec -i mysql_1 mysql -u root -prootpw -e "CREATE USER 'nodeapp' IDENTIFIED WITH mysql_native_password BY 'coffee'; GRANT all privileges on *.* to 'nodeapp'@'%';"</p>
+
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="task-7-testing-the-mysql-container-with-the-node-application">Task 7: Testing the MySQL Container with the Node Application</h2></summary>
+<div class="section-content">
+
+
+<p>Stop and remove the app container so it can be relaunched pointing at the new database container:</p>
+<p>docker stop node_app_1 &amp;&amp; docker rm node_app_1</p>
+
+<p>Find the MySQL container's internal Docker network IP address:</p>
+<p>docker inspect mysql_1</p>
+<p>Look for the IPAddress field under NetworkSettings (or the bridge network entry).</p>
+
+<p>Launch the app container again, this time pointing APP_DB_HOST at the MySQL container's internal IP instead of any EC2 instance's IP:</p>
+<p>docker run -d --name node_app_1 -p 3000:3000 -e APP_DB_HOST=&lt;mysql-container-ip&gt; node_app</p>
+<div class="diagram-container">
+<img src="images/aws-docker-migration-lab8-1-container-network.png" alt="Both containers running on the Docker bridge network, node_app reaching mysql via its internal container IP instead of any EC2 instance" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Both containers running on the Docker bridge network, node_app reaching mysql via its internal container IP instead of any EC2 instance</em></p>
+</div>
+
+<p>Reload the app and choose List of suppliers. Seeing your edited street name confirms <code>node_app_1</code> is now reading from <code>mysql_1</code>, not from the original <code>MysqlServerNode</code> EC2 instance.</p>
+
+<p>screenshot: screenshot-app-connected-to-container-db.png | The Suppliers page displaying the record with the edited street name confirming the containerized database is now the data source</p>
+
+
+
+
+<div class="info-box">
+    <p>Leave both containers running for now — you'll use them again in several of the Extended Tasks below before moving on to Cleanup.</p>
+</div>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="task-8-adding-the-docker-images-to-amazon-ecr">Task 8: Adding the Docker Images to Amazon ECR</h2></summary>
+<div class="section-content">
+
+
+<p>Look up your AWS account ID from the console user-name menu, then authenticate the Docker client to Amazon ECR:</p>
+<p>aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin &lt;account-id&gt;.dkr.ecr.us-east-1.amazonaws.com</p>
+<p><span class="exam-highlight-sentence">This succeeds with no stored credentials on DockerHost at all — <code>aws ecr get-login-password</code> is served by the temporary credentials from the <code>docker-lab-ecr-role</code> instance profile you attached in Task 3.</span></p>
+
+<div class="error-box">
+    <p>Creating an Amazon ECR repository and pushing images to it is Free Tier eligible up to 500 MB-month of storage per repository; storage beyond that (and any pull data-transfer out of AWS) is billable in your account. This lab's images comfortably fit inside the free allowance, but remember Cleanup below if you don't intend to keep them.</p>
+</div>
+<p>Create the repository:</p>
+<p>aws ecr create-repository --repository-name node-app</p>
+
+<p>Tag the image with your registry ID so it points at your new repository:</p>
+<p>docker tag node_app:latest &lt;registry-id&gt;.dkr.ecr.us-east-1.amazonaws.com/node-app:latest</p>
+<p>Confirm with docker images.</p>
+
+<p>Push the image to Amazon ECR:</p>
+<p>docker push &lt;registry-id&gt;.dkr.ecr.us-east-1.amazonaws.com/node-app:latest</p>
+
+<p>Confirm the image landed in the repository:</p>
+<p>aws ecr list-images --repository-name node-app</p>
+
+<p>screenshot: screenshot-ecr-repository-image.png | Amazon ECR console showing the node-app repository with the pushed "latest" image tag and its digest</p>
+
+
+
+
+<div class="diagram-container">
+<img src="images/aws-docker-migration-lab8-1-ecr-push-flow.png" alt="docker login → docker tag → docker push flow, ending with the tagged image stored in the Amazon ECR repository" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>docker login → docker tag → docker push flow, ending with the tagged image stored in the Amazon ECR repository</em></p>
+</div>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="extended-task-inspect-the-docker-image">Extended Task: Inspect the Docker Image</h2></summary>
+<div class="section-content">
+
+<div class="info-box">
+    <p>The Extended Tasks below are independent of each other — do as many or as few as you'd like, in any order, using the containers and image you already built. None of them require new AWS resources.</p>
+</div>
+
+
+<p>Run docker history node_app and identify which instruction produced the largest layer.</p>
+<p>Why does Docker cache layers between builds, and which instruction in the node_app Dockerfile is most likely to invalidate that cache on every rebuild?</p>
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="extended-task-analyze-running-containers">Extended Task: Analyze Running Containers</h2></summary>
+<div class="section-content">
+
+
+<p>Run docker inspect node_app_1 and docker inspect mysql_1.</p>
+<p>For each container, find its internal IP address, its environment variables, its mounted volumes (if any), and its exposed ports.</p>
+<p>Explain in your own words what each of those sections tells you about how the container is configured.</p>
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="extended-task-view-and-interpret-logs">Extended Task: View and Interpret Logs</h2></summary>
+<div class="section-content">
+
+
+<p>Run docker logs node_app_1 and docker logs mysql_1.</p>
+<p>What does each log show at startup? Are there any warnings?</p>
+<p>How would these logs help you troubleshoot a production incident where the app is returning errors?</p>
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="extended-task-simulate-an-application-failure">Extended Task: Simulate an Application Failure</h2></summary>
+<div class="section-content">
+
+
+<p>Stop the MySQL container: docker stop mysql_1.</p>
+<p>Try accessing the app's List of suppliers page and record the exact error shown.</p>
+<p>Restart MySQL: docker start mysql_1, then verify the app recovers.</p>
+<p>Reflect: what does this failure mode tell you about the dependency between the two containers, and how might you make the app fail more gracefully?</p>
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="extended-task-compare-docker-base-images">Extended Task: Compare Docker Base Images</h2></summary>
+<div class="section-content">
+
+
+<p>Pull three variants of the Node base image: docker pull node:11-alpine, docker pull node:20-alpine, docker pull node:20.</p>
+<p>Run docker images and compare their sizes.</p>
+<p>Which would you choose for this app going forward, and why? What risk would you want to test for before switching <code>node_app</code>'s Dockerfile from <code>node:11-alpine</code> to a newer tag?</p>
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="extended-task-container-networking-investigation">Extended Task: Container Networking Investigation</h2></summary>
+<div class="section-content">
+
+
+<p>Run docker network ls and docker network inspect bridge.</p>
+<p>Which network are <code>node_app_1</code> and <code>mysql_1</code> using?</p>
+<p>Why do containers on this network receive private IP addresses instead of being directly reachable from outside the host?</p>
+<p>How does this compare to the <code>docker-lab-sg</code> security group you configured in Task 1, which controls traffic at the EC2 instance level rather than the container level?</p>
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="extended-task-security-review">Extended Task: Security Review</h2></summary>
+<div class="section-content">
+
+<p>Working entirely in your own account raises the stakes on this review — these are resources you're responsible for keeping secure.</p>
+
+
+<p>Identify every place in this lab where a credential was passed in plain text on the command line or stored in a plain-text file (<code>config.js</code>, <code>docker run -e</code>, the systemd unit, the <code>mysqldump</code>/<code>mysql</code> commands).</p>
+<p>Identify every port opened in <code>docker-lab-sg</code> and whether it's scoped as tightly as it could be.</p>
+<p>Propose, without implementing it, how you would replace the hardcoded <code>coffee</code> password with a secret retrieved at runtime from AWS Secrets Manager.</p>
+<p>The <code>coffee-app.service</code> systemd unit on AppServerNode runs the app as <code>root</code> so it can bind port 80. What's the containerized version's equivalent risk, if any — and why does <code>EXPOSE 3000</code> inside a container change that calculus?</p>
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="extended-task-amazon-ecr-digest-investigation">Extended Task: Amazon ECR Digest Investigation</h2></summary>
+<div class="section-content">
+
+
+<p>Run aws ecr describe-images --repository-name node-app and locate the <code>imageDigest</code> field.</p>
+<p>What is an image digest, and why is it immutable in a way a tag like <code>latest</code> isn't?</p>
+<p>How many image layers were uploaded when you pushed <code>node_app</code>?</p>
+<p>If you rebuilt and re-pushed <code>node_app:latest</code> right now with no code changes, would the digest change? Why or why not?</p>
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="extended-task-challenge-task-no-step-by-step-instructions">Extended Task: Challenge Task — No Step-by-Step Instructions</h2></summary>
+<div class="section-content">
+
+<p>Only the objective is given below. Work out the steps yourself using what you've already done in this lab.</p>
+
+<p>Deploy a second Node.js container on DockerHost, on a different host port (3001), using the same <code>node_app</code> image, ensuring it connects to the same <code>mysql_1</code> container as <code>node_app_1</code>.</p>
+
+<p>You'll need to figure out: a unique container name, the correct <code>-p</code> mapping, the correct <code>-e APP_DB_HOST</code> value, and how to verify both containers are independently reachable and both reading the same data.</p>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="cleanup">Cleanup</h2></summary>
+<div class="section-content">
+
+<div class="error-box">
+    <p>Every resource in this lab is running in your own AWS account and is billing in real time. Complete every step below even if you plan to keep experimenting later — you can always relaunch from these notes.</p>
+</div>
+
+
+<p>On DockerHost, stop and remove both running containers and any extras from the Extended Tasks:</p>
+<p>docker stop node_app_1 mysql_1</p>
+<p>docker rm node_app_1 mysql_1</p>
+
+<p>Remove local Docker images:</p>
+<p>docker rmi node_app mysql_server &lt;registry-id&gt;.dkr.ecr.us-east-1.amazonaws.com/node-app:latest 2/dev/null</p>
+
+<p>Delete the Amazon ECR repository and every image inside it:</p>
+<p>aws ecr delete-repository --repository-name node-app --force</p>
+
+<p>In the EC2 console, select all three instances (DockerHost, AppServerNode, MysqlServerNode) and choose Instance state → Terminate instance.</p>
+<p>Once all three instances show Terminated, delete the security group: EC2 console → Security Groups → select docker-lab-sg → Delete.</p>
+<p>Delete the key pair: EC2 console → Key Pairs → select docker-lab-key → Delete. Also delete the local <code>.pem</code> file from your machine.</p>
+<p>In the IAM console, delete the role docker-lab-ecr-role (this also removes its instance profile).</p>
+<p>If you created docker-lab-admin only for this lab, either delete the IAM user or, at minimum, deactivate any access keys and remove console access to avoid leaving standing credentials in your account.</p>
+<p>Double-check the EC2 console's Instances list shows nothing running, and the ECR console shows no repositories, before you close this lab out.</p>
+
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="overall-summary">Overall Summary</h2></summary>
+<div class="section-content">
+
+<div class="highlight-box">
+    <p><strong>Key Takeaways:</strong></p>
+    <ul>
+        <li>A Docker image is a read-only template built from a Dockerfile; a container is a running instance of that image</li>
+        <li>Containers share the host OS kernel, which is why they start in seconds and are far smaller than virtual machines</li>
+        <li>Provisioning your own IAM user, key pair, security group, and IAM role is the same groundwork any real AWS project needs before infrastructure work can even begin</li>
+        <li>An EC2 instance profile lets a container host authenticate to Amazon ECR with temporary, auto-rotated credentials instead of long-lived access keys</li>
+        <li>`docker build` reads a Dockerfile and produces an image; `docker run` launches a container from that image</li>
+        <li>Never hardcode environment-specific values like database hosts into an image — pass them at runtime with `-e` environment variables</li>
+        <li>`docker exec` and `docker inspect` let you look inside a running container's process and configuration state</li>
+        <li>Migrating a database to a container means dumping the data (`mysqldump`), baking it into a new image, and seeding a fresh container-based MySQL instance</li>
+        <li>Two containers on the same Docker bridge network can reach each other using their internal container IP addresses</li>
+        <li>An image tag (like `latest`) can move between images; an image digest is an immutable fingerprint of the exact image content</li>
+        <li>Cleanup is not optional in a personal AWS account — every EC2 instance, security group, and stored image keeps costing you (or keeps existing as a security surface) until you explicitly remove it</li>
+    </ul>
+</div>
+
+
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="glossary">📖 Glossary</h2></summary>
+<div class="section-content">
+<div id="glossaryContainer" data-glossary-source="json/glossary.json"></div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="interview-questions">🎤 Interview Questions</h2></summary>
+<div class="section-content">
+<p class="interview-intro">📚 Test your understanding with these questions.</p>
+<div class="interview-progress">
+    <p id="interviewProgress">Progress: 0/? (0%)</p>
+</div>
+<div class="flashcard-navigation">
+    <button onclick="previousInterviewQuestion()" class="nav-btn" id="prevInterviewBtn">&#8592; Previous</button>
+    <span id="interviewCounter" class="card-counter">1 / ?</span>
+    <button onclick="nextInterviewQuestion()" class="nav-btn" id="nextInterviewBtn">Next &#8594;</button>
+</div>
+<div class="flashcard-deck" id="interviewContainer" data-interview-source="json/interview.json"></div>
+<div class="quiz-reset-container">
+    <button onclick="resetInterviewProgress()" class="quiz-reset-btn">🔄 Reset Progress</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="multiple-choice-questions">📝 Multiple Choice Questions</h2></summary>
+<div class="section-content">
+<div class="quiz-header-info">
+    <p>Test your knowledge with immediate feedback.</p>
+</div>
+<div class="quiz-navigation">
+    <button onclick="previousQuestion()" class="quiz-nav-btn" id="prevBtn">&#8592; Previous</button>
+    <div class="quiz-info">
+        <span class="quiz-counter" id="quizCounter">Question 1 of ?</span>
+        <span class="quiz-score-display" id="quizScoreDisplay">Score: 0/0 (0%)</span>
+    </div>
+    <button onclick="nextQuestion()" class="quiz-nav-btn" id="nextBtn">Next &#8594;</button>
+</div>
+<div class="quiz-carousel-container" id="quizContainer" data-mcq-source="json/mcq.json"></div>
+<div class="quiz-summary-section">
+    <button onclick="showQuizSummary()" class="quiz-summary-btn">📊 View Summary</button>
+    <div class="quiz-reset-container">
+        <button onclick="resetEntireQuiz()" class="quiz-reset-btn">🔄 Reset Quiz</button>
+    </div>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="hands-on-projects">💼 Hands-On Projects</h2></summary>
+<div class="section-content">
+<details class="project-block" open>
+<summary><h3 class="project-title">Bonus Project 1: Convert This Lab to Docker Compose</h3></summary>
+<div class="project-content">
+<p class="project-objective"><strong>Objective:</strong> Replace the manual docker build / docker run / docker exec sequence used throughout this lab with a single docker-compose.yml that starts both containers together, on their own dedicated network, with one command.</p>
+<div class="project-meta"><span class="meta-time">⏱ 30-45 min</span> <span class="meta-cost">💰 Free tier eligible — uses the same DockerHost instance already running, no new billable resources</span> <span class="meta-prereqs">📋 Prerequisites: Completed Tasks 5-7 of this lab · Docker Compose plugin installed on DockerHost (verify with docker compose version; install with sudo dnf install -y docker-compose-plugin if missing)</span></div>
+<ol class="project-steps">
+<li>On DockerHost, in ~/containers, create a docker-compose.yml defining two services — node_app (build from ./node_app/codebase_partner) and mysql (build from ./mysql) — plus a shared user-defined network</li>
+<li>In the node_app service definition, set environment APP_DB_HOST to the mysql service&#x27;s name (e.g. APP_DB_HOST=mysql) instead of an IP address, relying on Compose&#x27;s built-in DNS resolution between services</li>
+<li>Stop and remove the containers created earlier in the lab (docker stop node_app_1 mysql_1 &amp;&amp; docker rm node_app_1 mysql_1) so ports 3000 and 3306 are free</li>
+<li>Run docker compose up -d and confirm both services start</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-compose-up.png</code> — Terminal output of `docker compose up -d` showing both the node_app and mysql services created and started</li>
+<li>Verify the app in the browser at http://&lt;DockerHost-public-ip:3000/suppliers, confirming the suppliers list still loads correctly using the Compose-managed containers</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-compose-app-working.png</code> — The Suppliers page loading correctly with containers now managed by Docker Compose</li>
+<li>Clean up by running docker compose down to stop and remove both services and the network in one command</li>
+</ol>
+</div>
+</details>
+
+<details class="project-block" open>
+<summary><h3 class="project-title">Bonus Project 2: Production-Readiness Prep for the Coffee Supplier Platform</h3></summary>
+<div class="project-content">
+<p class="project-objective"><strong>Objective:</strong> Sketch and partially implement the production path for this app — replacing the mysql container with Amazon RDS and moving credentials out of environment variables — without fully deploying a production system.</p>
+<div class="project-meta"><span class="meta-time">⏱ 60-90 min</span> <span class="meta-cost">💰 Amazon RDS db.t3.micro is Free Tier eligible for 12 months (750 hours/month); AWS Secrets Manager charges roughly $0.40/secret/month plus API call costs outside its own free tier — budget under $1 for the duration of this project if you complete Cleanup promptly</span> <span class="meta-prereqs">📋 Prerequisites: Completed Task 8 of this lab · Comfortable creating resources in the RDS and Secrets Manager consoles</span></div>
+<ol class="project-steps">
+<li>In the RDS console, launch a MySQL db.t3.micro instance in the same VPC as your lab instances, using a new DB subnet group and a security group that allows inbound 3306 only from docker-lab-sg</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-rds-instance-created.png</code> — RDS console showing the new MySQL instance in &quot;Available&quot; status with its endpoint visible</li>
+<li>From DockerHost, run the same mysqldump/import sequence from Task 6 against the RDS endpoint instead of mysql_1, seeding it with the COFFEE database</li>
+<li>In AWS Secrets Manager, store the database credentials (APP_DB_HOST, APP_DB_USER, APP_DB_PASSWORD, APP_DB_NAME) as a single JSON secret instead of passing them as docker run -e flags</li>
+<li>Update the IAM role attached to DockerHost to also allow secretsmanager:GetSecretValue for that specific secret</li>
+<li>Relaunch node_app_1 with a small startup script that retrieves the secret via the AWS CLI/SDK before starting the app, instead of hardcoded -e flags</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-app-using-secrets-manager.png</code> — The Suppliers page loading correctly with the app now sourcing its database credentials from Secrets Manager instead of docker run flags</li>
+<li><div class="error-box">
+    <p>This project provisions a billable RDS instance and a billable Secrets Manager secret. Delete the RDS instance (skip the final snapshot for a lab environment) and the secret in Cleanup below as soon as you&#x27;re done.</p>
+</div> Delete the RDS instance and the Secrets Manager secret to avoid ongoing charges</li>
+</ol>
+</div>
+</details>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="learning-checklist">☑️ Learning Checklist</h2></summary>
+<div class="section-content">
+<div class="checklist-progress">
+    <p>Progress: <span id="checklistProgress">0/0</span></p>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+    </div>
+</div>
+<div id="checklistContainer" data-checklist-source="json/checklist.json"></div>
+<div class="quiz-reset-container">
+    <button onclick="resetChecklist()" class="quiz-reset-btn">🔄 Reset Checklist</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="reflection-questions">🤔 Reflection Questions</h2></summary>
+<div class="section-content">
+<div class="question-block">
+<h4>1. Why did containerizing the app expose a configuration bug (the hardcoded database IP) that wasn&#x27;t obvious when the app ran directly on AppServerNode&#x27;s guest OS?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Think about what was implicitly providing the correct environment variable before, and what changed when the app moved into a container.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>2. If you deleted the mysql_1 container right now without having baked the mysqldump file into its image, what would happen to the supplier data — and how could you have prevented that?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Consider what a Docker volume or bind mount is for, versus data that only lives in a container&#x27;s writable layer.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>3. This lab used a container&#x27;s internal bridge-network IP address for the app-to-database connection. What could go wrong with that approach if the containers are restarted independently, and how does Docker Compose&#x27;s service-name DNS resolve it?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Internal container IPs aren&#x27;t guaranteed to stay fixed across a stop/start cycle.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>4. Why might a company choose Amazon RDS over a self-managed MySQL container for their production database, even after seeing how straightforward it was to containerize MySQL in this lab?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Think about backups, failover, patching, and durability — not just whether it&#x27;s technically possible to run MySQL in a container.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>5. What would need to change about this lab&#x27;s Dockerfiles and run commands to safely support running two app replicas on the same host at once?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Consider what happens when two containers both try to bind the same host port.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>6. Why does Amazon ECR authenticate with a short-lived token from aws ecr get-login-password rather than a long-lived username and password?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Think about the security trade-offs of credentials that expire quickly versus ones that don&#x27;t.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>7. The lab&#x27;s Dockerfile copies all source code before running npm install. How would reordering these steps change what gets rebuilt the next time only application code (not dependencies) changes?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Docker caches each instruction&#x27;s layer and only reruns instructions whose inputs changed.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>8. This lab attached AdministratorAccess to a lab-only IAM user for convenience. If you were setting this lab up for a team rather than yourself, what specific permissions would you scope the IAM user and the EC2 role down to instead?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>List the exact services this lab actually touches — EC2, IAM (to create/pass one role), and ECR — and think about which actions within each are genuinely needed versus merely convenient.</p>
+</div>
+</details>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="links-references">Links & References</h2></summary>
+<div class="section-content">
+<ul>
+    <li><a href="https://docs.docker.com/get-started/docker-overview/" target="_blank" rel="noopener">Docker Overview — Official Docker Documentation</a></li>
+    <li><a href="https://docs.docker.com/reference/dockerfile/" target="_blank" rel="noopener">Dockerfile Reference — Official Docker Documentation</a></li>
+    <li><a href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html" target="_blank" rel="noopener">Amazon Elastic Container Registry — Official AWS Documentation</a></li>
+    <li><a href="https://aws.amazon.com/ecr/pricing/" target="_blank" rel="noopener">Amazon ECR Pricing</a></li>
+    <li><a href="https://aws.amazon.com/ecr/faqs/" target="_blank" rel="noopener">Amazon ECR FAQs</a></li>
+    <li><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html" target="_blank" rel="noopener">IAM Roles for Amazon EC2 — Official AWS Documentation</a></li>
+    <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html" target="_blank" rel="noopener">Amazon EC2 Security Groups — Official AWS Documentation</a></li>
+    <li><a href="https://aws.amazon.com/free/" target="_blank" rel="noopener">AWS Free Tier</a></li>
+    <li><a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html" target="_blank" rel="noopener">AWS Well-Architected Framework — Reliability Pillar</a></li>
+    <li><a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html" target="_blank" rel="noopener">Amazon Elastic Container Service (ECS) — Official AWS Documentation</a></li>
+</ul>
+</div>
+</details>
+
+<div class="tags" aria-label="Topic tags">
+    <span class="tag">Docker</span>
+    <span class="tag">Containers</span>
+    <span class="tag">Amazon ECR</span>
+    <span class="tag">AWS Labs</span>
+</div>
+
+
+</div><!-- end note-content -->
+
+</div><!-- end note-container -->
+<div id="footerRoot" data-subject="aws"></div>
+
+<script>window.NoteReadTime = {"word_count": 6139, "read_time_minutes": 27};</script>
+<script src="../../../js/notes/notes-page-core.js" async="false"></script>
+
+</body>
+</html>

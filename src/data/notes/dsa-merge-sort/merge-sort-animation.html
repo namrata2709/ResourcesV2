@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merge Sort — Animation</title>
+<link rel="stylesheet" href="../../../css/notes/dsa/animation-core.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+<div class="anim-header">
+    <div class="anim-title">Merge Sort</div>
+    <div class="anim-subtitle">Interactive step-by-step animation</div>
+</div>
+
+<div class="input-panel">
+    <div class="input-group" data-box="array-number">
+    <label>Array (comma-separated numbers)</label>
+    <input type="text" id="inputArray" value="38,27,43,3,9,82,10" maxlength="80">
+</div>
+    <button class="run-btn" onclick="initAnimation()">Run</button>
+    <div class="input-error" id="inputError"></div>
+</div>
+
+<div class="step-label" id="stepLabel"><strong>Press Run</strong> to begin.</div>
+
+<div class="anim-canvas" id="animCanvas" data-renderer="array"></div>
+
+<div class="decision-banner" id="decisionBanner"></div>
+
+<div class="status-bar" id="statusBar"></div>
+
+<div class="controls">
+    <button class="ctrl-btn" id="btnPrev" onclick="goStep(-1)" disabled> &#9664; Prev</button>
+    <button class="ctrl-btn primary" id="btnPlayPause" onclick="togglePlay()"> &#9654; Play</button>
+    <button class="ctrl-btn" id="btnNext" onclick="goStep(1)" disabled>Next &#9654;</button>
+    <button class="ctrl-btn" onclick="initAnimation()">&#8635; Restart</button>
+    <div class="step-counter" id="stepCounter">Step 0 / 0</div>
+</div>
+
+<script src="../../../js/notes/dsa/animation/animation-core.js"></script>
+<script src="../../../js/notes/dsa/animation/renderer-array.js"></script>
+<script>
+// ── computeSteps() — topic specific, inlined since unique per topic ──
+function computeSteps(input) {
+    const arr = input.array.slice();
+    const steps = [];
+
+    steps.push({
+        active: [],
+        eliminated: [],
+        found: null,
+        pointers: {},
+        label: `Initial array — starting Merge Sort`,
+        decision: ""
+    });
+
+    // We'll simulate bottom-up merge sort to produce clean flat steps
+    const n = arr.length;
+    const sorted = arr.slice();
+
+    // Track the sorted state at each pass for display
+    // Use iterative bottom-up approach: merge sizes 1, 2, 4, ...
+    let size = 1;
+    while (size < n) {
+        for (let low = 0; low < n; low += size * 2) {
+            const mid = Math.min(low + size - 1, n - 1);
+            const high = Math.min(low + size * 2 - 1, n - 1);
+            if (mid >= high) continue;
+
+            // Merge sorted[low..mid] with sorted[mid+1..high]
+            const left = sorted.slice(low, mid + 1);
+            const right = sorted.slice(mid + 1, high + 1);
+            let i = 0, j = 0, k = low;
+
+            while (i < left.length && j < right.length) {
+                const activeIndices = [low + i, mid + 1 + j];
+                if (left[i] <= right[j]) {
+                    steps.push({
+                        active: activeIndices,
+                        eliminated: Array.from({length: low}, (_, x) => x)
+                            .concat(Array.from({length: n - 1 - high}, (_, x) => high + 1 + x)),
+                        found: null,
+                        pointers: { i: low + i, j: mid + 1 + j },
+                        label: `Merging run [${low}..${high}]: pick ${left[i]} from left`,
+                        decision: `${left[i]} ≤ ${right[j]} → take left[${i}]`
+                    });
+                    sorted[k++] = left[i++];
+                } else {
+                    steps.push({
+                        active: activeIndices,
+                        eliminated: Array.from({length: low}, (_, x) => x)
+                            .concat(Array.from({length: n - 1 - high}, (_, x) => high + 1 + x)),
+                        found: null,
+                        pointers: { i: low + i, j: mid + 1 + j },
+                        label: `Merging run [${low}..${high}]: pick ${right[j]} from right`,
+                        decision: `${left[i]} > ${right[j]} → take right[${j}]`
+                    });
+                    sorted[k++] = right[j++];
+                }
+            }
+            while (i < left.length) { sorted[k++] = left[i++]; }
+            while (j < right.length) { sorted[k++] = right[j++]; }
+        }
+        steps.push({
+            active: [],
+            eliminated: [],
+            found: null,
+            pointers: {},
+            label: `Pass complete — run size ${size} → ${size * 2}. Array: [${sorted.join(', ')}]`,
+            decision: `All runs of size ${size} merged into runs of size ${size * 2}`
+        });
+        size *= 2;
+    }
+
+    steps.push({
+        active: Array.from({length: n}, (_, i) => i),
+        eliminated: [],
+        found: 0,
+        pointers: {},
+        label: `Sort complete — [${sorted.join(', ')}]`,
+        decision: "All elements in sorted order"
+    });
+
+    return steps;
+}
+
+// ── boot ──
+window.addEventListener('load', initAnimation);
+window.addEventListener('resize', () => { if (typeof current !== 'undefined' && current >= 0) renderStep(current); });
+</script>
+</body>
+</html>

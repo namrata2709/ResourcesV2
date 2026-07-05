@@ -1,23 +1,37 @@
 /**
- * renderer-tree.js — Renders tree-shaped visualizations using SVG.
- * Covers 47 topics: Binary Tree, BST, AVL, Heap, Tries, Segment Tree,
- * DSU (forest), Game Trees, Treap, Splay Tree, B-Tree.
+ * =============================================================================
+ * File: renderer-tree.js
+ * Path: js/notes/dsa/renderer-tree.js
+ * Project: Learning Dashboard
  *
- * Builds a BST from input.treeValues (insert order). Layout computed
- * via standard recursive x-position-by-subtree-width algorithm.
+ * Description:
+ * SVG tree visualization renderer — covers 47 topics (Binary Tree, BST,
+ * AVL, Heap, Tries, Segment Tree, DSU as forest, Game Trees, Treap, Splay
+ * Tree, B-Tree). Two build paths, chosen automatically by shape of input:
+ *   1. input.treeStructure = {nodes: {id: {val,left,right}}, root: id} —
+ *      pre-built by the topic's computeSteps() for anything that isn't a
+ *      plain BST (Heap, Trie, Segment Tree, etc.). Used as-is, no insertion.
+ *   2. input.treeValues = [...] (no treeStructure) — legacy path, builds a
+ *      standard BST via insertBST(). Only correct for genuinely
+ *      BST-ordered topics.
+ * Layout (subtree-width x, depth-based y) runs identically either way.
+ * NOTE: as of 2026-07-03, only path 2 was previously implemented — every
+ * topic silently got BST-insert regardless of shape. Non-BST topics
+ * (Heap/Trie/Segment Tree/DSU/Treap/Splay/B-Tree) must be updated to emit
+ * treeStructure in their computeSteps() output, or they'll still fall
+ * through to path 2 and render an incorrect BST. Not yet verified against
+ * animate.py or any of those topics' actual computeSteps() — check next
+ * time one is uploaded.
+ * Defines buildVisual(input)/renderStep(step,idx) as globals, consumed by
+ * animation-core.js.
  *
- * Step schema:
- * {
- *   activeNode: id | null,           // node being examined (purple)
- *   visitedNodes: [id, ...],          // nodes already visited (blue)
- *   comparedNodes: [id, ...],         // amber outline
- *   foundNode: id | null,             // green
- *   path: [id, ...],                  // edges along this path highlighted
- *   label: "",
- *   decision: ""
- * }
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-07-03
  *
- * Exposes: buildVisual(input), renderStep(step, idx)
+ * Dependencies:
+ * - js/notes/dsa/animation-core.js (must load first)
+ * =============================================================================
  */
 
 let _treeNodes = {};  // id -> {val, left, right, x, y}
@@ -29,11 +43,20 @@ function buildVisual(input) {
     const canvas = document.getElementById("animCanvas");
     canvas.innerHTML = "";
 
-    const values = input.treeValues || [];
     _treeNodes = {};
     _treeRoot = null;
 
-    values.forEach(val => insertBST(val));
+    if (input.treeStructure && input.treeStructure.nodes && input.treeStructure.root) {
+        // Non-BST topics (Heap, Trie, Segment Tree, DSU, Treap, Splay, B-Tree, ...)
+        // supply their own node shape — used as-is, no BST insertion logic applied.
+        _treeNodes = input.treeStructure.nodes;
+        _treeRoot = input.treeStructure.root;
+    } else {
+        // Legacy path — only correct for genuinely BST-ordered topics.
+        const values = input.treeValues || [];
+        values.forEach(val => insertBST(val));
+    }
+
     computeLayout();
 
     const svgWidth  = Math.max(900, Object.keys(_treeNodes).length * 60);

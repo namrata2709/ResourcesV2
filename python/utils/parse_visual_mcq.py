@@ -37,6 +37,13 @@ def parse_visual_mcq_block(block: str, idx: int) -> dict | None:
     valid_types = {"fillblank", "trace", "output", "spotbug"}
     valid_diff  = {"beginner", "intermediate", "advanced", "expert"}
 
+    # Every real top-level field this block format supports. A line only
+    # ends the code capture if it starts with one of THESE — not any
+    # lowercase-word-then-colon pattern, since ordinary code lines like
+    # "else:", "except:", "finally:", "default:", or a dict "key:" line
+    # match that pattern too and would otherwise truncate the code sample.
+    FIELD_PREFIXES = ("q:", "o:", "c:", "e:", "d:", "img:", "type:")
+
     fields  = {}
     lines   = block.strip().splitlines()
     i       = 0
@@ -55,9 +62,9 @@ def parse_visual_mcq_block(block: str, idx: int) -> dict | None:
             i += 1
             continue
 
-        # End of code block — next single-char field key
+        # End of code block — only on an actual known field key
         if in_code:
-            if re.match(r'^[a-z]+:', line) and not line.startswith("code:"):
+            if line.startswith(FIELD_PREFIXES):
                 fields["code"] = "\n".join(code_lines).strip()
                 code_lines = []
                 in_code = False

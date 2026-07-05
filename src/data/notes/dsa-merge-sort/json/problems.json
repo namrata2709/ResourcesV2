@@ -1,0 +1,52 @@
+{
+  "problems": [
+    {
+      "id": 1,
+      "number": "912",
+      "title": "Sort an Array",
+      "url": "https://leetcode.com/problems/sort-an-array/",
+      "diff": "medium",
+      "pattern": "Direct Merge Sort implementation — baseline practice for the divide, recurse, merge structure"
+    },
+    {
+      "id": 2,
+      "number": "88",
+      "title": "Merge Sorted Array",
+      "url": "https://leetcode.com/problems/merge-sorted-array/",
+      "diff": "easy",
+      "pattern": "Pure merge step in-place — tests mastery of the two-pointer merge without the recursive framework"
+    },
+    {
+      "id": 3,
+      "number": "21",
+      "title": "Merge Two Sorted Lists",
+      "url": "https://leetcode.com/problems/merge-two-sorted-lists/",
+      "diff": "easy",
+      "pattern": "Merge step on linked lists — pointer rewiring instead of index copying, building block for #148"
+    },
+    {
+      "id": 4,
+      "number": "148",
+      "title": "Sort List",
+      "url": "https://leetcode.com/problems/sort-list/",
+      "diff": "medium",
+      "pattern": "Merge Sort on a linked list — slow-fast pointer to find midpoint, then recursive sort and merge"
+    },
+    {
+      "id": 5,
+      "number": "315",
+      "title": "Count of Smaller Numbers After Self",
+      "url": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/",
+      "diff": "hard",
+      "pattern": "Modified merge step counts cross-half inversions — tracking original indices through sort"
+    },
+    {
+      "id": 6,
+      "number": "493",
+      "title": "Reverse Pairs",
+      "url": "https://leetcode.com/problems/reverse-pairs/",
+      "diff": "hard",
+      "pattern": "Count inversions with a stricter condition (i < j and nums[i] > 2 * nums[j]) during the merge step"
+    }
+  ]
+}

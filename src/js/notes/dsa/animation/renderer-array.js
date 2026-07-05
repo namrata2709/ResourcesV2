@@ -1,24 +1,23 @@
 /**
- * renderer-array.js — Renders array-shaped visualizations.
- * Covers 56 topics: search, sort, sliding window, two pointers,
- * stack/queue/deque, linked list (linked mode), sieve, streaming.
+ * =============================================================================
+ * File: renderer-array.js
+ * Path: js/notes/dsa/animation/renderer-array.js
+ * Project: Learning Dashboard
  *
- * Step schema this renderer consumes:
- * {
- *   array: [...],                  // optional — only needed if array changes (sort)
- *   active: [i, ...],              // indices to highlight purple
- *   eliminated: [i, ...],          // indices to fade dark
- *   swapped: [i, j],               // optional — pair to highlight orange
- *   compared: [i, ...],            // optional — amber outline
- *   found: i | null,                // index to highlight green
- *   pointers: { low, high, mid, i, j },  // any subset, null = hidden
- *   label: "",
- *   decision: ""
- * }
+ * Description:
+ * Array-shaped visualization renderer — covers 56 topics (search, sort,
+ * sliding window, two pointers, stack/queue/deque, linked list in linked
+ * mode, sieve, streaming). Defines buildVisual(input)/renderStep(step,idx)
+ * as globals, consumed by animation-core.js.
  *
- * Exposes: buildVisual(input), renderStep(step, idx)
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - js/notes/dsa/animation-core.js (must load first; calls into this file)
+ * =============================================================================
  */
-
 let _arrValues = [];
 
 function buildVisual(input) {

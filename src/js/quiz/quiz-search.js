@@ -1,4 +1,23 @@
-// @ts-nocheck
+/**
+ * =============================================================================
+ * File: quiz-search.js
+ * Path: js/quiz/quiz-search.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * QuizEngine.prototype extensions for in-quiz search — text search across
+ * question/option content plus a status filter (all/unanswered/correct/
+ * incorrect/flagged), debounced 200ms. Requires quiz-engine.js loaded
+ * first (extends its prototype).
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - js/quiz/quiz-engine.js (must load first)
+ * =============================================================================
+ */
 !function () {
     'use strict';
 

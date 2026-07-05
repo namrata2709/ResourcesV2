@@ -1,0 +1,214 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What problem is OpenClaw designed to solve for on-call engineers?",
+      "answer": "It removes the multi-tab, multi-console ritual of manually checking CloudWatch, ECS, and EC2 during an incident by letting an engineer just ask a chat-based agent for status, getting back live data pulled directly from AWS APIs instead of guessed answers.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 2,
+      "question": "What is a Skill in OpenClaw, structurally?",
+      "answer": "A single folder containing one SKILL.md file plus any script(s) it invokes — there's no larger plugin framework involved, which keeps skills easy to write and review.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 3,
+      "question": "Why does the agent execute a real script instead of generating an answer directly from the LLM?",
+      "answer": "So the response reflects ground-truth, live infrastructure state pulled from the AWS SDK rather than the model's best guess, which avoids hallucinated infra status during an incident when accuracy matters most.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 4,
+      "question": "What are the two distinct agents inside OpenClaw, and why does that distinction matter operationally?",
+      "answer": "A config/setup agent and a main conversational agent. Skills only execute from the main agent, so users must explicitly switch context with \"talk to agent\" before any skill will trigger — forgetting this is the most common first-time mistake.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 5,
+      "question": "Why is the architecture described as running \"locally\"?",
+      "answer": "The agent, gateway, and skill scripts all run on the engineer's own machine; AWS is only contacted outward via SDK calls authenticated with short-lived, scoped credentials, so no inbound webhook or always-on cloud server is required.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 6,
+      "question": "Which three AWS SDK v3 client packages does the aws-health skill depend on?",
+      "answer": "@aws-sdk/client-ec2, @aws-sdk/client-ecs, and @aws-sdk/client-cloudwatch, each providing the typed client for its respective service's API calls.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 7,
+      "question": "Why is the script run with tsx instead of being compiled first?",
+      "answer": "tsx executes TypeScript directly at runtime, removing the need for a separate build/compile step before running — useful for a small skill script that doesn't warrant a full build pipeline.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 8,
+      "question": "Which EC2 API calls does the skill use, and what does each return?",
+      "answer": "DescribeInstances returns instance metadata and state; DescribeInstanceStatus returns system status checks that specifically detect hardware-level failures, separate from guest-OS checks.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 9,
+      "question": "What is the chain of ECS API calls the skill walks through to build its report?",
+      "answer": "ListClusters, then ListServices per cluster, then DescribeServices for running/desired counts, then ListTasks, then DescribeTasks for per-task detail including stop reasons.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 10,
+      "question": "How does the skill compute CPU utilization, and over what window?",
+      "answer": "It calls CloudWatch's GetMetricStatistics aggregated as a 15-minute average, which smooths out short spikes while still being responsive enough for an on-call decision.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 11,
+      "question": "What does ECS \"deployment rollout state\" tell an engineer that a simple running-count doesn't?",
+      "answer": "It tells you whether the deployment process itself succeeded, is still progressing, or failed — a service could show the correct running count yet still be mid-rollout, or have a previously failed deployment that's worth investigating.",
+      "difficulty": "medium",
+      "category": "complexity"
+    },
+    {
+      "id": 12,
+      "question": "Why does the skill surface the last 5 stopped tasks with stop reason instead of just the current running count?",
+      "answer": "A crash loop, where tasks repeatedly start and die, can look identical to a healthy service at any single snapshot in time — recent stop history with stop reasons is what actually reveals that pattern.",
+      "difficulty": "medium",
+      "category": "complexity"
+    },
+    {
+      "id": 13,
+      "question": "What is the entry point command format used in SKILL.md to invoke the script, and what does {baseDir} represent?",
+      "answer": "\"cd {baseDir} && npx tsx scripts/aws-health.ts\", where {baseDir} is a placeholder OpenClaw resolves at runtime to the skill's own folder path so the command works regardless of where the skill is installed.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 14,
+      "question": "How would you scope the health check to a single ECS cluster from the CLI?",
+      "answer": "By passing both flags together: \"npx tsx scripts/aws-health.ts --only ecs --cluster my-cluster-name\", which limits both the service domain and the specific cluster queried.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 15,
+      "question": "What environment variables does the skill require, and which one is optional?",
+      "answer": "AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION are required; AWS_SESSION_TOKEN is optional and only needed for temporary or assumed-role credentials.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 16,
+      "question": "What is the core IAM principle applied to this skill, and why is it non-negotiable for an AI agent specifically?",
+      "answer": "Least privilege, via a dedicated read-only IAM user — non-negotiable because an agent acting on natural-language input is a less predictable caller than a fixed script run by a human, so its blast radius has to be capped at the permission layer itself.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 17,
+      "question": "Why should the agent never run under AWS root credentials?",
+      "answer": "Root credentials have unrestricted account access; if the agent's behavior or its credentials were ever misused, root access would allow any action against any resource with no IAM boundary anywhere to stop it.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 18,
+      "question": "Name the API action categories included in the skill's IAM policy.",
+      "answer": "Only Describe*, List*, and Get* actions across EC2, ECS, and CloudWatch — there is no Create, Modify, Stop, Terminate, or Delete action anywhere in the policy.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 19,
+      "question": "What's the security trade-off of a shared, multi-user OpenClaw instance?",
+      "answer": "User isolation can break down if multiple users share the same OpenClaw instance and underlying file system, meaning one user's session or skill state can potentially be visible to or affect another's — a real concern when the agent has any access to sensitive infra.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 20,
+      "question": "How would you rotate credentials for the openclaw-bot IAM user without downtime?",
+      "answer": "(Situation) The current access key needs rotation for security hygiene. (Task) Avoid breaking the running agent. (Action) Create a second access key for the same user, since IAM allows up to two active keys, update openclaw.json with the new key, then restart the gateway and confirm the skill still runs. (Result) Once confirmed, deactivate and delete the old key with zero downtime in between.",
+      "difficulty": "hard",
+      "category": "application"
+    },
+    {
+      "id": 21,
+      "question": "If you wanted finer audit visibility into what the agent did during an incident, what AWS service would you add and why?",
+      "answer": "AWS CloudTrail, to log every API call made by the openclaw-bot IAM user, giving a verifiable, independent audit trail of exactly what was queried, separate from and more trustworthy than the agent's own chat transcript.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 22,
+      "question": "A teammate says the skill returned AccessDeniedException right after IAM setup. Walk through your diagnosis.",
+      "answer": "(Situation) AccessDeniedException immediately after setup. (Task) Find the missing permission without guessing. (Action) Confirm the custom policy was actually created and attached, not just created; confirm the access key belongs to the same user the policy is attached to; re-check the policy JSON includes every EC2/ECS/CloudWatch action the script calls. (Result) A typo or missing action in the policy is the most common root cause and is usually found in that order.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 23,
+      "question": "The skill reports region: undefined. What's the most likely cause and fix?",
+      "answer": "AWS_REGION wasn't exported in the shell session for local testing, or wasn't set under the skill's env block in openclaw.json for the agent — set it explicitly in whichever context is actually running, then re-run.",
+      "difficulty": "easy",
+      "category": "application"
+    },
+    {
+      "id": 24,
+      "question": "A user says \"the skill isn't triggering at all\" even though SKILL.md looks correct. What's the first thing you'd check?",
+      "answer": "Whether they're still inside the config/setup agent rather than the main conversational agent, since skills only run from the main agent — reachable by running \"talk to agent\" first.",
+      "difficulty": "easy",
+      "category": "application"
+    },
+    {
+      "id": 25,
+      "question": "How would you extend this skill to proactively alert instead of waiting for a user to ask?",
+      "answer": "Wire an SNS topic to the relevant CloudWatch alarms or ECS task-stopped events, build a small listener that pushes that event into the OpenClaw gateway as an inbound trigger, and have the agent format and send a WhatsApp message automatically — without any user-initiated query.",
+      "difficulty": "hard",
+      "category": "application"
+    },
+    {
+      "id": 26,
+      "question": "Why might ResourceNotFoundException be a false alarm rather than a real bug during a demo?",
+      "answer": "Because it's also returned simply when a cluster doesn't exist yet in that account/region, such as an empty demo environment — the same error as a config-time typo in the cluster name, so it has to be diagnosed against the actual AWS account state rather than assumed to be a code defect.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 27,
+      "question": "Why is using DescribeInstances/DescribeServices preferable to the AWS Health API for this specific use case?",
+      "answer": "The Health API only reports account- or service-level operational status; it cannot tell you whether one specific instance or one specific ECS service of yours is unhealthy, which is exactly the per-resource granularity this skill is built to provide.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 28,
+      "question": "What architectural property makes the agent structurally incapable of mutating infrastructure, independent of how the LLM itself behaves?",
+      "answer": "The underlying IAM policy contains no mutating actions at all, so the enforcement boundary sits at the AWS permission layer rather than relying on the agent's own judgment or prompt — even a misbehaving or compromised agent simply cannot call a write API it was never granted.",
+      "difficulty": "expert",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 29,
+      "question": "In a multi-region extension using AWS_REGIONS=ap-south-1,us-east-1, what change would the script require at minimum?",
+      "answer": "AWS SDK clients are region-scoped, so the script would need to instantiate one client per region listed and aggregate the results into a single combined report, rather than assuming a single global client.",
+      "difficulty": "expert",
+      "category": "implementation"
+    },
+    {
+      "id": 30,
+      "question": "You are rolling out the aws-health skill to a 15-person on-call team, each engineer on their own laptop. What architectural changes would you make compared to the single-engineer local setup, and why?",
+      "answer": "A per-laptop setup creates 15 copies of the same read-only IAM credentials spread across unmanaged machines, which is both operationally fragile and a credential hygiene risk. The right pattern is a single shared OpenClaw gateway on a small, hardened host — a t3.micro is more than enough for read-only polling. Each engineer still reaches it through their own WhatsApp or Slack account so sessions are isolated per user, and the gateway handles routing without them sharing a session. The IAM user remains the same read-only openclaw-bot identity, credentials live only on the shared host, and CloudTrail produces a single unified audit trail of all API calls regardless of which engineer triggered the query.",
+      "difficulty": "hard",
+      "category": "application"
+    }
+  ]
+}

@@ -1,9 +1,25 @@
 /**
- * notes-accessibility.js — All accessibility features
- * Exposes: window.announceToScreenReader
- * Depends on: DOM ready, #themeToggle injected by notes-page.js
- *             window.openPrintModal (notes-print.js) at key-press time
- * File: js/notes-accessibility.js
+ * =============================================================================
+ * File: notes-accessibility.js
+ * Path: js/notes/notes-accessibility.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * All accessibility features for note pages — keyboard-user detection,
+ * skip link, ARIA live region (window.announceToScreenReader), focus
+ * management for quiz answers and collapsible sections, full keyboard
+ * shortcuts (Alt+E/T/L/P/K, /, Escape) plus the shortcuts help panel, and
+ * ARIA landmark roles for quiz/checklist/glossary/interview sections.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - #themeToggle (injected by theme.js, must exist by init time)
+ * - window.openPrintModal (notes-print.js, resolved at key-press time)
+ * - window.toggleLiteMode (notes-page-core.js, resolved at key-press time)
+ * =============================================================================
  */
 
 (function () {
@@ -49,16 +65,87 @@
         const skipLink = document.createElement('a');
         skipLink.href = '#main-content';
         skipLink.className = 'skip-link';
-        skipLink.textContent = 'Skip to main content';
+        skipLink.innerHTML = '<span class="skip-link-icon" aria-hidden="true">⏭️</span><span>Skip to content</span>';
         skipLink.setAttribute('accesskey', '1');
 
         document.body.insertBefore(skipLink, document.body.firstChild);
 
         const noteContent = document.querySelector('.note-content');
-        if (noteContent && !noteContent.id) {
-            noteContent.id = 'main-content';
+        if (noteContent) {
             noteContent.setAttribute('role', 'main');
             noteContent.setAttribute('aria-label', 'Main content');
+        }
+
+        // Land on the first actual collapsible section (Overview, Quiz,
+        // whatever comes first in the page), not on .note-content itself —
+        // that wrapper starts with the table of contents, so the old
+        // behavior "skipped to main content" that was, in practice, still
+        // the TOC someone has to scroll past again.
+        const firstSection = document.querySelector('.note-content details.collapsible-section');
+        let targetId = 'main-content';
+
+        if (firstSection) {
+            if (!firstSection.id) firstSection.id = 'main-content';
+            targetId = firstSection.id;
+        } else if (noteContent && !noteContent.id) {
+            noteContent.id = 'main-content';
+        }
+        skipLink.href = `#${targetId}`;
+
+        skipLink.addEventListener('click', function (e) {
+            const target = document.getElementById(targetId);
+            if (!target) return; // fall through to native anchor behavior
+
+            e.preventDefault();
+
+            // If the target itself is a closed <details>, open it first —
+            // a plain anchor jump scrolls to a closed section without
+            // revealing its content, which defeats the point of "skip to
+            // content".
+            if (target.tagName === 'DETAILS' && !target.open) {
+                target.open = true;
+            }
+
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Move focus for screen reader / keyboard users, same as any
+            // proper skip link — not just a visual scroll.
+            const hadTabIndex = target.hasAttribute('tabindex');
+            if (!hadTabIndex) target.setAttribute('tabindex', '-1');
+            target.focus({ preventScroll: true });
+            if (!hadTabIndex) {
+                target.addEventListener('blur', function cleanup() {
+                    target.removeAttribute('tabindex');
+                    target.removeEventListener('blur', cleanup);
+                }, { once: true });
+            }
+        });
+
+        // Scroll-driven visibility: visible (top: 10px) while the person
+        // is still above the first collapsible section — i.e. exactly
+        // where a "skip to content" link is actually useful — and hidden
+        // (top: -100px) once they've scrolled into it, since at that point
+        // they're already past the point it would have skipped them to.
+        // :focus in the CSS still shows it on demand for keyboard users
+        // regardless of scroll position, as a fallback.
+        const skipLinkTarget = document.getElementById(targetId);
+        let tickingSkipLink = false;
+
+        function updateSkipLinkVisibility() {
+            tickingSkipLink = false;
+            if (!skipLinkTarget) return;
+            const aboveTarget = skipLinkTarget.getBoundingClientRect().top > 0;
+            skipLink.classList.toggle('visible', aboveTarget);
+        }
+
+        if (skipLinkTarget) {
+            window.addEventListener('scroll', function () {
+                if (tickingSkipLink) return;
+                tickingSkipLink = true;
+                requestAnimationFrame(updateSkipLinkVisibility);
+            }, { passive: true });
+            window.addEventListener('resize', updateSkipLinkVisibility);
+            updateSkipLinkVisibility(); // initial state on load
         }
 
         console.log('✅ Skip links added');
@@ -138,6 +225,7 @@
         const shortcuts = {
             'Alt+E': 'Toggle exam mode',
             'Alt+T': 'Toggle theme',
+            'Alt+L': 'Toggle Lite Mode',
             'Alt+P': 'Print page',
             'Alt+K': 'Show keyboard shortcuts',
             '/': 'Search (if available)',
@@ -167,6 +255,16 @@
                 if (themeToggle) {
                     themeToggle.click();
                     window.announceToScreenReader('Theme toggled');
+                }
+            }
+
+            // Alt+L: Toggle Lite Mode — reloads the page (notes-page-core.js
+            // handles the reload itself), so just announce before that happens.
+            if (e.altKey && e.key.toLowerCase() === 'l') {
+                e.preventDefault();
+                if (typeof window.toggleLiteMode === 'function') {
+                    window.announceToScreenReader('Toggling Lite Mode');
+                    window.toggleLiteMode();
                 }
             }
 
@@ -217,7 +315,8 @@
         const noteContainer = document.querySelector('.note-container');
         if (noteContainer) {
             noteContainer.setAttribute('role', 'article');
-            noteContainer.setAttribute('aria-label', 'AWS training notes');
+            const subjectLabel = document.body.dataset.subject === 'dsa' ? 'DSA' : 'AWS';
+            noteContainer.setAttribute('aria-label', `${subjectLabel} training notes`);
         }
 
         const footer = document.querySelector('.content-footer');
@@ -304,7 +403,8 @@
                 ],
                 'Study Modes': [
                     { key: 'Alt+E', desc: 'Toggle exam mode' },
-                    { key: 'Alt+T', desc: 'Toggle theme' }
+                    { key: 'Alt+T', desc: 'Toggle theme' },
+                    { key: 'Alt+L', desc: 'Toggle Lite Mode' }
                 ],
                 'Actions': [
                     { key: 'Alt+P', desc: 'Print page' },

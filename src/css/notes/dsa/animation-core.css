@@ -1,8 +1,33 @@
-/* ============================================
-   ANIMATION CORE STYLESHEET
-   Shared across all 171 animated DSA topics
-   File: css/animation-core.css
-   ============================================ */
+/*
+==============================================================================
+File: animation-core.css
+Path: css/notes/dsa/animation-core.css
+Project: Learning Dashboard
+
+Description:
+Shared visual chrome for all 171 animated DSA topic pages — header, input
+panel, step label, animation canvas, generic cell/pointer/node/edge
+primitives (array, grid, string, tree, graph renderers), decision banner,
+status bar, and playback controls.
+
+Sections:
+1. Header
+2. Input Panel
+3. Step Label
+4. Animation Canvas
+5. Generic Pointer
+6. Generic Cell
+7. Generic Node + Edge (SVG)
+8. Decision Banner
+9. Status Bar
+10. Controls
+11. Responsive
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-06-30
+==============================================================================
+*/
 
 * , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

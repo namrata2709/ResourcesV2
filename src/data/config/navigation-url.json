@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Home",
+    "emoji": "🏠",
+    "url": " "
+  },
+  {
+    "title": "Quizzes",
+    "emoji": "📝",
+    "url": "quiz-index.html"
+  },
+  {
+    "title": "Notes",
+    "emoji": "📓",
+    "url": "notes-index.html"
+  },
+  {
+    "title": "AWS",
+    "emoji": "☁️",
+    "url": "notes-index.html?subject=aws"
+  },
+  {
+    "title": "DSA",
+    "emoji": "🧩",
+    "url": "notes-index.html?subject=dsa"
+  },
+  {
+    "title": "Images Gallery",
+    "emoji": "🖼️",
+    "url": "gallery.html"
+  }
+]

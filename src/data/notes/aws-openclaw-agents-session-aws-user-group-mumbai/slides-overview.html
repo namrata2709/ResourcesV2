@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building Production-Ready Agents with OpenClaw on AWS - AWS Presentation</title>
+<meta name="description" content="Building Production-Ready Agents with OpenClaw on AWS — AWS presentation deck.">
+<meta name="keywords" content=", AWS, cloud">
+<link rel="stylesheet" href="../../../css/styles.css">
+<link rel="stylesheet" href="../../../css/notes/slides.css">
+<script src="../../../js/shared/site-config.js"></script>
+</head>
+<body data-subject="aws" data-mode="presentation" data-no-nav="true">
+
+<div id="pageLoader" class="page-loader">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Loading...</p>
+</div>
+
+<div id="slideProgress" class="slide-progress" role="progressbar" aria-label="Slide progress"></div>
+
+<header class="slide-chrome slide-chrome-top">
+  <button type="button" id="tocToggle" class="slide-chrome-btn" aria-label="Table of contents">&#9776;</button>
+  <span id="slideCounter" class="slide-counter">1 / 38</span>
+  <div class="slide-chrome-right">
+    <button type="button" id="notesToggle" class="slide-chrome-btn" aria-label="Toggle speaker notes">&#128221;</button>
+    <button type="button" id="fullscreenToggle" class="slide-chrome-btn" aria-label="Fullscreen">&#9974;</button>
+  </div>
+</header>
+
+<nav id="slideToc" class="slide-toc" hidden data-entries='[{"index": 3, "title": "Agents vs. Chatbots vs. Harnesses"}, {"index": 7, "title": "Core Architecture: Gateway, Agents, Skills, and Tools"}, {"index": 13, "title": "Deployment Options on AWS"}, {"index": 18, "title": "Multi-Tenancy and Isolation Models"}, {"index": 24, "title": "Security Model"}, {"index": 30, "title": "Pricing"}]'></nav>
+
+<aside id="notesPanel" class="notes-panel" hidden>
+  <div class="notes-panel-header">
+    <span>Speaker Notes</span>
+    <button type="button" id="notesPanelClose" class="notes-panel-close" aria-label="Close speaker notes">&times;</button>
+  </div>
+  <div id="notesPanelContent" class="notes-panel-content"></div>
+</aside>
+
+<main id="deck" class="slide-deck">
+<section class="slide" data-type="title" data-index="1">
+  <div class="slide-body">
+<h1>Production AI Agents on AWS: OpenClaw, Bedrock AgentCore &amp; Security Explained</h1>
+<p>AWS User Group Mumbai — with Anirudh Sharma</p>
+  </div>
+  <div class="slide-notes-content" hidden><p>[0:00–0:20]</p>
+<p>Quick question before we start: if you handed an AI agent your WhatsApp, would you trust it to run unattended for a week? By the end of this video you&#x27;ll know exactly what has to be true for the answer to be &quot;yes&quot; — on AWS, in production, with more than one user.</p></div>
+</section>
+<section class="slide" data-type="objectives" data-index="2">
+  <div class="slide-body">
+<h2>What You&#x27;ll Learn</h2>
+<ul><li>What makes an agent &quot;autonomous&quot; versus a chatbot or a harness</li><li>OpenClaw&#x27;s four-layer architecture: Gateway, Agents, Skills, Tools</li><li>Four AWS hosting options and their cost/isolation trade-offs</li><li>The multi-tenancy and security controls production deployments need</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[0:20–0:50]</p>
+<p>We&#x27;re covering four things: what actually counts as an autonomous agent, how OpenClaw is built under the hood, where to host it on AWS, and — this is the part most tutorials skip — how to keep it secure and safe for more than one user.</p></div>
+</section>
+<section class="slide" data-type="section-divider" data-index="3">
+  <div class="slide-body">
+<h2>Agents vs. Chatbots vs. Harnesses</h2>
+  </div>
+  <div class="slide-notes-content" hidden><p>[0:50–0:58]</p>
+<p>First, let&#x27;s get our vocabulary straight — because these three terms get used interchangeably, and that&#x27;s where a lot of confusion starts.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="4">
+  <div class="slide-body">
+<h2>Agents vs. Chatbots: what&#x27;s the real difference</h2>
+<ul><li>Chatbot — answers a question, then stops</li><li>Harness — has tools, but a human drives each step</li><li>Autonomous agent — given a goal, decides its own next action</li><li>OpenClaw is built for the third category</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[0:58–1:43]</p>
+<p>Think of it like hiring a personal assistant versus reading from a call-center script. The script only answers exactly what it&#x27;s asked, in order. A real assistant checks your calendar, books the table, and sends the follow-up email — without you asking for each step. A chatbot is the script. OpenClaw builds the assistant: an agent that decides what to do next, not just what to say.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="5">
+  <div class="slide-body">
+<h2>Key Features: three categories, one line each</h2>
+<ul><li>Chatbot: conversational Q&amp;A, nothing happens outside the chat window</li><li>Harness: tools available, but invoked deliberately, one task at a time — Claude Code in a terminal is the textbook example</li><li>Autonomous agent: handed a goal plus skills, tools, and a model, then keeps acting without a human re-prompting each step</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[1:43–2:23]</p>
+<p>The defining test is: who decides what happens next? For a chatbot and a harness, a human does — even if the harness has tools, a person is still triggering each one. For an autonomous agent, the model itself decides. That&#x27;s the line that matters architecturally.</p></div>
+</section>
+<section class="slide" data-type="example" data-index="6">
+  <div class="slide-body">
+<h2>Use Case: Why a Call Center Needed More Than a Chatbot</h2>
+<ul><li>A multinational customer wanted an agent as first point of contact</li><li>A plain chatbot could only handle simple FAQ questions</li><li>Production support needed real skills, a knowledge base, and escalation judgment</li><li>OpenClaw&#x27;s skill-and-tool model fit that need directly</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[2:23–2:58]</p>
+<p>A real example from the session: a multinational customer wanted an agent as the first point of contact for customer queries. A plain chatbot could handle simple FAQ questions, but production support needs real skills, a knowledge base to pull answers from, and the judgment to escalate to a human when it&#x27;s out of its depth. That&#x27;s exactly the skill-and-tool model OpenClaw is built around — not just a bigger chatbot.</p></div>
+</section>
+<section class="slide" data-type="section-divider" data-index="7">
+  <div class="slide-body">
+<h2>Core Architecture: Gateway, Agents, Skills, and Tools</h2>
+  </div>
+  <div class="slide-notes-content" hidden><p>[2:58–3:06]</p>
+<p>So how is OpenClaw actually put together? Four pieces, and they fit together like a car.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="8">
+  <div class="slide-body">
+<h2>The Four Layers: Dashboard, Driver, Checklist, Engine</h2>
+<ul><li>Gateway = the dashboard — every config action happens here</li><li>Agents = the drivers — persona and behavior live in SOUL.md</li><li>Skills = the checklist — SKILL.md defines when and how to act</li><li>Tools = the engine — the actual executable capability</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[3:06–3:51]</p>
+<p>Picture a car: the Gateway is the dashboard where you control everything. Agents are the drivers, each with their own personality defined in a file called SOUL.md. Skills are the checklist the driver follows — what to do and when. And Tools are the engine — the code that actually makes something happen. Skills tell the agent when to reach for a tool; the tool is what actually runs.</p></div>
+</section>
+<section class="slide" data-type="diagram" data-index="9">
+  <div class="slide-body">
+<h2>How the Four Layers Stack on a Swappable Model</h2>
+<div class="visual-placeholder" data-image-index="1" aria-hidden="true">Image goes here — see diagram-prompts.md #1</div>
+  </div>
+  <div class="slide-notes-content" hidden><p>[3:51–4:26]</p>
+<p>Here&#x27;s the stack visually — Gateway on top, then agents, then skills, then tools, all sitting on a foundation model. And that bottom layer is swappable: OpenClaw is explicitly model-agnostic, so that brain could be Claude, GPT, or something else entirely.</p>
+<p>🎬 Production: hold on the stacked diagram for the full narration, no cuts.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="10">
+  <div class="slide-body">
+<h2>Key Features of the Architecture</h2>
+<ul><li>Gateway: CLI or web console, issues an access token to authenticate clients</li><li>Agents: persona and boundaries defined per-agent in SOUL.md</li><li>Skills: describe when/how to act — no implementation code inside</li><li>Tools: the actual executable capability behind each skill</li><li>Foundation model: model-agnostic — Claude, GPT, or any other</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[4:26–5:11]</p>
+<p>A few specifics worth knowing: the Gateway issues an access token the first time you launch OpenClaw — that&#x27;s how any client authenticates to it. And skills are deliberately separate from tools: a SKILL.md file just describes the activity, like &quot;search the web when you don&#x27;t know an answer&quot; — the actual code lives in the tool underneath it.</p></div>
+</section>
+<section class="slide" data-type="example" data-index="11">
+  <div class="slide-body">
+<h2>Use Case: Setting an Agent&#x27;s Boundaries with SOUL.md</h2>
+<ul><li>Can set hard limits, e.g. &quot;reply in under 500 characters&quot;</li><li>Or restrict scope, e.g. &quot;never discuss topics outside customer support&quot;</li><li>Boundaries live in the persona file, not hardcoded into the model</li><li>Keeps an autonomous agent on-script while it still decides its own actions</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[5:11–5:46]</p>
+<p>A SOUL.md file can say something as concrete as &quot;reply in under 500 characters&quot; or &quot;never discuss topics outside customer support.&quot; That&#x27;s how you keep an agent on-script even though it&#x27;s making its own decisions — the boundary is written into its persona file, not hardcoded into the model.</p></div>
+</section>
+<section class="slide" data-type="mistakes" data-index="12">
+  <div class="slide-body">
+<h2>Common Mistakes: Skill Supply-Chain Risk</h2>
+<ul><li>Community-published skills can be imported into OpenClaw</li><li>Installing one you haven&#x27;t reviewed means trusting unaudited code</li><li>The underlying tool or its dependencies could be vulnerable</li><li>Treat every new skill like a new npm/pip package: review before installing</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[5:46–6:16]</p>
+<p>OpenClaw supports importing community-published skills — and installing one you haven&#x27;t reviewed means trusting code you haven&#x27;t audited. The skill&#x27;s underlying tool and its package dependencies could be vulnerable, or worse. Treat a new skill exactly like a new npm or pip package: review before you install.</p></div>
+</section>
+<section class="slide" data-type="section-divider" data-index="13">
+  <div class="slide-body">
+<h2>Deployment Options on AWS</h2>
+  </div>
+  <div class="slide-notes-content" hidden><p>[6:16–6:24]</p>
+<p>OpenClaw has to live somewhere besides your laptop — the moment your laptop sleeps, your WhatsApp bot goes offline. Let&#x27;s look at where to host it.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="14">
+  <div class="slide-body">
+<h2>Always-On vs. On-Demand: the core trade-off</h2>
+<ul><li>Lightsail, EC2, EKS — instance runs continuously, no cold start</li><li>Bedrock AgentCore — spins up per session, on demand</li><li>Always-on = pay for uptime, whether or not it&#x27;s used</li><li>On-demand = pay for active use, with a brief startup delay</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[6:24–7:09]</p>
+<p>It&#x27;s the same trade-off as owning a car you keep running in the driveway versus calling a cab only when you need a ride. Lightsail, EC2, and EKS are the car in the driveway — always ready, but you pay for every hour whether you&#x27;re using it or not. Bedrock AgentCore is the cab — nothing running until you need it, but that first call takes a few seconds to arrive.</p></div>
+</section>
+<section class="slide" data-type="diagram" data-index="15">
+  <div class="slide-body">
+<h2>Always-On Compute vs. Bedrock AgentCore, Side by Side</h2>
+<div class="visual-placeholder" data-image-index="1" aria-hidden="true">Image goes here — see diagram-prompts.md #1</div>
+  </div>
+  <div class="slide-notes-content" hidden><p>[7:09–7:44]</p>
+<p>This is the visual version of that trade-off — continuous billing on the left, intermittent, usage-based billing on the right. Keep this picture in mind, because it comes back when we talk about pricing later.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="16">
+  <div class="slide-body">
+<h2>Key Features: Four Ways to Host OpenClaw</h2>
+<ul><li>Lightsail: pre-built blueprint, running in minutes — best for fast POCs</li><li>EC2: full VM control, CloudFormation can bootstrap it at launch</li><li>EKS: runs as a long-lived pod for teams already on Kubernetes</li><li>Bedrock AgentCore: fully managed, serverless, built for production multi-tenancy</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[7:44–8:29]</p>
+<p>One more detail worth knowing if you go the EC2 route: Graviton-based instances — AWS&#x27;s ARM processors — were specifically recommended in the session, since they typically cost less per vCPU than comparable x86 instances for the same workload.</p></div>
+</section>
+<section class="slide" data-type="example" data-index="17">
+  <div class="slide-body">
+<h2>Use Case: Choosing Lightsail for a Fast, Cheap POC</h2>
+<ul><li>Goal: prove OpenClaw works before committing to bigger infrastructure</li><li>Lightsail&#x27;s blueprint gets you running in minutes</li><li>Fixed, predictable monthly cost</li><li>Delete the instance when done — billing stops immediately</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[8:29–9:04]</p>
+<p>Say your team just needs to prove OpenClaw works before committing to anything bigger. Lightsail&#x27;s blueprint gets you running in minutes at a fixed, predictable monthly cost. Test it, then delete the instance — billing stops immediately. That&#x27;s the whole appeal for a proof of concept: minimal setup, minimal commitment.</p></div>
+</section>
+<section class="slide" data-type="section-divider" data-index="18">
+  <div class="slide-body">
+<h2>Multi-Tenancy and Isolation Models</h2>
+  </div>
+  <div class="slide-notes-content" hidden><p>[9:04–9:12]</p>
+<p>Now for the question every team hits the moment there&#x27;s more than one user: how do you keep Customer A&#x27;s data from ever touching Customer B&#x27;s?</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="19">
+  <div class="slide-body">
+<h2>Pool, Silo, and Bridge: the three isolation patterns</h2>
+<ul><li>Pool — everyone shares the same resources</li><li>Silo — everyone gets fully dedicated resources</li><li>Bridge — a mix: shared where cost matters, isolated where safety matters</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[9:12–9:57]</p>
+<p>Think of an apartment building. Pool is one shared unit with everyone&#x27;s stuff mixed together — cheapest, but the least private. Silo is everyone owning a separate house — completely private, but expensive to build and maintain individually. Bridge is a shared lobby and shared utilities, but every unit has its own locked door. Most production systems land on bridge.</p></div>
+</section>
+<section class="slide" data-type="diagram" data-index="20">
+  <div class="slide-body">
+<h2>Pool, Silo, and Bridge Compared Against AgentCore</h2>
+<div class="visual-placeholder" data-image-index="1" aria-hidden="true">Image goes here — see diagram-prompts.md #1</div>
+  </div>
+  <div class="slide-notes-content" hidden><p>[9:57–10:32]</p>
+<p>Here&#x27;s all three side by side, plus how AgentCore&#x27;s per-session isolation fits in — it gives you silo-level isolation without you having to provision a separate stack for every single customer.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="21">
+  <div class="slide-body">
+<h2>Key Features: Isolation Trade-offs</h2>
+<ul><li>Pool: cheapest, weakest isolation — one bug can expose another user&#x27;s data</li><li>Silo: strongest isolation, but cost scales linearly with users</li><li>Bridge: shared infrastructure plus dedicated resources where it counts</li><li>OpenClaw&#x27;s own Gateway is designed for one user per instance</li><li>AgentCore Runtime isolates per session, not per long-lived instance</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[10:32–11:17]</p>
+<p>That fourth point is the one to remember: OpenClaw&#x27;s documentation is explicit that a single Gateway is built for one user. Add it to a shared WhatsApp group with channel sharing turned on, and every conversation can start flowing through the same session — users end up seeing each other&#x27;s messages.</p></div>
+</section>
+<section class="slide" data-type="example" data-index="22">
+  <div class="slide-body">
+<h2>Use Case: Architecting for 50 Enterprise Customers</h2>
+<ul><li>Pure pool: too risky for isolation at this scale</li><li>Pure silo: too expensive to manage per customer</li><li>Practical answer: bridge — shared front-end, dedicated session/memory/token per customer</li><li>Or let Bedrock AgentCore isolate each session at the platform level</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[11:17–11:57]</p>
+<p>If you&#x27;re designing a multi-tenant support system for fifty enterprise customers, a pure pool deployment is too risky and pure silo is too expensive to manage. The practical answer is bridge: a shared front-end for cost efficiency, but a dedicated session, memory store, and access token per customer — or better, let Bedrock AgentCore isolate each session at the platform level instead of provisioning fifty separate stacks yourself.</p></div>
+</section>
+<section class="slide" data-type="mistakes" data-index="23">
+  <div class="slide-body">
+<h2>Common Mistakes: Sharing and Scaling Don&#x27;t Fix Isolation</h2>
+<ul><li>Channel sharing in a group chat can route every user through the same session</li><li>An Auto Scaling Group in front of EC2 doesn&#x27;t solve multi-tenancy</li><li>Each new instance still needs its own Gateway, token, and routing</li><li>More instances ≠ isolation — it just adds management overhead</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[11:57–12:32]</p>
+<p>Two traps to watch for. One: enabling channel sharing in a group chat routes every user through the same session by default — the instructor demonstrated this happening on his own deployment. Two: bolting an Auto Scaling Group in front of multiple EC2 instances doesn&#x27;t solve multi-tenancy — each new instance still needs its own Gateway, its own token, its own routing. You&#x27;ve added management overhead without fixing the underlying problem.</p></div>
+</section>
+<section class="slide" data-type="section-divider" data-index="24">
+  <div class="slide-body">
+<h2>Security Model</h2>
+  </div>
+  <div class="slide-notes-content" hidden><p>[12:32–12:40]</p>
+<p>Security was the biggest theme of the whole session, so let&#x27;s go through it layer by layer.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="25">
+  <div class="slide-body">
+<h2>Seven Layers of Attack Surface</h2>
+<ul><li>Foundational model</li><li>Data</li><li>Agent framework</li><li>Service / tooling</li><li>Observability</li><li>Network</li><li>Credentials / insider access</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[12:40–13:25]</p>
+<p>Think of it like a castle with seven walls, not one. A single strong gate doesn&#x27;t protect you if the moat is dry somewhere else. Each of these seven layers — from the model itself down to who has insider credentials — needs its own control. Securing only the model and ignoring the network, or vice versa, leaves a gap an attacker will find.</p></div>
+</section>
+<section class="slide" data-type="diagram" data-index="26">
+  <div class="slide-body">
+<h2>The Seven Layers, Stacked with Their Controls</h2>
+<div class="visual-placeholder" data-image-index="1" aria-hidden="true">Image goes here — see diagram-prompts.md #1</div>
+  </div>
+  <div class="slide-notes-content" hidden><p>[13:25–14:00]</p>
+<p>Here&#x27;s each layer with the specific AWS control that maps to it — guardrails at the model layer, encryption and IAM at the data layer, Session Manager at the credentials layer, and so on. We&#x27;ll walk through the ones that matter most next.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="27">
+  <div class="slide-body">
+<h2>Key Features: The Controls That Matter Most</h2>
+<ul><li>AWS Session Manager replaces long-lived SSH keys — no open port 22, no leaked key</li><li>Private subnet plus a layer-7 control like CloudFront or WAF in front of anything public</li><li>Review every third-party skill before installing it</li><li>Bedrock Guardrails filter sensitive data crossing tool and model boundaries</li><li>Full audit logging of every tool call an agent makes</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[14:00–14:45]</p>
+<p>The SSH point is worth sitting on: an SSH key is a long-lived credential — commit it to a public repo by accident, and it&#x27;s usable until someone manually rotates it. Session Manager removes that risk entirely. It authenticates through your IAM identity via the AWS control plane, so an instance can sit in a fully private subnet with no internet gateway at all and still be reachable for management.</p></div>
+</section>
+<section class="slide" data-type="example" data-index="28">
+  <div class="slide-body">
+<h2>Use Case: Migrating Off a Leaked SSH Key</h2>
+<ul><li>A .pem file gets committed alongside application code and leaks</li><li>Rotating the key alone isn&#x27;t enough</li><li>Must also remove it from git history</li><li>Migrate the connection path to Session Manager going forward</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[14:45–15:20]</p>
+<p>Say a `.pem` file gets committed alongside application code and shows up in a public repo. The fix isn&#x27;t just rotating the key — it&#x27;s removing it from git history and migrating that connection path to Session Manager going forward, so there&#x27;s no long-lived credential left to leak again.</p></div>
+</section>
+<section class="slide" data-type="mistakes" data-index="29">
+  <div class="slide-body">
+<h2>Common Mistakes: Credentials and Access Scope</h2>
+<ul><li>A leaked SSH key sitting in a public repo</li><li>An agent integrated using someone&#x27;s personal OS account</li><li>That inherits every permission the personal account has</li><li>Fix: a scoped, dedicated identity with least-privilege access</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[15:20–15:55]</p>
+<p>Two recurring issues: a leaked SSH key sitting in a public repo, and an agent integrated using someone&#x27;s personal OS account — which means it inherits every permission that person has. The fix for the second one is a scoped, dedicated identity with least-privilege access, not a personal admin account. The agent&#x27;s blast radius is exactly as large as the identity it runs as.</p></div>
+</section>
+<section class="slide" data-type="section-divider" data-index="30">
+  <div class="slide-body">
+<h2>Pricing</h2>
+  </div>
+  <div class="slide-notes-content" hidden><p>[15:55–16:03]</p>
+<p>Last piece before we wrap up the architecture side: what does all this actually cost?</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="31">
+  <div class="slide-body">
+<h2>OpenClaw Is Free — You Pay for What It Runs On</h2>
+<ul><li>OpenClaw itself: free and open source</li><li>You&#x27;re billed for AWS infrastructure</li><li>Plus foundation model inference, if you&#x27;re calling a hosted model</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[16:03–16:38]</p>
+<p>OpenClaw doesn&#x27;t have a license fee — it&#x27;s open source. The bill you actually get is for the road it drives on: the AWS compute underneath it, and the model inference calls it makes along the way.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="32">
+  <div class="slide-body">
+<h2>Key Features: How Each Option Bills You</h2>
+<ul><li>Lightsail: fixed monthly rate, billed continuously regardless of usage</li><li>EC2 / EKS: on-demand, reserved, or spot pricing — scales with instance size and uptime</li><li>AgentCore Runtime: bills per vCPU-hour and GB-hour of active use only</li><li>AgentCore Gateway bills per tool call, Memory bills per stored/retrieved record</li><li>Model inference billed separately at standard Bedrock rates</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[16:38–17:18]</p>
+<p>This ties straight back to the always-on versus on-demand trade-off from earlier. Lightsail, EC2, and EKS charge for uptime, full stop — it doesn&#x27;t matter if the agent answered one message or a thousand. AgentCore only charges while it&#x27;s actively doing something; idle time waiting on a model or tool response isn&#x27;t billed.</p></div>
+</section>
+<section class="slide" data-type="example" data-index="33">
+  <div class="slide-body">
+<h2>Use Case: Avoiding the Idle-Session Bill Shock</h2>
+<ul><li>A session left open keeps billing until its timeout expires</li><li>Set an appropriate session timeout for AgentCore</li><li>Clean up unused agents and idle Lightsail/EC2 instances</li><li>Idle time is easy to forget and easy to overpay for</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[17:18–17:53]</p>
+<p>Idle session accumulation is a common AgentCore surprise — a session that isn&#x27;t explicitly closed can keep billing until its timeout expires. The fix is simple but easy to forget: set an appropriate session timeout, and clean up unused agents and Lightsail or EC2 instances you&#x27;re not actively using.</p></div>
+</section>
+<section class="slide" data-type="mistakes" data-index="34">
+  <div class="slide-body">
+<h2>Common Mistakes: Where Unexpected Charges Come From</h2>
+<ul><li>Idle AgentCore sessions that outlive their usefulness before timeout</li><li>Observability costs billed through CloudWatch, left unmonitored</li><li>Review usage regularly, not just when the invoice arrives</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[17:53–18:23]</p>
+<p>Two places bills creep up: idle AgentCore sessions that outlive their usefulness before hitting their timeout, and Observability costs — billed through CloudWatch — that go unmonitored. Review usage regularly, not just when the invoice arrives.</p></div>
+</section>
+<section class="slide" data-type="example" data-index="35">
+  <div class="slide-body">
+<h2>Let&#x27;s See It In Action</h2>
+  </div>
+  <div class="slide-notes-content" hidden><p>[18:23–18:43]</p>
+<p>Everything so far has been concepts. Coming up, we&#x27;ll walk through actually standing this up — launching OpenClaw from the Lightsail console, connecting to it securely with Session Manager, and calling an agent through Bedrock AgentCore with a few lines of Python.</p>
+<p>🎬 Production: this is a transition card only — cut to screen recording after this slide, no lab steps on the slide itself.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="36">
+  <div class="slide-body">
+<h2>Best Practices Before You Go to Production</h2>
+<ul><li>Connect via Session Manager, never SSH keys</li><li>Private subnet plus a layer-7 control in front of anything public</li><li>Never share a single Gateway across multiple users</li><li>Review every third-party skill before installing it</li><li>Wrap model traffic with Bedrock Guardrails and enable full audit logging</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[18:43–19:28]</p>
+<p>If you take five things away from this whole session, make it this list. Every one of them showed up as the root cause of a real problem earlier in this video — this slide is just the fix, collected in one place.</p></div>
+</section>
+<section class="slide" data-type="summary" data-index="37">
+  <div class="slide-body">
+<h2>Summary</h2>
+<ul><li>OpenClaw builds autonomous agents — systems that decide actions, not just chatbots or harnesses</li><li>Four-layer architecture: Gateway, Agents (SOUL.md), Skills (SKILL.md), Tools</li><li>AWS hosting spans always-on (Lightsail, EC2, EKS) to serverless (Bedrock AgentCore)</li><li>OpenClaw&#x27;s Gateway is built for one user per instance — sharing it is the biggest production risk</li><li>Three multi-tenancy patterns: pool, silo, and bridge</li><li>Session Manager replaces long-lived SSH keys for EC2 access</li><li>Security spans seven layers — every layer needs its own control</li><li>Cost model: always-on bills for uptime; AgentCore bills only for active use</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>[19:28–20:23]</p>
+<p>So, quick recap: an autonomous agent decides its own next move — that&#x27;s OpenClaw&#x27;s whole premise. It&#x27;s built from four layers sitting on a swappable model. Where you host it is a straight trade-off between always-on and on-demand. And none of that matters if you get multi-tenancy or security wrong — a single shared Gateway, a leaked SSH key, or an unreviewed skill can undo everything else you did right.</p></div>
+</section>
+<section class="slide" data-type="cta" data-index="38">
+  <div class="slide-body">
+<h2>Want the Full Written Breakdown?</h2>
+<p>[Link to the complete note — every diagram, glossary term, and interview question from this session]</p>
+  </div>
+  <div class="slide-notes-content" hidden><p>[20:23–20:43]</p>
+<p>If you want to go deeper — full glossary, every diagram, and a set of interview-style practice questions — the complete written note is linked below. If this helped, subscribe for the next AWS deep dive.</p></div>
+</section>
+</main>
+
+<footer class="slide-chrome slide-chrome-bottom">
+  <button type="button" id="prevSlide" class="slide-nav-btn" aria-label="Previous slide">&#8592;</button>
+  <button type="button" id="nextSlide" class="slide-nav-btn" aria-label="Next slide">&#8594;</button>
+</footer>
+
+<div id="footerRoot" data-subject="aws"></div>
+
+<script src="../../../js/notes/slides.js" async="false"></script>
+</body>
+</html>

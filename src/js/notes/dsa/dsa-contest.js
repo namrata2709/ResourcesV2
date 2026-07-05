@@ -1,6 +1,20 @@
 /**
- * dsa-contest.js — Loads contest.json, renders contest problems list.
- * File: js/notes/dsa/dsa-contest.js
+ * =============================================================================
+ * File: dsa-contest.js
+ * Path: js/notes/dsa/dsa-contest.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Loads contest.json and renders the contest-problems list
+ * (#contestContainer) — platform/title, difficulty badge, pattern, link.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - window.NotesSearch (notes-search.js, optional — rebuildIndex() call)
+ * =============================================================================
  */
 
 (function () {

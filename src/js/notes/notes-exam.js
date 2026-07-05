@@ -1,9 +1,24 @@
 /**
- * notes-exam.js — Exam highlight mode (complete-notes pages only)
- * Exposes: window.cycleExamMode, window.setExamMode,
- *          window.getExamHighlightStats, window.exportExamHighlights
- * Depends on: window.showNotification (notes-reader.js, resolved at click-time)
- * File: js/notes-exam.js
+ * =============================================================================
+ * File: notes-exam.js
+ * Path: js/notes/notes-exam.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Exam highlight mode for complete-notes pages only (skipped on overview
+ * pages). Cycles none → highlight → test via Alt+E or the floating menu,
+ * persists choice to localStorage. "Test" mode hides exam-highlight-term
+ * spans (reveal on hover); "highlight" mode shows both sentence and term
+ * highlights. Also supports exporting all highlights to a downloadable
+ * .txt file.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - window.showNotification (notes-reader.js, resolved at click-time)
+ * =============================================================================
  */
 
 (function () {

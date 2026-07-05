@@ -1,3 +1,25 @@
+<!--
+==============================================================================
+File: index.html
+Path: index.html
+Project: Learning Dashboard
+
+Description:
+Dashboard home page. Renders subject and module cards dynamically from
+data/index/dashboard-cards.json via js/dashboard.js — adding a new subject
+requires only a new JSON entry, no HTML changes.
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-06-30
+
+Dependencies:
+- css/styles.css
+- js/shared/site-config.js
+- js/dashboard.js
+- data/index/dashboard-cards.json (fetched at runtime by dashboard.js)
+==============================================================================
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -28,13 +50,11 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://namrata2709.github.io/Resources/">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
-
     <title>Free AWS & DSA Notes, Quizzes | Learning Dashboard</title>
     <link rel="stylesheet" href="css/styles.css">
+
+    <script src="js/shared/site-config.js"></script>
+
 
     <!-- Structured Data for Google Rich Results -->
     <script type="application/ld+json">
@@ -62,6 +82,14 @@
 </head>
 
 <body>
+    <noscript>
+        <style>#pageLoader { display: none; }</style>
+        <div class="noscript">
+            <h2>JavaScript Required</h2>
+            <p>This website relies on JavaScript for navigation and interactive learning features.</p>
+            <p>Please enable JavaScript.</p>
+        </div>
+    </noscript>
     <!-- Loading State -->
     <div id="pageLoader" class="page-loader">
         <div class="loader-spinner"></div>
@@ -105,12 +133,7 @@
     <!-- Shared meta tags (author, robots, og:site_name, twitter:card,
          theme-color, color-scheme) — identical on every page, injected
          from a single source of truth instead of duplicated in <head>. -->
-    <script src="js/shared/shared-meta.js"></script>
-    <script src="js/shared/theme.js"></script>
     <script src="js/dashboard.js"></script>
-    <script src="js/shared/footer.js"></script>
-    <script src="js/shared/analytics.js"></script>
-    <script src="js/shared/page-loader.js"></script>
 </body>
 
 </html>

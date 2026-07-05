@@ -1,8 +1,40 @@
-/* ============================================
-   NOTES PRINT STYLESHEET v1.0
-   Loaded only by the print window (executePrint)
-   File: css/notes-print.css
-   ============================================ */
+/*
+==============================================================================
+File: notes-print.css
+Path: css/notes/notes-print.css
+Project: Learning Dashboard
+
+Description:
+General-purpose print stylesheet for the custom print window (opened by
+executePrint in notes-print.js), used by every note type. Covers headers,
+typography, code blocks, tables, info boxes, exam highlights, quizzes,
+flashcards, checklists, glossary, interview questions, and footer — plus
+hides all interactive UI chrome (buttons, nav, search, theme toggle, etc.).
+
+Sections:
+1. Header
+2. Section Structure
+3. Typography
+4. Code
+5. Tables
+6. Info Boxes
+7. Images
+8. Exam Highlights
+9. Quiz
+10. Flashcards
+11. Checklist
+12. Glossary
+13. Interview Questions
+14. Links & Resources (third category — visible URLs for copy/paste)
+15. Footer
+16. Hide All UI Elements
+17. Page Setup
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-07-04
+==============================================================================
+*/
 
 * { box-sizing: border-box; }
 
@@ -463,6 +495,32 @@ img {
     padding: 0.5rem;
     border: 1pt solid #ddd;
     page-break-inside: avoid;
+}
+
+/* ============================================
+   LINKS & RESOURCES (third category) — LeetCode Problems, Contest
+   Problems, YouTube videos, and Links & References. A visual box on
+   paper distinguishes this from regular note content, and every link's
+   real, resolved URL is printed right after its text (data-print-url is
+   stamped by notes-print.js's stampPrintUrls() at print time — see
+   there for why it uses the resolved a.href rather than the raw href
+   attribute) so a reader can copy it into a browser by hand.
+   ============================================ */
+
+.print-section-links {
+    border: 1pt solid #999;
+    border-radius: 4pt;
+    padding: 0.5rem 0.75rem;
+    background: #fafafa;
+}
+
+.print-section-links a[href]::after {
+    content: " (" attr(data-print-url) ")";
+    font-size: 8pt;
+    font-weight: 400;
+    font-style: normal;
+    color: #333;
+    word-break: break-all;
 }
 
 /* ============================================

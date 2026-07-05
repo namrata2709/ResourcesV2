@@ -1,0 +1,96 @@
+{
+  "categories": [
+    {
+      "title": "📚 Concepts Mastered",
+      "items": [
+        {
+          "id": "c1",
+          "text": "Explain what OpenClaw is and what problem it solves for on-call engineers"
+        },
+        {
+          "id": "c2",
+          "text": "Describe the minimum structure of a Skill (folder + SKILL.md)"
+        },
+        {
+          "id": "c3",
+          "text": "Explain why the agent executes a real script instead of generating an answer from the LLM alone"
+        },
+        {
+          "id": "c4",
+          "text": "Understand the difference between OpenClaw's config agent and main agent"
+        },
+        {
+          "id": "c5",
+          "text": "Explain the six-stage architecture from WhatsApp message to AWS response"
+        }
+      ]
+    },
+    {
+      "title": "🛠️ Skills Acquired",
+      "items": [
+        {
+          "id": "c6",
+          "text": "List the three AWS SDK v3 client packages used by the aws-health skill"
+        },
+        {
+          "id": "c7",
+          "text": "Trace the ECS API call chain from ListClusters to DescribeTasks"
+        },
+        {
+          "id": "c8",
+          "text": "Read and interpret ECS deployment rollout state and stopped-task stop reasons"
+        },
+        {
+          "id": "c9",
+          "text": "Run the script locally with the correct environment variables before wiring it into OpenClaw"
+        },
+        {
+          "id": "c10",
+          "text": "Install and register a skill inside an OpenClaw instance and restart the gateway correctly"
+        }
+      ]
+    },
+    {
+      "title": "🎓 Exam Ready",
+      "items": [
+        {
+          "id": "c11",
+          "text": "Explain what EC2 system status checks detect versus instance status checks"
+        },
+        {
+          "id": "c12",
+          "text": "Distinguish the AWS Health API from per-resource Describe calls in scenario questions"
+        },
+        {
+          "id": "c13",
+          "text": "Recall the three ECS deployment rollout states: COMPLETED, IN_PROGRESS, FAILED"
+        },
+        {
+          "id": "c14",
+          "text": "Identify least-privilege IAM patterns as the correct answer over broader-access distractors"
+        }
+      ]
+    },
+    {
+      "title": "💼 Hands-On Done",
+      "items": [
+        {
+          "id": "c15",
+          "text": "Completed Project 1: Build and Deploy Your Own AWS Health Skill"
+        },
+        {
+          "id": "c16",
+          "text": "Completed Project 2: Harden the IAM Policy and Test Failure Modes"
+        },
+        {
+          "id": "c17",
+          "text": "Successfully triggered the skill end-to-end from WhatsApp"
+        },
+        {
+          "id": "c18",
+          "text": "Cleaned up the openclaw-bot access key after testing (no ongoing exposure)"
+        }
+      ]
+    }
+  ]
+}

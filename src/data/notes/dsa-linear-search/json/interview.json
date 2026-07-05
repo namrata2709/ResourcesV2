@@ -128,41 +128,48 @@
     },
     {
       "id": 19,
+      "question": "How does the number of comparisons in linear search change when the array contains duplicates?",
+      "answer": "The count of comparisons does not change — linear search still checks indices 0 through k, where k is the position of the first match, regardless of duplicates. Duplicates only affect which index is returned (always the leftmost). If you need the last occurrence, the scan always runs to completion in O(n). If you need all occurrences, the scan also runs to O(n). Duplicates never reduce the comparison count below the position of the first hit.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 20,
       "question": "How would you implement a type-generic linear search in a statically typed language?",
       "answer": "Use generics (Java/C++) or templates (C++) with an equality comparator or Comparable interface. In Java: `public static <T> int linearSearch(T[] arr, T target, Comparator<T> cmp)`, comparing via `cmp.compare(arr[i], target) == 0`. In C++: `template<typename T, typename Pred> int linearSearch(vector<T>& arr, Pred predicate)`. The predicate approach is the most flexible — it decouples the search from the equality definition, enabling searches like \"first element satisfying condition\" without changing the function signature.",
       "difficulty": "medium",
       "category": "implementation"
     },
     {
-      "id": 20,
+      "id": 21,
       "question": "What happens if the array has duplicate targets and you run linear search?",
       "answer": "Standard linear search returns the first (leftmost) occurrence and stops — duplicates at higher indices are never visited. To find all occurrences, remove the early return and collect all matching indices in O(n). To find the last occurrence, scan right to left or scan all and keep updating the answer. The choice depends on the problem specification. In interviews, always clarify: \"Should I return the first occurrence, last, or all?\" before coding.",
       "difficulty": "easy",
       "category": "implementation"
     },
     {
-      "id": 21,
+      "id": 22,
       "question": "How does linear search relate to the \"find peak element\" problem?",
       "answer": "A peak element is one greater than its neighbours. Naive linear scan — check every element for the peak condition — works in O(n) and is essentially linear search with a custom predicate. However, the sorted structure of the peak problem (the array rises then falls) allows binary search to find a peak in O(log n) by comparing mid to mid+1. Knowing that linear search is the brute-force baseline lets you recognize when problem structure enables something faster.",
       "difficulty": "hard",
       "category": "application"
     },
     {
-      "id": 22,
+      "id": 23,
       "question": "What is SIMD and how does it accelerate linear search?",
       "answer": "SIMD (Single Instruction, Multiple Data) lets a CPU compare 4, 8, or 16 array elements to the target simultaneously in a single instruction (e.g., SSE, AVX on x86). A SIMD linear search loads 8 integers at once, compares all 8 to the target in parallel, and checks the comparison mask in one step — effectively giving a constant-factor speedup of 4–16× over scalar loops while maintaining O(n) asymptotic complexity. Languages expose this via intrinsics (C/C++) or libraries (numpy's vectorized operations in Python).",
       "difficulty": "expert",
       "category": "implementation"
     },
     {
-      "id": 23,
+      "id": 24,
       "question": "In what situations should you still use linear search even if the data is sorted?",
       "answer": "When the searched range is tiny (under ~8 elements) — binary search's overhead of computing midpoints and branch prediction misses can exceed the cost of a simple scan. Standard library implementations (like `std::lower_bound` in C++) often switch to linear scan for small sub-ranges internally. Also when accessing sorted data over a network or from disk, where each read is expensive regardless, and the latency dominates over the comparison count.",
       "difficulty": "hard",
       "category": "tradeoffs"
     },
     {
-      "id": 24,
+      "id": 25,
       "question": "How would you verify the correctness of a linear search implementation?",
       "answer": "Test four categories: (1) element present at the start (best case), (2) element present at the end (worst case), (3) element present in the middle, (4) element absent (should return -1). Additionally test edge cases: empty array (should return -1 without crashing), single-element array with match, single-element array without match, duplicate elements (returns first occurrence), and all elements equal to target. These seven to nine test cases cover all boundary conditions.",
       "difficulty": "medium",

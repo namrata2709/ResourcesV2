@@ -1,1036 +1,675 @@
-/**
- * YouTube Video Slides Stylesheet
- * Professional presentation slides with animations
- * File: css/video-slides.css
- * Supports 3 themes: light, dark (default), comfort
- * Uses theme.js for theme switching
- */
+/*
+==============================================================================
+File: slides.css
+Path: css/notes/slides.css
+Project: Learning Dashboard
 
-/* ============================================
-   CSS VARIABLES - DARK THEME (DEFAULT)
-   ============================================ */
+Description:
+Presentation Mode deck stylesheet. Loaded only by slides.html pages
+(src/data/notes/aws-[topic]/slides.html), never by notes.html.
 
-:root,
-[data-theme="dark"] {
-    /* AWS Brand Colors */
-    --aws-orange: #FF9900;
-    --aws-dark: #232F3E;
-    --aws-blue: #146EB4;
-    --aws-light-blue: #00A8E1;
-    --aws-green: #3DD598;
-    
-    /* Presentation Colors - DARK THEME */
-    --bg-primary: #1a1d23;
-    --bg-secondary: #252932;
-    --text-primary: #ffffff;
-    --text-secondary: #e4e6eb;
-    --text-muted: #b0b3b8;
-    
-    /* Accent Colors */
-    --accent-warning: #FFB84D;
-    --accent-error: #FF6B6B;
-    --accent-success: #51CF66;
-    --accent-info: #4DABF7;
-    
-    /* Box Backgrounds (Dark Theme) */
-    --box-definition-bg: rgba(20, 110, 180, 0.15);
-    --box-analogy-bg: rgba(255, 184, 77, 0.15);
-    --box-exam-bg: rgba(81, 207, 102, 0.15);
-    --box-mistake-bg: rgba(255, 107, 107, 0.15);
-    --box-cta-bg: rgba(255, 153, 0, 0.2);
-    --box-cost-bg: rgba(255, 255, 255, 0.05);
-    
-    /* Slide Specific */
-    --slide-padding: 4rem;
-    --animation-speed: 0.6s;
-    --gradient-start: #232F3E;
-    --gradient-end: #146EB4;
+Deliberately does NOT touch notes.css and does NOT fork its own :root
+color palette — every color/shadow value below reads from the custom
+properties already defined once in css/styles.css (confirmed names:
+--bg-primary, --bg-secondary, --bg-card, --text-primary, --text-secondary,
+--text-muted, --border-color, --shadow, --accent, --accent-hover,
+--card-shadow, --highlight-bg, --highlight-border, --info, --success).
+Light/dark/comfort mode is automatic via [data-theme] on <html>, same as
+every other page — no theme logic lives in this file.
+
+The site-wide theme toggle (js/shared/theme.js) self-injects as a fixed
+circle at top:20px;right:20px on every page, including this one — slides.js
+does not reimplement it. .slide-chrome-top below reserves right-hand space
+so its own buttons don't sit under that circle.
+
+Author: Namrata Mulwani
+==============================================================================
+*/
+
+/* ---------------------------------------------------------------------- */
+/* Page shell                                                             */
+/* ---------------------------------------------------------------------- */
+
+body[data-mode="presentation"] {
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  height: 100vh;
+  width: 100vw;
 }
 
-/* ============================================
-   LIGHT THEME
-   ============================================ */
-
-[data-theme="light"] {
-    /* AWS Brand Colors (same) */
-    --aws-orange: #FF9900;
-    --aws-dark: #232F3E;
-    --aws-blue: #146EB4;
-    --aws-light-blue: #00A8E1;
-    --aws-green: #3DD598;
-    
-    /* Presentation Colors - LIGHT THEME */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f5f7fa;
-    --text-primary: #1a1d23;
-    --text-secondary: #4a5568;
-    --text-muted: #718096;
-    
-    /* Accent Colors (adjusted for light) */
-    --accent-warning: #ED8936;
-    --accent-error: #E53E3E;
-    --accent-success: #38A169;
-    --accent-info: #3182CE;
-    
-    /* Box Backgrounds (Light Theme) */
-    --box-definition-bg: #E6F2FF;
-    --box-analogy-bg: #FFF5E6;
-    --box-exam-bg: #E6F9E6;
-    --box-mistake-bg: #FFE6E6;
-    --box-cta-bg: #FFF3E0;
-    --box-cost-bg: #F7FAFC;
-    
-    /* Gradients for light theme */
-    --gradient-start: #E6F2FF;
-    --gradient-end: #FFF5E6;
+.slide-deck {
+  position: relative;
+  height: calc(100vh - 52px); /* leaves room for the top chrome bar */
+  width: 100%;
+  margin-right: 0;
+  overflow: hidden;
+  transition: margin-right 0.3s ease;
 }
 
-/* ============================================
-   COMFORT (EYE COMFORT) THEME
-   ============================================ */
-
-[data-theme="comfort"] {
-    /* AWS Brand Colors (warmer tones) */
-    --aws-orange: #D97706;
-    --aws-dark: #3E2723;
-    --aws-blue: #5B8A94;
-    --aws-light-blue: #6FA8B8;
-    --aws-green: #6B8E4E;
-    
-    /* Presentation Colors - COMFORT THEME */
-    --bg-primary: #F5F1E8;
-    --bg-secondary: #E8E3D8;
-    --text-primary: #3D3525;
-    --text-secondary: #5A5340;
-    --text-muted: #8A7F6B;
-    
-    /* Accent Colors (warm, easy on eyes) */
-    --accent-warning: #C8944D;
-    --accent-error: #B85C4E;
-    --accent-success: #6B8E4E;
-    --accent-info: #6B8E9E;
-    
-    /* Box Backgrounds (Comfort Theme) */
-    --box-definition-bg: #E3F2F7;
-    --box-analogy-bg: #FFF8E1;
-    --box-exam-bg: #E8F5E3;
-    --box-mistake-bg: #FFEAE8;
-    --box-cta-bg: #FFE082;
-    --box-cost-bg: #F5F5F0;
-    
-    /* Gradients for comfort theme */
-    --gradient-start: #F5F1E8;
-    --gradient-end: #E8E3D8;
+/* When the speaker-notes drawer is open, the deck (and chrome bars) shrink
+   to make room for it — same pattern as Claude's artifact panel: content
+   reflows beside the panel instead of the panel floating on top of it. */
+body.notes-open .slide-deck {
+  margin-right: 340px;
 }
 
-/* ============================================
-   GLOBAL RESET
-   ============================================ */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* ============================================
-   SLIDE CONTAINER
-   ============================================ */
-
-.slide-container {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    overflow: hidden;
-}
-
-/* ============================================
-   INDIVIDUAL SLIDES
-   ============================================ */
+/* ---------------------------------------------------------------------- */
+/* Slides                                                                  */
+/* ---------------------------------------------------------------------- */
 
 .slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 64px;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
 }
 
 .slide.active {
-    opacity: 1;
-    visibility: visible;
-    z-index: 10;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
 }
 
-.slide-content {
-    width: 90%;
-    max-width: 1200px;
-    height: 90%;
-    padding: var(--slide-padding);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.slide-body {
+  max-width: 900px;
+  width: 100%;
 }
 
-/* ============================================
-   TITLE SLIDE
-   ============================================ */
-
-.title-slide {
-    text-align: center;
-    align-items: center;
+/* Speaker notes are stored per-slide but never rendered in place — they
+   only ever appear in the global #notesPanel (see below), copied in by
+   slides.js. This keeps every slide's own layout identical whether or
+   not it has notes, same as how notes don't reshape a slide in Google
+   Slides or PowerPoint. */
+.slide-notes-content {
+  display: none;
 }
 
-.title-slide h1 {
-    font-size: 4rem;
-    font-weight: 800;
-    color: var(--aws-orange);
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+.slide-body h1 {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  color: var(--accent);
+  margin: 0 0 0.4em;
+  text-align: center;
 }
 
-.title-slide h2 {
-    font-size: 2rem;
-    font-weight: 400;
-    color: var(--text-secondary);
-    margin-bottom: 3rem;
+.slide-body h2 {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  color: var(--text-primary);
+  margin: 0 0 0.6em;
 }
 
-.title-slide .presenter {
-    font-size: 1.5rem;
-    color: var(--text-muted);
-    font-weight: 300;
+.slide-body p {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0 0 0.6em;
 }
 
-/* ============================================
-   SLIDE TITLES
-   ============================================ */
-
-.slide-title {
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--aws-orange);
-    margin-bottom: 2rem;
-    border-bottom: 4px solid var(--aws-orange);
-    padding-bottom: 1rem;
+.slide-body ul {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  padding-left: 1.4em;
+  margin: 0;
 }
 
-/* ============================================
-   CONTENT BOXES
-   ============================================ */
-
-.definition-box,
-.analogy-box,
-.exam-tip,
-.mistake-box,
-.cta-box {
-    padding: 2rem;
-    border-radius: 12px;
-    margin: 1.5rem 0;
-    border-left: 6px solid;
+.slide-body ul li {
+  margin-bottom: 0.35em;
 }
 
-.definition-box {
-    background: var(--box-definition-bg);
-    border-left-color: var(--aws-blue);
+/* Slide type variants */
+
+.slide[data-type="title"] .slide-body,
+.slide[data-type="section-divider"] .slide-body,
+.slide[data-type="summary"] .slide-body {
+  text-align: center;
 }
 
-.analogy-box {
-    background: var(--box-analogy-bg);
-    border-left-color: var(--accent-warning);
+.slide[data-type="section-divider"] {
+  background: var(--bg-secondary);
 }
 
-.exam-tip {
-    background: var(--box-exam-bg);
-    border-left-color: var(--accent-success);
-    font-size: 1.3rem;
+.slide[data-type="section-divider"] h2 {
+  font-size: clamp(2rem, 4.5vw, 2.8rem);
+  color: var(--accent);
 }
 
-.mistake-box {
-    background: var(--box-mistake-bg);
-    border-left-color: var(--accent-error);
-    margin-bottom: 2rem;
+.slide[data-type="diagram"] .visual-placeholder,
+.visual-placeholder {
+  margin-top: 20px;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
-.mistake-box h3 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    color: var(--accent-error);
+.visual-placeholder img {
+  max-width: 100%;
+  border-radius: 8px;
 }
 
-.mistake-box .solution {
-    margin-top: 1rem;
-    color: var(--accent-success);
-    font-weight: 600;
+.visual-caption {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-style: normal;
+  color: var(--text-secondary);
 }
 
-.cta-box {
-    background: var(--box-cta-bg);
-    border-left-color: var(--aws-orange);
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: 600;
+/* ---------------------------------------------------------------------- */
+/* Comparison (type="comparison") — 2-3 side-by-side columns              */
+/* ---------------------------------------------------------------------- */
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  text-align: left;
+  width: 100%;
 }
 
-/* ============================================
-   BULLET LISTS
-   ============================================ */
-
-.bullet-list {
-    list-style: none;
-    padding: 0;
+.comparison-column {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px 22px;
 }
 
-.bullet-list li {
-    font-size: 1.8rem;
-    margin: 1.5rem 0;
-    padding-left: 3rem;
-    position: relative;
-    line-height: 1.6;
-    color: var(--text-primary);
+.comparison-title {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  color: var(--accent);
 }
 
-.bullet-list li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.5rem;
-    width: 1.5rem;
-    height: 1.5rem;
-    background: var(--aws-orange);
-    border-radius: 50%;
+.comparison-column ul {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
-/* ============================================
-   IMAGE SLIDES
-   ============================================ */
+/* ---------------------------------------------------------------------- */
+/* Stat callouts (type="stat") — one or more big-number cards             */
+/* ---------------------------------------------------------------------- */
 
-.image-slide {
-    align-items: center;
-    text-align: center;
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
 }
 
-.image-slide img {
-    max-width: 90%;
-    max-height: 65vh;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    margin: 2rem auto;
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 160px;
 }
 
-.image-slide .caption {
-    font-size: 1.3rem;
-    color: var(--text-muted);
-    margin-top: 1.5rem;
-    font-style: italic;
+.stat-value {
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
 }
 
-/* ============================================
-   DEMO SLIDE
-   ============================================ */
-
-.demo-slide {
-    background: linear-gradient(135deg, var(--aws-dark) 0%, var(--aws-blue) 100%);
-    text-align: center;
-    align-items: center;
+.stat-label {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 220px;
 }
 
-.demo-slide h2 {
-    font-size: 4rem;
-    color: var(--aws-orange);
+/* ---------------------------------------------------------------------- */
+/* Icon grid (type="icon-grid") — icon + short label, repeatable          */
+/* ---------------------------------------------------------------------- */
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 24px;
+  width: 100%;
 }
 
-.demo-slide p {
-    font-size: 2rem;
-    color: var(--text-secondary);
-    margin-top: 2rem;
+.icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 8px;
 }
 
-/* Light theme specific demo slide */
-[data-theme="light"] .demo-slide {
-    background: linear-gradient(135deg, #E6F2FF 0%, #FFF5E6 100%);
+.icon-item-glyph {
+  font-size: 2.4rem;
+  line-height: 1;
 }
 
-[data-theme="light"] .demo-slide p {
-    color: var(--text-primary);
+.icon-item-label {
+  font-size: 1rem;
+  color: var(--text-primary);
+  text-align: center;
 }
 
-/* Comfort theme specific demo slide */
-[data-theme="comfort"] .demo-slide {
-    background: linear-gradient(135deg, #E3F2F7 0%, #FFF8E1 100%);
+/* ---------------------------------------------------------------------- */
+/* Code slide (type="code")                                               */
+/* ---------------------------------------------------------------------- */
+
+.slide-code {
+  width: 100%;
+  text-align: left;
+  background: var(--bg-code, var(--bg-secondary));
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 24px 28px;
+  overflow-x: auto;
+  margin-top: 16px;
 }
 
-/* ============================================
-   EXAM SLIDE
-   ============================================ */
-
-.exam-slide {
-    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--accent-success) 20%);
+.slide-code code {
+  font-family: Monaco, 'Courier New', monospace;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: none;
+  padding: 0;
+  border: none;
 }
 
-[data-theme="dark"] .exam-slide {
-    background: linear-gradient(135deg, #1a1d23 0%, #2d5016 100%);
+/* ---------------------------------------------------------------------- */
+/* Engage cards (think / scenario / poll / predict / pause)               */
+/* ---------------------------------------------------------------------- */
+
+.engage-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--info, var(--accent));
+  border-radius: 8px;
+  padding: 28px 32px;
+  box-shadow: var(--card-shadow);
 }
 
-[data-theme="light"] .exam-slide {
-    background: linear-gradient(135deg, #E6F9E6 0%, #C6F6D5 100%);
+.engage-label {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--info, var(--accent));
+  margin-bottom: 10px;
 }
 
-[data-theme="comfort"] .exam-slide {
-    background: linear-gradient(135deg, #E8F5E3 0%, #D4E5C7 100%);
+.engage-card[data-kind="poll"] .engage-label,
+.engage-card[data-kind="predict"] .engage-label {
+  color: var(--accent);
 }
 
-/* ============================================
-   CTA SLIDE
-   ============================================ */
-
-.cta-slide {
-    background: linear-gradient(135deg, var(--aws-dark) 0%, var(--aws-orange) 100%);
-    text-align: center;
-    align-items: center;
+.engage-card[data-kind="pause"] .engage-label {
+  color: var(--success, var(--accent));
 }
 
-.cta-slide h2 {
-    font-size: 4rem;
-    margin-bottom: 3rem;
-    color: var(--text-primary);
+.engage-question {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--text-primary);
 }
 
-/* Light theme CTA */
-[data-theme="light"] .cta-slide {
-    background: linear-gradient(135deg, #FFF5E6 0%, var(--aws-orange) 100%);
+.engage-options {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-[data-theme="light"] .cta-slide h2 {
-    color: var(--aws-dark);
+.engage-option-btn {
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 1rem;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-/* Comfort theme CTA */
-[data-theme="comfort"] .cta-slide {
-    background: linear-gradient(135deg, #FFF8E1 0%, var(--aws-orange) 100%);
+.engage-option-btn:hover {
+  border-color: var(--accent);
 }
 
-/* ============================================
-   ANIMATIONS
-   ============================================ */
-
-.animate-item {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity var(--animation-speed) ease, 
-                transform var(--animation-speed) ease;
+.engage-option-btn.selected {
+  border-color: var(--accent);
+  background: var(--highlight-bg);
 }
 
-.animate-item.visible {
-    opacity: 1;
-    transform: translateY(0);
+.engage-reveal-btn {
+  padding: 8px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-/* Stagger animations */
-.animate-item[data-order="1"] { transition-delay: 0s; }
-.animate-item[data-order="2"] { transition-delay: 0.2s; }
-.animate-item[data-order="3"] { transition-delay: 0.4s; }
-.animate-item[data-order="4"] { transition-delay: 0.6s; }
-.animate-item[data-order="5"] { transition-delay: 0.8s; }
-.animate-item[data-order="6"] { transition-delay: 1s; }
+.engage-reveal-btn:hover {
+  background: var(--accent-hover);
+}
 
-/* ============================================
-   SLIDE COUNTER
-   ============================================ */
+.engage-reveal {
+  margin-top: 14px;
+  padding: 12px 16px;
+  background: var(--bg-primary);
+  border-left: 3px solid var(--success, var(--accent));
+  border-radius: 4px;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.engage-reveal[hidden] {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Chrome — progress bar, header/footer controls, TOC                     */
+/* ---------------------------------------------------------------------- */
+
+.slide-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+  z-index: 50;
+}
+
+.slide-chrome {
+  position: fixed;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  height: 48px;
+  z-index: 40;
+  background: var(--bg-primary);
+  transition: right 0.3s ease;
+}
+
+body.notes-open .slide-chrome {
+  right: 340px;
+}
+
+.slide-chrome-top {
+  top: 4px; /* sits below the progress bar */
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  /* Reserve space on the right so buttons don't sit under the site-wide
+     fixed theme-toggle circle (top:20px; right:20px; 50px diameter). */
+  padding-right: 90px;
+}
+
+.slide-chrome-bottom {
+  bottom: 0;
+  justify-content: center;
+  gap: 24px;
+  border-top: 1px solid var(--border-color);
+}
+
+.slide-chrome-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slide-chrome-btn,
+.slide-nav-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.slide-chrome-btn:hover,
+.slide-nav-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
 
 .slide-counter {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: rgba(255, 153, 0, 0.9);
-    color: var(--bg-primary);
-    padding: 0.75rem 1.5rem;
-    border-radius: 50px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
 }
 
-[data-theme="light"] .slide-counter {
-    background: var(--aws-orange);
-    color: white;
+.slide-toc {
+  position: fixed;
+  top: 52px;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-color);
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 45;
+  box-shadow: var(--card-shadow);
 }
 
-/* ============================================
-   CONTROLS HINT
-   ============================================ */
+.slide-toc[hidden] {
+  display: none;
+}
 
-.controls-hint {
-    position: fixed;
-    bottom: 2rem;
-    left: 2rem;
-    background: rgba(35, 47, 62, 0.9);
-    color: var(--text-secondary);
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+.slide-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.slide-toc li button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 10px 8px;
+  font-size: 1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.slide-toc li button:hover {
+  background: var(--bg-secondary);
+  color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Speaker notes panel — hideable, right-side drawer (Google Slides /     */
+/* PowerPoint presenter-notes pattern). Content is swapped in by          */
+/* slides.js from the active slide's hidden .slide-notes-content block    */
+/* every time you navigate, whether the panel is open or closed.         */
+/* ---------------------------------------------------------------------- */
+
+.notes-panel {
+  position: fixed;
+  top: 52px;
+  right: 0;
+  bottom: 0;
+  width: 340px;
+  background: var(--bg-primary);
+  border-left: 1px solid var(--border-color);
+  z-index: 45;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  /* Open/closed state is driven entirely by the .is-open class (added by
+     slides.js), not the [hidden] attribute — a site-wide [hidden] rule
+     elsewhere can silently block display:none/block toggling, but a
+     transform+visibility class here can't be shadowed the same way. */
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.3s ease, visibility 0.3s ease;
+}
+
+.notes-panel.is-open {
+  transform: translateX(0) !important;
+  visibility: visible !important;
+}
+
+.notes-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.notes-panel-close {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.notes-panel-close:hover {
+  color: var(--accent);
+}
+
+.notes-panel-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.notes-panel-content p {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  margin: 0 0 0.7em;
+}
+
+.notes-panel-content ul {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  padding-left: 1.2em;
+  margin: 0 0 0.7em;
+}
+
+.notes-panel-content .notes-empty {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Fullscreen mode                                                        */
+/* ---------------------------------------------------------------------- */
+
+body[data-mode="presentation"]:fullscreen .slide-chrome-top,
+body[data-mode="presentation"]:fullscreen .slide-progress {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+body[data-mode="presentation"]:fullscreen:hover .slide-chrome-top,
+body[data-mode="presentation"]:fullscreen:hover .slide-progress {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Responsive                                                             */
+/* ---------------------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  .slide {
+    padding: 32px 24px;
+  }
+
+  .slide-toc {
+    width: 100%;
+  }
+
+  .notes-panel {
+    width: 100%;
+  }
+
+  body.notes-open .slide-deck,
+  body.notes-open .slide-chrome {
+    margin-right: 0;
+    right: 0;
+  }
+
+  .slide-body ul,
+  .slide-body p {
     font-size: 1rem;
-    z-index: 1000;
-    border: 1px solid var(--aws-orange);
-}
+  }
 
-[data-theme="light"] .controls-hint {
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--text-primary);
-    border: 2px solid var(--aws-orange);
-}
+  .slide-chrome-top {
+    padding-right: 20px; /* theme toggle shrinks/relocates on small screens per styles.css responsive rules */
+  }
 
-[data-theme="comfort"] .controls-hint {
-    background: rgba(245, 241, 232, 0.95);
-    color: var(--text-primary);
-}
+  .slide-inner.has-notes {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 
-.controls-hint kbd {
-    background: var(--aws-orange);
-    color: white;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-weight: 700;
-    margin: 0 0.25rem;
-}
-
-[data-theme="light"] .controls-hint kbd {
-    color: white;
-}
-
-/* ============================================
-   SPLIT LAYOUT (CODE + OUTPUT)
-   ============================================ */
-
-.split-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    height: 100%;
-}
-
-.split-left,
-.split-right {
-    background: var(--box-cost-bg);
-    padding: 2rem;
-    border-radius: 12px;
-    overflow: auto;
-}
-
-.split-left h3,
-.split-right h3 {
-    color: var(--aws-orange);
-    margin-bottom: 1rem;
-    font-size: 1.8rem;
-}
-
-/* Code block in slides */
-pre {
-    background: var(--bg-secondary);
-    padding: 1.5rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    font-size: 1.1rem;
-    line-height: 1.6;
-}
-
-code {
-    font-family: 'Consolas', 'Monaco', monospace;
-    color: var(--text-primary);
-}
-
-[data-theme="dark"] pre {
-    background: #1e1e1e;
-}
-
-[data-theme="dark"] code {
-    color: #d4d4d4;
-}
-
-/* ============================================
-   COMPARISON TABLE
-   ============================================ */
-
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 2rem 0;
-}
-
-.comparison-table th {
-    background: var(--aws-orange);
-    color: white;
-    padding: 1rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.comparison-table td {
-    padding: 1rem;
-    border: 2px solid var(--aws-orange);
-    font-size: 1.3rem;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-}
-
-.comparison-table tr:nth-child(even) td {
-    background: var(--bg-secondary);
-}
-
-/* ============================================
-   PROGRESS INDICATOR
-   ============================================ */
-
-.progress-bar-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: var(--bg-secondary);
-    z-index: 1001;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: var(--aws-orange);
-    transition: width 0.3s ease;
-}
-
-/* ============================================
-   SPECIAL EFFECTS
-   ============================================ */
-
-/* Highlight effect for key terms */
-.highlight {
-    background: linear-gradient(120deg, var(--aws-orange) 0%, var(--aws-orange) 100%);
-    background-repeat: no-repeat;
-    background-size: 100% 40%;
-    background-position: 0 90%;
-    padding: 0 0.25rem;
-}
-
-/* Emphasis box */
-.emphasis-box {
-    background: var(--aws-orange);
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    font-size: 2rem;
-    font-weight: 700;
-    text-align: center;
-    margin: 2rem 0;
-    box-shadow: 0 8px 24px rgba(255, 153, 0, 0.3);
-}
-
-/* Icon bullets */
-.icon-list {
-    list-style: none;
-    padding: 0;
-}
-
-.icon-list li {
-    font-size: 1.6rem;
-    margin: 1.5rem 0;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    color: var(--text-primary);
-}
-
-.icon-list li::before {
-    font-size: 2rem;
-}
-
-/* ============================================
-   ADDITIONAL CONTENT BOXES FOR SLIDES
-   ============================================ */
-
-/* Cost Breakdown Boxes */
-.cost-breakdown {
-    background: var(--box-cost-bg);
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin: 1.5rem 0;
-    border-left: 4px solid var(--accent-warning);
-}
-
-.cost-breakdown p {
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-}
-
-.cost-breakdown ul {
-    list-style: none;
-    padding-left: 1rem;
-}
-
-.cost-breakdown li {
-    font-size: 1.2rem;
-    margin: 0.75rem 0;
-    color: var(--text-secondary);
-}
-
-.cost-breakdown strong {
-    color: var(--aws-orange);
-    font-size: 1.3rem;
-}
-
-/* Provider Boxes (AWS, Azure, GCP) */
-.provider-box {
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    border-radius: 10px;
-    border-left: 6px solid;
-}
-
-.provider-box h3 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-}
-
-.provider-box ul {
-    list-style: none;
+  .slide-notes {
+    border-left: none;
+    border-top: 1px solid var(--border-color);
     padding-left: 0;
+    padding-top: 16px;
+  }
 }
 
-.provider-box li {
-    font-size: 1.2rem;
-    margin: 0.5rem 0;
+/* ---------------------------------------------------------------------- */
+/* Print — falls back to the browser's native print dialog on the         */
+/* currently-active slide sequence rather than a dedicated print          */
+/* stylesheet.                                                            */
+/* ---------------------------------------------------------------------- */
+
+@media print {
+  .slide-chrome,
+  .slide-progress,
+  .slide-toc,
+  .notes-panel {
+    display: none !important;
+  }
+
+  .slide {
+    position: relative;
+    opacity: 1 !important;
+    transform: none !important;
+    page-break-after: always;
+    height: 100vh;
+  }
 }
-
-/* AWS Orange Theme */
-.provider-box.aws {
-    background: #fff3e0;
-    border-left-color: var(--aws-orange);
-}
-
-.provider-box.aws h3,
-.provider-box.aws li {
-    color: #3E2723;
-}
-
-/* Azure Blue Theme */
-.provider-box.azure {
-    background: #e3f2fd;
-    border-left-color: var(--aws-blue);
-}
-
-.provider-box.azure h3,
-.provider-box.azure li {
-    color: #0D47A1;
-}
-
-/* GCP Green Theme */
-.provider-box.gcp {
-    background: #e8f5e9;
-    border-left-color: var(--aws-green);
-}
-
-.provider-box.gcp h3,
-.provider-box.gcp li {
-    color: #1B5E20;
-}
-
-/* Comparison Boxes */
-.comparison-box {
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    border-radius: 10px;
-    border-left: 6px solid;
-}
-
-.comparison-box h3 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-}
-
-.comparison-box ul {
-    list-style: none;
-    padding-left: 1rem;
-}
-
-.comparison-box li {
-    font-size: 1.2rem;
-    margin: 0.5rem 0;
-    line-height: 1.6;
-}
-
-.comparison-box strong {
-    font-size: 1.3rem;
-}
-
-/* On-Premise (Red/Warning Theme) */
-.comparison-box.onprem {
-    background: #ffebee;
-    border-left-color: var(--accent-error);
-}
-
-.comparison-box.onprem h3 {
-    color: var(--accent-error);
-}
-
-.comparison-box.onprem li {
-    color: #7f1d1d;
-}
-
-/* Cloud (Green/Success Theme) */
-.comparison-box.cloud {
-    background: #e8f5e9;
-    border-left-color: var(--accent-success);
-}
-
-.comparison-box.cloud h3 {
-    color: var(--accent-success);
-}
-
-.comparison-box.cloud li {
-    color: #1B5E20;
-}
-
-/* Concept Boxes */
-.concept-box {
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    border-radius: 8px;
-    border-left: 4px solid;
-}
-
-.concept-box h3 {
-    font-size: 1.6rem;
-    margin-bottom: 1rem;
-}
-
-.concept-box p {
-    font-size: 1.2rem;
-    line-height: 1.6;
-}
-
-/* Different colored concept boxes */
-.concept-box.orange {
-    background: #fff3e0;
-    border-left-color: var(--aws-orange);
-}
-
-.concept-box.orange h3,
-.concept-box.orange p {
-    color: #3E2723;
-}
-
-.concept-box.blue {
-    background: #e3f2fd;
-    border-left-color: var(--aws-blue);
-}
-
-.concept-box.blue h3,
-.concept-box.blue p {
-    color: #0D47A1;
-}
-
-.concept-box.purple {
-    background: #f3e5f5;
-    border-left-color: #9c27b0;
-}
-
-.concept-box.purple h3,
-.concept-box.purple p {
-    color: #4A148C;
-}
-
-.concept-box.green {
-    background: #e8f5e9;
-    border-left-color: var(--aws-green);
-}
-
-.concept-box.green h3,
-.concept-box.green p {
-    color: #1B5E20;
-}
-
-/* Example Boxes (Brand Colored) */
-.example-box {
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    border-radius: 10px;
-    color: white;
-}
-
-.example-box h3 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    color: white;
-}
-
-.example-box p {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    color: white;
-}
-
-.example-box ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-.example-box li {
-    font-size: 1.2rem;
-    margin: 0.5rem 0;
-    line-height: 1.8;
-    color: white;
-}
-
-/* Netflix Red */
-.example-box.netflix {
-    background: #e50914;
-}
-
-/* Airbnb Pink */
-.example-box.airbnb {
-    background: #ff5a5f;
-}
-
-/* Spotify Green */
-.example-box.spotify {
-    background: #1db954;
-}
-
-/* Capital One Blue */
-.example-box.capitalone {
-    background: #004c97;
-}
-
-/* Generic Example Box (if no brand class) */
-.example-box:not([class*=" "]) {
-    background: var(--aws-dark);
-}
-
-/* Result/Summary Text Styling */
-.result-text {
-    text-align: center;
-    font-size: 1.8rem;
-    color: var(--accent-success);
-    font-weight: bold;
-    margin-top: 2rem;
-}
-
-/* CTA Slide Specific Overrides */
-.cta-slide .cta-box {
-    background: rgba(255, 153, 0, 0.3);
-    border-left-color: var(--aws-orange);
-}
-
-.cta-slide .cta-box p {
-    font-size: 1.8rem;
-    margin: 0.5rem 0;
-    color: var(--text-primary);
-}
-
-.cta-slide .emphasis-box {
-    background: var(--aws-orange);
-    color: white;
-    padding: 2rem;
-    border-radius: 10px;
-    margin-top: 2rem;
-}
-
-.cta-slide .emphasis-box p {
-    margin: 0.5rem 0;
-}
-
-.cta-slide .emphasis-box p:first-child {
-    font-size: 1.8rem;
-}
-
-.cta-slide .emphasis-box p:last-child {
-    font-size: 1.2rem;
-    margin-top: 1rem;
-}
-
-/* ============================================
-   THEME TOGGLE BUTTON (Optional)
-   ============================================ */
-
-.theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid var(--aws-orange);
-    background: var(--bg-secondary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 1002;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.theme-toggle:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.theme-icon::before {
-    content: '☀️';
-    font-size: 24px;
-}
-
-[data-theme="dark"] .theme-icon::before {
-    content: '🌙';
-}
-
-[data-theme="comfort"] .theme-icon::before {
-    content: '👁️';
-}
-
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
-
-@media (max-width: 1024px) {
-    .title-slide h1 { font-size: 3rem; }
-    .slide-title { font-size: 2.5rem; }
-    .bullet-list li { font-size: 1.5rem; }
-    
-    .split-layout {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .slide-content {
-        padding: 2rem;
-    }
-    
-    .title-slide h1 { font-size: 2.5rem; }
-    .slide-title { font-size: 2rem; }
-    .bullet-list li { font-size: 1.3rem; }
-    
-    .controls-hint {
-        font-size: 0.9rem;
-    }
-}
-
-/* ============================================

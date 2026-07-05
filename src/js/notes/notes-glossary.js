@@ -1,7 +1,21 @@
 /**
- * Glossary Interactive Features v1.0
- * Loads glossary terms from JSON and renders dynamically
- * File: js/notes-glossary.js
+ * =============================================================================
+ * File: notes-glossary.js
+ * Path: js/notes/notes-glossary.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Glossary table renderer for note pages (#glossaryContainer). Loads
+ * term/definition/example entries from JSON and renders them as a
+ * 3-column table. Read-only — no interactive state, no localStorage.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - window.NotesSearch (notes-search.js, optional — rebuildIndex() call)
+ * =============================================================================
  */
 
 (function () {

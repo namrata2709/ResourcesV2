@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Building Production-Ready Agents with OpenClaw on AWS — covers AWS concepts, architecture, best practices, and exam preparation. Keywords: OpenClaw, AI agent, AWS SDK v3, EC2 health check, ECS monitoring, CloudWatch metrics, IAM least privilege, WhatsApp automation, DevOps agent, SKILL.md. Beginner to intermediate level.">
+    <meta name="keywords" content="OpenClaw, AI agent, AWS SDK v3, EC2 health check, ECS monitoring, CloudWatch metrics, IAM least privilege, WhatsApp automation, DevOps agent, SKILL.md, AWS, cloud, certification">
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/data/notes/aws-openclaw-skill/notes.html">
+    <meta property="og:title" content="Building Production-Ready Agents with OpenClaw on AWS - AWS Notes">
+    <meta property="og:description" content="Building Production-Ready Agents with OpenClaw on AWS — covers AWS concepts, architecture, best practices, and exam preparation. Keywords: OpenClaw, AI agent, AWS SDK v3, EC2 health check, ECS monitoring, CloudWatch metrics, IAM least privilege, WhatsApp automation, DevOps agent, SKILL.md. Beginner to intermediate level.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/data/notes/aws-openclaw-skill/notes.html">
+    <title>Building Production-Ready Agents with OpenClaw on AWS - AWS Notes</title>
+    <link rel="stylesheet" href="../../../css/styles.css">
+    <link rel="stylesheet" href="../../../css/notes/notes.css">
+    <script src="../../../js/shared/site-config.js"></script>
+</head>
+<body data-subject="aws">
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Building Production-Ready Agents with OpenClaw on AWS - AWS Notes",
+    "description": "Building Production-Ready Agents with OpenClaw on AWS — covers AWS concepts, architecture, best practices, and exam preparation. Keywords: OpenClaw, AI agent, AWS SDK v3, EC2 health check, ECS monitoring, CloudWatch metrics, IAM least privilege, WhatsApp automation, DevOps agent, SKILL.md. Beginner to intermediate level.",
+    "author": {
+        "@type": "Person",
+        "name": "Namrata Mulwani",
+        "email": "awslecturenotes@gmail.com"
+    },
+    "datePublished": "2026-06-27",
+    "dateModified": "2026-06-27",
+    "publisher": {
+        "@type": "Person",
+        "name": "Namrata Mulwani"
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://namrata2709.github.io/Resources/data/notes/aws-openclaw-skill/notes.html"
+    },
+    "articleSection": "AWS Notes",
+    "keywords": [
+        "OpenClaw",
+        "AI agent",
+        "AWS SDK v3",
+        "EC2 health check",
+        "ECS monitoring",
+        "CloudWatch metrics",
+        "IAM least privilege",
+        "WhatsApp automation",
+        "DevOps agent",
+        "SKILL.md"
+    ],
+    "educationalLevel": "Beginner to Intermediate"
+}
+</script>
+
+<div id="pageLoader" class="page-loader">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Loading...</p>
+</div>
+
+<div class="note-container">
+
+<div class="success-box">
+    <p>
+        🎓 <strong>Lecture by:</strong> <a href="https://www.linkedin.com/in/yashgkar/" target="_blank" rel="noopener noreferrer">Yash Garudkar</a><br>
+        💬 <strong>Session:</strong> <a href="https://www.linkedin.com/company/awsugmum/" target="_blank" rel="noopener noreferrer">AWS User Group Mumbai — Building Production-Ready Agents with OpenClaw on AWS &rarr;</a>
+    </p>
+</div>
+
+<div class="highlight-box" role="note" aria-label="When to use">
+    <p><strong>When to use:</strong> Use OpenClaw skills when you need an AI agent to read live status from your AWS infrastructure (EC2, ECS, CloudWatch) and report it back over a chat channel like WhatsApp, instead of an engineer manually opening the console during an incident.</p>
+</div>
+
+<div class="note-content">
+
+<details class="collapsible-section" open>
+<summary><h2 id="introduction">Introduction</h2></summary>
+<div class="section-content">
+
+<p>Imagine being woken up at 2am because production is down. Before you can even figure out what broke, you have to unlock your laptop, log into the AWS console, click into CloudWatch, click into ECS, click into EC2 — five tabs deep — just to answer one question: *what actually happened?*</p>
+
+<p>OpenClaw removes that friction. It is an <strong>open-source AI agent that runs locally on your machine</strong> and connects a large language model to your real tools through small, well-defined units called <strong>Skills</strong>. Instead of opening a laptop and clicking through consoles, you send a WhatsApp message — *"check my AWS health"* — and the agent runs a script against the AWS SDK and replies with a structured report in seconds.</p>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-overview.png" alt="High-level flow: a WhatsApp message triggers an OpenClaw skill, which queries AWS and replies in chat" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>High-level flow: a WhatsApp message triggers an OpenClaw skill, which queries AWS and replies in chat</em></p>
+</div>
+
+<div class="info-box">
+    <p>OpenClaw is channel-agnostic — the same skill works whether you talk to it over WhatsApp, Telegram, or Slack. The session demo used WhatsApp because it's the channel most engineers already have open at 2am.</p>
+</div>
+
+<p><span class="exam-highlight-sentence">OpenClaw is an open-source AI agent that runs locally and connects language models to real-world tools through Skills.</span></p>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="how-openclaw-skills-work">How OpenClaw Skills Work</h2></summary>
+<div class="section-content">
+
+<p>A <strong>Skill</strong> in OpenClaw is intentionally simple: it is <strong>one folder containing one <code>SKILL.md</code> file</strong>, plus whatever script or code that file points to. There is no heavyweight plugin framework to learn.</p>
+
+<p><code>SKILL.md</code> is not meant for a human to read line by line — it's written <strong>for the agent</strong> to understand. It tells the agent:</p>
+
+<ul>
+<li><strong>When to trigger</strong> — which natural-language phrases should invoke this skill (e.g. "check my AWS health", "how are my EC2 instances")</li>
+<li><strong>How to invoke</strong> — the exact shell command to run (e.g. <code>cd {baseDir} &amp;&amp; npx tsx scripts/aws-health.ts</code>)</li>
+<li><strong>Output format</strong> — how to present the script's output back to the user</li>
+<li><strong>Error handling</strong> — what to tell the user when specific errors occur</li>
+</ul>
+
+<p><span class="exam-highlight-sentence">A skill is just one folder with one <code>SKILL.md</code> file — the agent reads it to learn when to trigger and what command to run.</span></p>
+
+<p>When a trigger phrase is detected, the agent does not "think up" an answer — it <strong>executes the underlying script</strong> and returns that script's real output. This matters: the agent is a dispatcher and a presenter, not the source of truth. The AWS SDK call is the source of truth.</p>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-skill-folder-anatomy.png" alt="Anatomy of a skill folder: SKILL.md, package.json, scripts/, and how the agent reads each piece" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Anatomy of a skill folder: SKILL.md, package.json, scripts/, and how the agent reads each piece</em></p>
+</div>
+
+<div class="highlight-box">
+    <p>Because the agent executes a real script rather than "guessing" infrastructure state from training data, the report you get back is always live data pulled directly from the AWS APIs at the moment you asked — not a hallucinated summary.</p>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="architecture-whatsapp-to-aws-and-back">Architecture: WhatsApp to AWS and Back</h2></summary>
+<div class="section-content">
+
+<p>The end-to-end flow demonstrated in the session has six stages:</p>
+
+<ol>
+<li><strong>WhatsApp User</strong> sends a message such as *"how are my EC2 instances?"*</li>
+<li><strong>OpenClaw Agent</strong>, running locally, matches the message against the skill's trigger phrases</li>
+<li><strong>AWS Health Skill</strong> (<code>SKILL.md</code> + <code>aws-health.ts</code>) is invoked with the right CLI flags</li>
+<li><strong>AWS SDK v3</strong> calls are made from the local script — not from any cloud-hosted middleman</li>
+<li>Calls go out to the relevant AWS services: <strong>Amazon EC2</strong> (compute), <strong>Amazon ECS</strong> (containers), and <strong>Amazon CloudWatch</strong> (monitoring) — authenticated through a dedicated, <strong>read-only IAM identity</strong></li>
+<li>The structured result flows back through the agent and is delivered as a <strong>WhatsApp Response</strong></li>
+</ol>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-architecture-diagram.png" alt="Six-stage architecture: WhatsApp User to OpenClaw Agent to AWS Health Skill to AWS SDK v3 to EC2/ECS/CloudWatch to WhatsApp Response" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Six-stage architecture: WhatsApp User to OpenClaw Agent to AWS Health Skill to AWS SDK v3 to EC2/ECS/CloudWatch to WhatsApp Response</em></p>
+</div>
+
+<div class="info-box">
+    <p>Nothing in this flow requires a public-facing webhook or always-on server in AWS. The agent and the skill run on the engineer's own machine, and AWS is only called outward via the SDK using short-lived credentials.</p>
+</div>
+
+<p>A natural question from the audience was: *why not use the AWS Health API or EventBridge instead of polling EC2/ECS describe calls?* The Health API reports account-level and service-level AWS outages; it does not tell you whether <strong>your specific instance</strong> or <strong>your specific ECS service</strong> is unhealthy. Describe calls give per-resource granularity that a generic Health API cannot.</p>
+
+<p><span class="exam-highlight-sentence">The agent never holds AWS credentials with write access — it only ever calls Describe/Get style read APIs.</span></p>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="what-the-skill-reports">What the Skill Reports</h2></summary>
+<div class="section-content">
+
+<p>The <code>aws-health</code> skill is split into two domains, EC2 and ECS, and can be queried independently or together.</p>
+
+<p><strong>EC2 reports:</strong></p>
+<ul>
+<li>Instance name, instance ID, instance type, and Availability Zone</li>
+<li>State — running / stopped / pending</li>
+<li>System status check, which detects underlying <strong>hardware failures</strong> (distinct from instance-level OS checks)</li>
+<li>CPU utilization as a <strong>15-minute average</strong>, pulled from CloudWatch</li>
+</ul>
+
+<p><strong>ECS reports:</strong></p>
+<ul>
+<li>All clusters in the configured region, or a single cluster if <code>--cluster</code> is passed</li>
+<li>Per-service <strong>running count vs desired count</strong> — the fastest way to see a stuck or failing deployment</li>
+<li><strong>Deployment rollout state</strong>: <code>COMPLETED</code>, <code>IN_PROGRESS</code>, or <code>FAILED</code></li>
+<li>The <strong>last 5 stopped tasks</strong>, each with its stop code and stop reason — this is what catches a crash-loop before it becomes a full outage</li>
+</ul>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-ec2-ecs-report-fields.png" alt="Two-column breakdown of EC2 fields vs ECS fields returned by the skill" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Two-column breakdown of EC2 fields vs ECS fields returned by the skill</em></p>
+</div>
+
+<div class="error-box">
+    <p>The script intentionally does !!not!! expose any mutating action (no restart, no scale, no terminate). It is read-only by design, both at the IAM layer and at the application layer.</p>
+</div>
+
+<p><span class="exam-highlight-sentence">EC2 system status checks specifically catch underlying <span class="exam-highlight-term" data-term="hardware failures">hardware failures</span>, separate from OS-level checks.</span></p>
+<p><span class="exam-highlight-sentence">ECS deployment rollout state can be <code>COMPLETED</code>, <code>IN_PROGRESS</code>, or <code>FAILED</code>.</span></p>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="inside-skillmd-and-the-script">Inside SKILL.md and the Script</h2></summary>
+<div class="section-content">
+
+<p><code>SKILL.md</code> carries metadata and instructions in a structured front section, followed by human-readable guidance:</p>
+
+<pre><code class="language-yaml">
+name: aws-health
+description: Check health of AWS EC2 instances and ECS clusters/services.
+  Reports running/stopped counts, CPU/memory metrics, and unhealthy tasks.
+  Use when the user asks about AWS instance health, ECS status, or infra monitoring.
+version: 1.0.0
+</code></pre>
+
+<p>It also declares <strong>environment variable requirements</strong> so the agent knows what credentials it needs before it can run the skill at all:</p>
+
+<table>
+<thead><tr>
+<th>Variable</th>
+<th>Required</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>AWS_ACCESS_KEY_ID</code></td>
+<td>true</td>
+<td>Read-only AWS access key</td>
+</tr>
+<tr>
+<td><code>AWS_SECRET_ACCESS_KEY</code></td>
+<td>true</td>
+<td>Matching secret key</td>
+</tr>
+<tr>
+<td><code>AWS_REGION</code></td>
+<td>true</td>
+<td>Region to query, e.g. <code>ap-south-1</code></td>
+</tr>
+<tr>
+<td><code>AWS_SESSION_TOKEN</code></td>
+<td>false</td>
+<td>Only needed for temporary/assumed-role credentials</td>
+</tr>
+</tbody></table>
+
+<p><strong>How to invoke</strong>, as written in <code>SKILL.md</code> for the agent:</p>
+
+<pre><code class="language-bash">
+cd {baseDir} &amp;&amp; npx tsx scripts/aws-health.ts
+cd {baseDir} &amp;&amp; npx tsx scripts/aws-health.ts --only ec2
+cd {baseDir} &amp;&amp; npx tsx scripts/aws-health.ts --only ecs
+cd {baseDir} &amp;&amp; npx tsx scripts/aws-health.ts --only ecs --cluster my-cluster-name
+</code></pre>
+
+<p><code>scripts/aws-health.ts</code> itself is plain <strong>TypeScript run with <code>tsx</code></strong> (no build step). At a high level it:</p>
+
+<ol>
+<li>Imports <code>@aws-sdk/client-ec2</code>, <code>@aws-sdk/client-ecs</code>, and <code>@aws-sdk/client-cloudwatch</code></li>
+<li>Initializes each client using the credentials and region from environment variables</li>
+<li>Calls <code>DescribeInstances</code> / <code>DescribeInstanceStatus</code> for EC2, and walks <code>ListClusters</code> → <code>ListServices</code> → <code>DescribeServices</code> → <code>ListTasks</code> → <code>DescribeTasks</code> for ECS</li>
+<li>Calls <code>GetMetricStatistics</code> against CloudWatch for the 15-minute CPU average</li>
+<li>Formats everything into one structured, emoji-coded report and prints it to stdout, which OpenClaw relays as-is to chat</li>
+</ol>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-script-data-flow.png" alt="Script execution flow from SDK client setup through API calls to formatted chat output" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Script execution flow from SDK client setup through API calls to formatted chat output</em></p>
+</div>
+
+<p><span class="exam-highlight-sentence"><code>tsx</code> lets the script run TypeScript directly with no separate compile/build step.</span></p>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="iam-and-security-best-practices">IAM and Security Best Practices</h2></summary>
+<div class="section-content">
+
+<p>The single most repeated point in the session was: <strong>never give the agent your root keys, and never give it write access.</strong></p>
+
+<p>The recommended setup creates one dedicated IAM user (e.g. <code>openclaw-bot</code>) with a custom <strong>read-only policy</strong> scoped to exactly three API namespaces:</p>
+
+<pre><code class="language-json">
+{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: [
+        &quot;ec2:DescribeInstances&quot;,
+        &quot;ec2:DescribeInstanceStatus&quot;,
+        &quot;ecs:ListClusters&quot;,
+        &quot;ecs:ListServices&quot;,
+        &quot;ecs:DescribeServices&quot;,
+        &quot;ecs:ListTasks&quot;,
+        &quot;ecs:DescribeTasks&quot;,
+        &quot;cloudwatch:GetMetricStatistics&quot;,
+        &quot;cloudwatch:GetMetricData&quot;
+      ],
+      &quot;Resource&quot;: &quot;*&quot;
+    }
+  ]
+}
+</code></pre>
+
+<div class="highlight-box">
+    <p>Every action in this policy is a `Describe`, `List`, or `Get` call. There is no `Create`, `Modify`, `Terminate`, `Stop`, or `Delete` action anywhere in scope — by design, this identity is structurally incapable of changing infrastructure, even if the agent or the script were compromised.</p>
+</div>
+
+<p>Setup can be done via the <strong>console</strong> (IAM → Users → Create user → attach a custom policy) or via the <strong>AWS CLI</strong>:</p>
+
+<pre><code class="language-bash">
+aws iam create-policy \
+  --policy-name OpenClawAWSHealthReadOnly \
+  --policy-document file://iam-policy.json
+
+aws iam create-user --user-name openclaw-bot
+
+aws iam attach-user-policy \
+  --user-name openclaw-bot \
+  --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/OpenClawAWSHealthReadOnly
+
+aws iam create-access-key --user-name openclaw-bot
+</code></pre>
+
+<div class="error-box">
+    <p>Access keys printed by `create-access-key` are shown only once. Store them in a secrets manager or directly in OpenClaw's local config — never commit them to a repository.</p>
+</div>
+
+<p><span class="exam-highlight-sentence">Least-privilege IAM is non-negotiable: one dedicated user, one job, read-only actions only.</span></p>
+<p><span class="exam-highlight-sentence">Never use AWS root account credentials for an automated agent under any circumstance.</span></p>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="implementation">Implementation</h2></summary>
+<div class="section-content">
+
+<h3 id="local-setup">Local Project Setup</h3>
+
+<pre><code class="language-bash">
+git clone https://github.com/yashgkar/aws-health
+cd aws-health
+npm install
+</code></pre>
+
+<p>This pulls in <code>@aws-sdk/client-ec2</code>, <code>@aws-sdk/client-ecs</code>, <code>@aws-sdk/client-cloudwatch</code>, and <code>tsx</code>.</p>
+
+<h3 id="standalone-test">Testing the Script Standalone</h3>
+
+<p>Before wiring it into OpenClaw at all, the script can be run directly to confirm credentials and permissions work:</p>
+
+<pre><code class="language-bash">
+export AWS_ACCESS_KEY_ID=AKIA...
+export AWS_SECRET_ACCESS_KEY=your-secret
+export AWS_REGION=ap-south-1
+
+npx tsx scripts/aws-health.ts
+</code></pre>
+
+<p>Expected output looks roughly like:</p>
+
+<pre><code>
+AWS Health Report — ap-south-1 — 2026-06-24T...
+
+EC2 Instances
+  my-server (i-0c2d159b3fd755c14)
+   Type: t2.micro | AZ: ap-south-1b | State: running
+   CPU (15m avg): 2.9%
+Summary: 1 total | 1 running | 0 stopped | 0 system check failures
+
+ECS Clusters &amp; Services
+ Cluster: my-cluster
+   my-service
+     Launch: FARGATE | Running: 3/3 desired | Pending: 0
+     Deployment: COMPLETED
+
+Health check complete.
+</code></pre>
+
+<h3 id="installing-into-openclaw">Installing Into OpenClaw</h3>
+
+<pre><code class="language-bash">
+mkdir -p ~/.openclaw/workspace/skills
+cp -r /path/to/aws-health ~/.openclaw/workspace/skills/aws-health
+</code></pre>
+
+<p>Then register credentials inside <code>~/.openclaw/openclaw.json</code> under the skill's <code>entries</code> block:</p>
+
+<pre><code class="language-json">
+&quot;skills&quot;: {
+  &quot;entries&quot;: {
+    &quot;aws-health&quot;: {
+      &quot;enabled&quot;: true,
+      &quot;env&quot;: {
+        &quot;AWS_ACCESS_KEY_ID&quot;: &quot;AKIA...&quot;,
+        &quot;AWS_SECRET_ACCESS_KEY&quot;: &quot;your-secret&quot;,
+        &quot;AWS_REGION&quot;: &quot;ap-south-1&quot;
+      }
+    }
+  }
+}
+</code></pre>
+
+<p>Restart the gateway so the new skill is picked up:</p>
+
+<pre><code class="language-bash">
+openclaw gateway restart
+</code></pre>
+
+<h3 id="talking-to-agent">Talking to the Agent</h3>
+
+<div class="highlight-box">
+    <p>OpenClaw ships with !!two distinct agents!!: a setup/config agent (referred to in the session as "Crestodian") and the !!main conversational agent!!. Skills only execute from the main agent — a very common first-time mistake is trying to trigger a skill while still inside the config agent.</p>
+</div>
+
+<pre><code class="language-bash">
+openclaw
+talk to agent
+check my AWS health
+</code></pre>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-setup-sequence.png" alt="Sequence from cloning the repo through IAM setup, local install, OpenClaw registration, and the first WhatsApp test message" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Sequence from cloning the repo through IAM setup, local install, OpenClaw registration, and the first WhatsApp test message</em></p>
+</div>
+
+<p><span class="exam-highlight-sentence">Skills only run from the main conversational agent, not from the configuration agent.</span></p>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="usage-examples">Usage Examples</h2></summary>
+<div class="section-content">
+
+<table>
+<thead><tr>
+<th>Message</th>
+<th>What it does</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>check my AWS health</code></td>
+<td>Full EC2 + ECS report</td>
+</tr>
+<tr>
+<td><code>show EC2 status</code></td>
+<td>EC2 only</td>
+</tr>
+<tr>
+<td><code>how are my ECS services</code></td>
+<td>ECS only</td>
+</tr>
+<tr>
+<td><code>any stopped tasks in prod-cluster</code></td>
+<td>ECS, scoped to a specific cluster</td>
+</tr>
+<tr>
+<td><code>what's the CPU on my instances</code></td>
+<td>EC2 + CloudWatch CPU metric</td>
+</tr>
+</tbody></table>
+
+<p>The script also accepts direct CLI flags for testing outside of chat:</p>
+
+<pre><code class="language-bash">
+npx tsx scripts/aws-health.ts                          # EC2 + ECS
+npx tsx scripts/aws-health.ts --only ec2                # EC2 only
+npx tsx scripts/aws-health.ts --only ecs                # ECS only
+npx tsx scripts/aws-health.ts --only ecs --cluster X     # specific cluster
+</code></pre>
+
+<div class="info-box">
+    <p>Grammar matters more than exact phrasing — the agent matches intent, not a fixed command syntax, as long as the message clearly maps to one of the documented triggers in `SKILL.md`.</p>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="common-mistakes-troubleshooting">Common Mistakes & Troubleshooting</h2></summary>
+<div class="section-content">
+
+<table>
+<thead><tr>
+<th>Problem</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>region: undefined</code> in output</td>
+<td><code>AWS_REGION</code> not exported in the shell</td>
+<td><code>export AWS_REGION=ap-south-1</code> before running</td>
+</tr>
+<tr>
+<td>Skill doesn't trigger at all</td>
+<td>Still inside the config agent</td>
+<td>Run <code>talk to agent</code> to switch to the main agent first</td>
+</tr>
+<tr>
+<td><code>CredentialsProviderError</code></td>
+<td>Access key/secret missing or wrong</td>
+<td>Re-check <code>AWS_ACCESS_KEY_ID</code> / <code>AWS_SECRET_ACCESS_KEY</code> in <code>openclaw.json</code></td>
+</tr>
+<tr>
+<td><code>AccessDeniedException</code></td>
+<td>IAM user missing required actions</td>
+<td>Re-attach the <code>OpenClawAWSHealthReadOnly</code> policy from <code>iam-policy.json</code></td>
+</tr>
+<tr>
+<td><code>ResourceNotFoundException</code></td>
+<td>Wrong ECS cluster name passed</td>
+<td>Confirm with <code>aws ecs list-clusters</code></td>
+</tr>
+<tr>
+<td>Skill folder "not found"</td>
+<td>Skills directory never created</td>
+<td><code>mkdir -p ~/.openclaw/workspace/skills</code>, then copy the skill in again</td>
+</tr>
+<tr>
+<td>Config edits seem to do nothing</td>
+<td>Gateway wasn't restarted</td>
+<td>Run <code>openclaw gateway restart</code> after every <code>openclaw.json</code> change</td>
+</tr>
+</tbody></table>
+
+<div class="error-box">
+    <p>A live demo failure during the session (the agent reporting "no ECS services") turned out to be a correctly-scoped permission boundary, not a bug — the demo AWS account simply had no clusters running at that moment. Treat `AccessDeniedException` and "found nothing" as two very different signals: one is a config problem, the other may just be an empty environment.</p>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="extending-the-skill">Extending the Skill</h2></summary>
+<div class="section-content">
+
+<p>Ideas raised during and after the session for a v2 of this skill:</p>
+
+<ul>
+<li><strong>RDS instance health</strong> via <code>DescribeDBInstances</code></li>
+<li><strong>ALB target group health</strong> via <code>DescribeTargetHealth</code></li>
+<li>An <strong>SNS-triggered push</strong>: alert fires → OpenClaw → WhatsApp message, without the user asking first</li>
+<li><strong>Multi-region support</strong>: <code>AWS_REGIONS=ap-south-1,us-east-1</code> and aggregate results</li>
+<li>A <strong>daily 9am digest</strong> pushed automatically to WhatsApp</li>
+<li>Parallelizing EC2 and ECS calls using async/threaded execution for faster responses on large fleets</li>
+<li>Swapping the polling-based health check for <strong>AWS Health API</strong> events where account-level (not per-resource) status is sufficient</li>
+</ul>
+
+<div class="info-box">
+    <p>None of these were implemented at the time of the session — they are documented as the project's open roadmap.</p>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="exam-tips">Exam Tips</h2></summary>
+<div class="section-content">
+
+<p><span class="exam-highlight-sentence">The core exam distinction is: EC2 system status checks detect <span class="exam-highlight-term" data-term="hardware-level">hardware-level</span> failures, while instance status checks detect guest-OS-level problems.</span></p>
+<p><span class="exam-highlight-sentence">ECS service health is measured by <span class="exam-highlight-term" data-term="running count vs desired count">running count vs desired count</span>, not by the cluster's existence alone.</span></p>
+<p><span class="exam-highlight-sentence">The AWS Health API reports account/service-level operational issues; it does <span class="exam-highlight-term" data-term="not">not</span> give per-resource detail for a specific instance or service — that distinction is a common exam trap.</span></p>
+<div class="highlight-box">
+    <p>If a question describes an automated tool or agent calling AWS APIs, the !!first thing to check!! in any answer option is whether it follows least-privilege IAM — exam questions frequently include a distractor option that grants `*:*` or root-level access.</p>
+</div>
+<p><span class="exam-highlight-sentence"><code>Describe*</code>, <code>List*</code>, and <code>Get*</code> actions are read-only API calls — they never appear in IAM policies meant to prevent mutation, since by definition they cannot mutate anything.</span></p>
+<p>Exam questions about credential types often test whether you know <code>AWS_SESSION_TOKEN</code> is required specifically for <strong>temporary credentials from an assumed role</strong>, not for standard long-lived IAM user keys.</p>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="visualisation">Visualisation</h2></summary>
+<div class="section-content">
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-overview.png" alt="High-level flow: a WhatsApp message triggers an OpenClaw skill, which queries AWS and replies in chat" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>High-level flow: a WhatsApp message triggers an OpenClaw skill, which queries AWS and replies in chat</em></p>
+</div>
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-architecture-diagram.png" alt="Six-stage architecture: WhatsApp User to OpenClaw Agent to AWS Health Skill to AWS SDK v3 to EC2/ECS/CloudWatch to WhatsApp Response" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Six-stage architecture: WhatsApp User to OpenClaw Agent to AWS Health Skill to AWS SDK v3 to EC2/ECS/CloudWatch to WhatsApp Response</em></p>
+</div>
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-ec2-ecs-report-fields.png" alt="Two-column breakdown of EC2 fields vs ECS fields returned by the skill" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Two-column breakdown of EC2 fields vs ECS fields returned by the skill</em></p>
+</div>
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-script-data-flow.png" alt="Script execution flow from SDK client setup through API calls to formatted chat output" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Script execution flow from SDK client setup through API calls to formatted chat output</em></p>
+</div>
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-setup-sequence.png" alt="Sequence from cloning the repo through IAM setup, local install, OpenClaw registration, and the first WhatsApp test message" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Sequence from cloning the repo through IAM setup, local install, OpenClaw registration, and the first WhatsApp test message</em></p>
+</div>
+<div class="diagram-container">
+<img src="images/aws-openclaw-skill-cheatsheet.png" alt="One-page cheat sheet summarizing skills, IAM rules, and the full request/response flow" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>One-page cheat sheet summarizing skills, IAM rules, and the full request/response flow</em></p>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="overall-summary">Overall Summary</h2></summary>
+<div class="section-content">
+
+<div class="highlight-box">
+    <p><strong>Key Takeaways:</strong></p>
+    <ul>
+        <li>OpenClaw is an open-source AI agent that runs locally and connects an LLM to real tools via small, well-defined Skills.</li>
+        <li>A skill is just one folder plus one `SKILL.md` file that tells the agent when to trigger, what command to run, how to format output, and how to handle errors.</li>
+        <li>The agent executes a real script and relays its real output — it does not invent infrastructure status from memory.</li>
+        <li>The demonstrated `aws-health` skill reports on EC2 (instance state, system status checks, 15-minute CPU average) and ECS (running vs desired tasks, deployment rollout state, last 5 stopped tasks with reasons).</li>
+        <li>The architecture flow is WhatsApp to OpenClaw Agent to SKILL.md to AWS SDK v3 to EC2/ECS/CloudWatch to WhatsApp Response.</li>
+        <li>IAM least privilege is mandatory: one dedicated read-only IAM user, scoped to Describe/List/Get actions only — never root keys, never write access.</li>
+        <li>The script is plain TypeScript run via `tsx`, with no build step required.</li>
+        <li>OpenClaw has two agents — a config agent and a main agent — and skills only execute from the main agent.</li>
+        <li>Common failures are almost always credentials, region, or wrong agent context, not the skill's logic itself.</li>
+        <li>The roadmap includes RDS/ALB health checks, proactive SNS-triggered alerts, and multi-region support.</li>
+    </ul>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="glossary">📖 Glossary</h2></summary>
+<div class="section-content">
+<div id="glossaryContainer" data-glossary-source="json/glossary.json"></div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="interview-questions">🎤 Interview Questions</h2></summary>
+<div class="section-content">
+<p class="interview-intro">📚 Test your understanding with these questions.</p>
+<div class="interview-progress">
+    <p id="interviewProgress">Progress: 0/? (0%)</p>
+</div>
+<div class="flashcard-navigation">
+    <button onclick="previousInterviewQuestion()" class="nav-btn" id="prevInterviewBtn">&#8592; Previous</button>
+    <span id="interviewCounter" class="card-counter">1 / ?</span>
+    <button onclick="nextInterviewQuestion()" class="nav-btn" id="nextInterviewBtn">Next &#8594;</button>
+</div>
+<div class="flashcard-deck" id="interviewContainer" data-interview-source="json/interview.json"></div>
+<div class="quiz-reset-container">
+    <button onclick="resetInterviewProgress()" class="quiz-reset-btn">🔄 Reset Progress</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="multiple-choice-questions">📝 Multiple Choice Questions</h2></summary>
+<div class="section-content">
+<div class="quiz-header-info">
+    <p>Test your knowledge with immediate feedback.</p>
+</div>
+<div class="quiz-navigation">
+    <button onclick="previousQuestion()" class="quiz-nav-btn" id="prevBtn">&#8592; Previous</button>
+    <div class="quiz-info">
+        <span class="quiz-counter" id="quizCounter">Question 1 of ?</span>
+        <span class="quiz-score-display" id="quizScoreDisplay">Score: 0/0 (0%)</span>
+    </div>
+    <button onclick="nextQuestion()" class="quiz-nav-btn" id="nextBtn">Next &#8594;</button>
+</div>
+<div class="quiz-carousel-container" id="quizContainer" data-mcq-source="json/mcq.json"></div>
+<div class="quiz-summary-section">
+    <button onclick="showQuizSummary()" class="quiz-summary-btn">📊 View Summary</button>
+    <div class="quiz-reset-container">
+        <button onclick="resetEntireQuiz()" class="quiz-reset-btn">🔄 Reset Quiz</button>
+    </div>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="hands-on-projects">💼 Hands-On Projects</h2></summary>
+<div class="section-content">
+<details class="project-block" open>
+<summary><h3 class="project-title">Project 1: Build and Deploy Your Own AWS Health Skill</h3></summary>
+<div class="project-content">
+<p class="project-objective"><strong>Objective:</strong> Stand up the reference aws-health OpenClaw skill end-to-end and trigger it from WhatsApp.</p>
+<div class="project-meta"><span class="meta-time">⏱ 45-60 min</span> <span class="meta-cost">💰 Free tier eligible</span> <span class="meta-prereqs">📋 Prerequisites: AWS account · Node.js 18+ · OpenClaw installed locally · WhatsApp linked to OpenClaw</span></div>
+<ol class="project-steps">
+<li>Clone the reference implementation with `git clone https://github.com/yashgkar/aws-health`</li>
+<li>Navigate to the IAM console and create a custom policy named OpenClawAWSHealthReadOnly using the contents of iam-policy.json</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-iam-policy-created.png</code> — Screenshot showing the IAM policy JSON editor with the finalized read-only policy and its name</li>
+<li>Create a dedicated IAM user named openclaw-bot and attach the OpenClawAWSHealthReadOnly policy</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-iam-user-attached.png</code> — Screenshot showing the openclaw-bot user&#x27;s Permissions tab with the policy attached</li>
+<li>Generate an access key for openclaw-bot via Security credentials &gt; Create access key</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-access-key-created.png</code> — Screenshot showing the access key creation confirmation screen with the key ID visible (secret redacted)</li>
+<li>Run `npm install` inside the cloned repo to pull AWS SDK v3 clients and tsx</li>
+<li>Export AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION locally, then run `npx tsx scripts/aws-health.ts` to verify the skill works standalone</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-local-test-success.png</code> — Screenshot showing terminal output with a successful local health report for at least one EC2 instance</li>
+<li>Copy the skill folder into `~/.openclaw/workspace/skills/aws-health`</li>
+<li>Register the skill&#x27;s credentials inside openclaw.json under skills.entries.aws-health.env, then restart the gateway with `openclaw gateway restart`</li>
+<li>Run `openclaw`, then `talk to agent`, then send &quot;check my AWS health&quot; from WhatsApp</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-whatsapp-live-report.png</code> — Screenshot showing a WhatsApp conversation with the agent responding to &quot;check my AWS health&quot; with a live EC2/ECS report</li>
+<li>Clean up by deactivating and deleting the openclaw-bot access key once testing is complete, since it is no longer needed for this exercise</li>
+</ol>
+</div>
+</details>
+
+<details class="project-block" open>
+<summary><h3 class="project-title">Project 2: Harden the IAM Policy and Test Failure Modes</h3></summary>
+<div class="project-content">
+<p class="project-objective"><strong>Objective:</strong> Deliberately break and repair IAM permissions to build intuition for the skill&#x27;s three core error types.</p>
+<div class="project-meta"><span class="meta-time">⏱ 20-30 min</span> <span class="meta-cost">💰 Free tier eligible</span> <span class="meta-prereqs">📋 Prerequisites: Completed Project 1 · Access to the openclaw-bot IAM user and its attached policy</span></div>
+<ol class="project-steps">
+<li>Confirm the OpenClawAWSHealthReadOnly policy contains only Describe/List/Get actions across EC2, ECS, and CloudWatch</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-policy-review.png</code> — Screenshot showing the finalized IAM policy JSON with all action names visible</li>
+<li>Deliberately remove one required action, such as ecs:DescribeServices, and save the policy</li>
+<li>Re-run the skill and observe the resulting AccessDeniedException</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-access-denied.png</code> — Screenshot showing the terminal or WhatsApp output containing AccessDeniedException</li>
+<li>Re-attach the full policy with the removed action restored and confirm the error disappears on the next run</li>
+<li>Query a deliberately incorrect ECS cluster name using `--only ecs --cluster does-not-exist` and confirm you see ResourceNotFoundException instead</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-resource-not-found.png</code> — Screenshot comparing the AccessDeniedException output from the earlier step against this ResourceNotFoundException output side by side</li>
+<li>Unset AWS_ACCESS_KEY_ID temporarily and re-run the script to observe CredentialsProviderError, then restore the variable</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-credentials-error.png</code> — Screenshot showing terminal output containing CredentialsProviderError</li>
+</ol>
+</div>
+</details>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="learning-checklist">☑️ Learning Checklist</h2></summary>
+<div class="section-content">
+<div class="checklist-progress">
+    <p>Progress: <span id="checklistProgress">0/0</span></p>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+    </div>
+</div>
+<div id="checklistContainer" data-checklist-source="json/checklist.json"></div>
+<div class="quiz-reset-container">
+    <button onclick="resetChecklist()" class="quiz-reset-btn">🔄 Reset Checklist</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="reflection-questions">🤔 Reflection Questions</h2></summary>
+<div class="section-content">
+<div class="question-block">
+<h4>1. If you were designing this skill for your own team&#x27;s infrastructure, which AWS service would you add first — RDS, ALB, or SNS-triggered alerting — and why?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Think about which failure mode actually wakes your team up most often.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>2. The session&#x27;s IAM policy grants account-wide (Resource: &quot;*&quot;) access to Describe/List/Get actions. How would you tighten this further using resource-level conditions or tags, and what trade-off would that introduce?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Consider tag-based IAM conditions and the maintenance cost of keeping them accurate as infrastructure grows.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>3. What would change about this architecture if the agent needed to run for a whole team instead of a single engineer?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Revisit the user-isolation concern raised about shared OpenClaw instances and file systems.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>4. The script is read-only by design. Under what circumstances, if any, would you consider adding a write action, such as restarting a stuck ECS task, and what additional safeguards would you require first?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Think about confirmation steps, audit logging, and limiting the blast radius of any new write permission.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>5. How would you test that your SKILL.md trigger phrases are broad enough to catch real on-call phrasing, without being so broad that they misfire on unrelated messages?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Consider building a small test set of real incident messages pulled from past on-call logs.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>6. The presenter mentioned choosing a particular LLM mainly because of an existing subscription, while the skill itself is model-agnostic. What would you weigh when picking which LLM backs your own OpenClaw setup?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Think about cost, latency, and how much reasoning the model actually needs to do versus simply dispatching a known script.</p>
+</div>
+</details>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="links-references">Links & References</h2></summary>
+<div class="section-content">
+<ul>
+    <li><a href="https://docs.aws.amazon.com/ec2/" target="_blank" rel="noopener">Amazon EC2 — Official AWS Documentation</a></li>
+    <li><a href="https://docs.aws.amazon.com/ecs/" target="_blank" rel="noopener">Amazon ECS — Official AWS Documentation</a></li>
+    <li><a href="https://docs.aws.amazon.com/cloudwatch/" target="_blank" rel="noopener">Amazon CloudWatch — Official AWS Documentation</a></li>
+    <li><a href="https://docs.aws.amazon.com/iam/" target="_blank" rel="noopener">AWS Identity and Access Management (IAM) — Official Documentation</a></li>
+    <li><a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html" target="_blank" rel="noopener">AWS Well-Architected Framework — Security Pillar</a></li>
+    <li><a href="https://github.com/yashgkar/aws-health" target="_blank" rel="noopener">aws-health — OpenClaw Skill Reference Implementation (GitHub)</a></li>
+    <li><a href="https://aws.amazon.com/pricing/" target="_blank" rel="noopener">AWS Pricing — EC2, ECS, and CloudWatch</a></li>
+    <li><a href="https://aws.amazon.com/faqs/" target="_blank" rel="noopener">AWS FAQs</a></li>
+</ul>
+</div>
+</details>
+
+<div class="tags" aria-label="Topic tags">
+    <span class="tag">OpenClaw</span>
+    <span class="tag">AI Agents</span>
+    <span class="tag">DevOps</span>
+    <span class="tag">AWS SDK</span>
+    <span class="tag">Monitoring</span>
+</div>
+
+
+</div><!-- end note-content -->
+
+</div><!-- end note-container -->
+<div id="footerRoot" data-subject="aws"></div>
+
+<script src="../../../js/notes/notes-page-core.js" async="false"></script>
+
+</body>
+</html>

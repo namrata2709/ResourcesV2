@@ -1,12 +1,27 @@
 /**
- * animation-core.js — Shared engine for all 171 animated DSA topics.
- * Provides: input validation, step navigation, play/pause, status bar updates.
- * Each renderer-[type].js must define: buildVisual(input), renderStep(step, idx).
- * Each topic's computeSteps(input) is inlined after this file by animate.py.
+ * =============================================================================
+ * File: animation-core.js
+ * Path: js/notes/dsa/animation/animation-core.js
+ * Project: Learning Dashboard
  *
- * Global state exposed: window.steps, window.current, window.animInput
+ * Description:
+ * Shared engine for all 171 animated DSA topics. Handles input-box
+ * validation (7 input types: array-number, target-number, tree-values,
+ * graph-edges, string-text, string-pattern, grid-dims), step navigation,
+ * play/pause autoplay, and the shared status bar. Each topic's renderer
+ * (renderer-array.js, renderer-tree.js, etc.) must define buildVisual(input)
+ * and renderStep(step, idx) as plain globals — no module system, the
+ * topic's computeSteps(input) is inlined after this file at build time by
+ * animate.py. Only one renderer is loaded per page, so the global
+ * function names never collide.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-07-02
+ *
+ * Dependencies: none (renderer-*.js files depend on this, not vice versa)
+ * =============================================================================
  */
-
 // ── State ──────────────────────────────────────────
 let steps      = [];
 let current    = -1;
@@ -175,6 +190,13 @@ function renderCurrentStep() {
     const step = steps[current];
     if (!step) return;
 
+    // Keep the exposed globals live — steps/current/animInput are rebound
+    // by reference (steps, current) or value (animInput) on every step
+    // change, init, and autoplay tick, not just once at file load.
+    window.steps = steps;
+    window.current = current;
+    window.animInput = animInput;
+
     if (typeof renderStep === "function") {
         renderStep(step, current);
     }
@@ -256,8 +278,9 @@ function setStatusBar(items) {
     ).join("");
 }
 
-// Expose globally for renderer files (no module system — plain script concat)
-window.steps = steps;
+// Expose globally for renderer files (no module system — plain script concat).
+// window.steps/current/animInput are kept live by renderCurrentStep() on
+// every call — see there, not here, for the actual sync.
 window.goStep = goStep;
 window.togglePlay = togglePlay;
 window.initAnimation = initAnimation;

@@ -1,0 +1,136 @@
+{
+  "categories": [
+    {
+      "title": "📚 Concepts Mastered",
+      "items": [
+        {
+          "id": "c1",
+          "text": "Explain the difference between a Docker image and a Docker container"
+        },
+        {
+          "id": "c2",
+          "text": "Explain why containers share the host OS kernel while VMs each run a full guest OS"
+        },
+        {
+          "id": "c3",
+          "text": "Describe what a Dockerfile is and what FROM, WORKDIR, COPY, RUN, EXPOSE, and CMD each do"
+        },
+        {
+          "id": "c4",
+          "text": "Explain why environment-specific values should be passed at runtime rather than hardcoded into an image"
+        },
+        {
+          "id": "c5",
+          "text": "Describe the difference between an image tag and an image digest"
+        },
+        {
+          "id": "c6",
+          "text": "Explain what Amazon ECR is and how it relates to Docker Hub"
+        },
+        {
+          "id": "c7",
+          "text": "Explain why an IAM role attached to an EC2 instance is safer than a long-lived access key stored on that instance"
+        }
+      ]
+    },
+    {
+      "title": "🛠️ Skills Acquired",
+      "items": [
+        {
+          "id": "c8",
+          "text": "Create an IAM user, an IAM role, a key pair, and a security group from scratch in a personal AWS account"
+        },
+        {
+          "id": "c9",
+          "text": "Launch and manually configure an EC2 instance to run a Node.js app or a MySQL/MariaDB database directly on the guest OS"
+        },
+        {
+          "id": "c10",
+          "text": "Write a working Dockerfile for a Node.js application"
+        },
+        {
+          "id": "c11",
+          "text": "Build a Docker image and run it as a container with docker build and docker run"
+        },
+        {
+          "id": "c12",
+          "text": "Diagnose a container networking/configuration failure using docker logs and docker inspect"
+        },
+        {
+          "id": "c13",
+          "text": "Migrate a MySQL database's data into a Docker container using mysqldump"
+        },
+        {
+          "id": "c14",
+          "text": "Connect two containers on the same host so one can reach the other"
+        },
+        {
+          "id": "c15",
+          "text": "Authenticate the Docker client to Amazon ECR using an attached IAM role and push a tagged image"
+        },
+        {
+          "id": "c16",
+          "text": "Fully tear down a multi-resource AWS environment with no leftover charges"
+        }
+      ]
+    },
+    {
+      "title": "🎓 Exam Ready",
+      "items": [
+        {
+          "id": "c17",
+          "text": "Recall that containers virtualize at the application layer while VMs virtualize the full OS"
+        },
+        {
+          "id": "c18",
+          "text": "Recall that a tag is mutable while a digest is immutable"
+        },
+        {
+          "id": "c19",
+          "text": "Identify when Amazon ECS or Amazon EKS becomes the right choice over standalone containers"
+        },
+        {
+          "id": "c20",
+          "text": "Recall that ECR authentication requires a token from aws ecr get-login-password piped into docker login"
+        },
+        {
+          "id": "c21",
+          "text": "Identify the security risk of hardcoding credentials into an image versus injecting them at runtime"
+        },
+        {
+          "id": "c22",
+          "text": "Recall that an EC2 instance profile is how an instance assumes an IAM role automatically"
+        }
+      ]
+    },
+    {
+      "title": "💼 Hands-On Done",
+      "items": [
+        {
+          "id": "c23",
+          "text": "Completed Task 1-3: provisioned an IAM user, IAM role, key pair, security group, and container host from scratch"
+        },
+        {
+          "id": "c24",
+          "text": "Completed Task 4-8: migrated the coffee-supplier app and database to Docker containers and pushed the image to Amazon ECR"
+        },
+        {
+          "id": "c25",
+          "text": "Completed at least one Extended Task: inspected image layers, container config, logs, or simulated a dependency failure"
+        },
+        {
+          "id": "c26",
+          "text": "Completed Bonus Project 1: rebuilt the lab's setup using Docker Compose"
+        },
+        {
+          "id": "c27",
+          "text": "Completed Bonus Project 2: moved the database to Amazon RDS and credentials to Secrets Manager"
+        },
+        {
+          "id": "c28",
+          "text": "Ran Cleanup — terminated all EC2 instances, deleted the ECR repository, security group, key pair, and IAM role"
+        }
+      ]
+    }
+  ]
+}

@@ -1,19 +1,22 @@
 /**
- * renderer-string.js — Renders two-row string matching visualizations.
- * Covers 6 topics: KMP, Rabin-Karp, Z-algorithm, Rolling Hash, Suffix Array.
+ * =============================================================================
+ * File: renderer-string.js
+ * Path: js/notes/dsa/animation/renderer-string.js
+ * Project: Learning Dashboard
  *
- * Step schema:
- * {
- *   textPointer: i,          // index in text being compared
- *   patternPointer: j,       // index in pattern being compared
- *   matched: [i, ...],       // text indices confirmed matching (green)
- *   mismatch: i | null,       // text index where mismatch occurred (red)
- *   patternShift: n,          // optional — how far pattern has shifted (display only)
- *   label: "",
- *   decision: ""
- * }
+ * Description:
+ * Two-row string-matching visualization renderer — covers 6 topics (KMP,
+ * Rabin-Karp, Z-algorithm, Rolling Hash, Suffix Array). Defines
+ * buildVisual(input)/renderStep(step,idx) as globals, consumed by
+ * animation-core.js.
  *
- * Exposes: buildVisual(input), renderStep(step, idx)
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - js/notes/dsa/animation-core.js (must load first)
+ * =============================================================================
  */
 
 let _text = "";

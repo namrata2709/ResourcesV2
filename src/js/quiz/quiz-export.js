@@ -1,3 +1,26 @@
+/**
+ * =============================================================================
+ * File: quiz-export.js
+ * Path: js/quiz/quiz-export.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * QuizEngine.prototype extensions for exporting quiz results — injects
+ * "Copy summary" / "Download PDF" buttons next to the score summary.
+ * Copy builds a plain-text report (score, pass/fail, time, flagged
+ * questions, study ratings) and writes it via the Clipboard API, with a
+ * textarea+execCommand fallback for browsers without clipboard support.
+ * PDF "download" just triggers window.print() with a print-summary-only
+ * body class. Requires quiz-engine.js loaded first.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - js/quiz/quiz-engine.js (must load first)
+ * =============================================================================
+ */
 !(function () {
   "use strict";
   ((QuizEngine.prototype._injectExportButtons = function (t) {

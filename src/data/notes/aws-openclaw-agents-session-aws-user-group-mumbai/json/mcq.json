@@ -1,0 +1,900 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is OpenClaw primarily designed to create?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A chatbot that only answers questions"
+        },
+        {
+          "letter": "B",
+          "text": "An autonomous agent that can take actions on your behalf"
+        },
+        {
+          "letter": "C",
+          "text": "A relational database service"
+        },
+        {
+          "letter": "D",
+          "text": "A static website hosting platform"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "OpenClaw is explicitly built to create autonomous agents — systems that decide what actions to take, not just what to say — using skills, tools, and a foundation model.",
+        "why": "A pure chatbot only produces text and can't act. OpenClaw is not a database or hosting service."
+      }
+    },
+    {
+      "id": 2,
+      "question": "According to the session, what distinguishes an agent from a chatbot like a standard ChatGPT conversation?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Agents are always cheaper to run"
+        },
+        {
+          "letter": "B",
+          "text": "Agents can independently decide to take actions using tools, not just produce text"
+        },
+        {
+          "letter": "C",
+          "text": "Chatbots require more compute than agents"
+        },
+        {
+          "letter": "D",
+          "text": "There is no real difference between the two"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "The defining property of an agent is autonomous action-taking — deciding which tool to call and when — while a chatbot's output is limited to conversational text.",
+        "why": "Cost isn't the distinguishing factor. Compute requirements vary by implementation, not by category. The session drew an explicit distinction between the two."
+      }
+    },
+    {
+      "id": 3,
+      "question": "Which AWS compute service was described as the fastest way to get OpenClaw running from a pre-built blueprint?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Amazon EC2"
+        },
+        {
+          "letter": "B",
+          "text": "AWS Lambda"
+        },
+        {
+          "letter": "C",
+          "text": "Amazon Lightsail"
+        },
+        {
+          "letter": "D",
+          "text": "Amazon EKS"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Amazon Lightsail offers pre-built blueprints that let you launch an application like OpenClaw within minutes with minimal configuration.",
+        "why": "EC2 requires more manual setup even with CloudFormation. AWS Lambda isn't suited to a continuously-running gateway process. EKS requires cluster setup and container orchestration knowledge."
+      }
+    },
+    {
+      "id": 4,
+      "question": "What does AWS Session Manager remove the need for when connecting to an EC2 instance?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Opening an inbound rule for port 22"
+        },
+        {
+          "letter": "B",
+          "text": "An IAM role"
+        },
+        {
+          "letter": "C",
+          "text": "A VPC"
+        },
+        {
+          "letter": "D",
+          "text": "An Elastic IP address"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Session Manager connects through the AWS control plane using IAM permissions, so there's no need to open port 22 for SSH access.",
+        "why": "An IAM role is still required (it's how Session Manager authorizes the connection). A VPC is still needed to host the instance. An Elastic IP is unrelated to how Session Manager authenticates."
+      }
+    },
+    {
+      "id": 5,
+      "question": "Which AWS service is recommended as the enterprise-grade, serverless option for running production AI agents?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Amazon Bedrock AgentCore"
+        },
+        {
+          "letter": "B",
+          "text": "Amazon Lightsail"
+        },
+        {
+          "letter": "C",
+          "text": "AWS Elastic Beanstalk"
+        },
+        {
+          "letter": "D",
+          "text": "Amazon EC2"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Amazon Bedrock AgentCore is AWS's purpose-built, fully managed, serverless platform for production AI agent hosting with per-session isolation.",
+        "why": "Lightsail and EC2 are always-on, self-managed compute, not serverless agent platforms. Elastic Beanstalk is a general application deployment service, not agent-specific."
+      }
+    },
+    {
+      "id": 6,
+      "question": "In OpenClaw's architecture, what is the \"Gateway\"?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The control plane used to configure agents, skills, and channels"
+        },
+        {
+          "letter": "B",
+          "text": "A load balancer for HTTP traffic"
+        },
+        {
+          "letter": "C",
+          "text": "A CDN edge location"
+        },
+        {
+          "letter": "D",
+          "text": "A database connection proxy"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "The Gateway is OpenClaw's control plane — every configuration action for agents, skills, plugins, and channels happens through it.",
+        "why": "The Gateway is not a networking load balancer, CDN, or database component — those are unrelated AWS/infrastructure concepts."
+      }
+    },
+    {
+      "id": 7,
+      "question": "What type of processor architecture do AWS Graviton instances use?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "x86"
+        },
+        {
+          "letter": "B",
+          "text": "ARM"
+        },
+        {
+          "letter": "C",
+          "text": "SPARC"
+        },
+        {
+          "letter": "D",
+          "text": "PowerPC"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Graviton is AWS's family of ARM-based processors, generally offering a lower cost-per-vCPU for general-purpose workloads compared to x86.",
+        "why": "x86 is the traditional Intel/AMD architecture, not Graviton. SPARC and PowerPC are unrelated legacy architectures not used by Graviton."
+      }
+    },
+    {
+      "id": 8,
+      "question": "What is a \"skill\" in OpenClaw?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The actual code that performs an action"
+        },
+        {
+          "letter": "B",
+          "text": "A definition of how and when an agent should use a capability"
+        },
+        {
+          "letter": "C",
+          "text": "An IAM permission policy"
+        },
+        {
+          "letter": "D",
+          "text": "A CloudWatch alarm"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "A skill describes when and how an agent should use a capability — the decision logic — separate from the underlying implementation code.",
+        "why": "The actual executing code is the tool, not the skill. IAM policies and CloudWatch alarms are unrelated AWS concepts."
+      }
+    },
+    {
+      "id": 9,
+      "question": "What is a \"tool\" in OpenClaw?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The actual capability or code that performs an action"
+        },
+        {
+          "letter": "B",
+          "text": "A markdown file describing an agent's persona"
+        },
+        {
+          "letter": "C",
+          "text": "A billing dashboard"
+        },
+        {
+          "letter": "D",
+          "text": "A messaging channel like WhatsApp"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "A tool is the executable code behind a capability — for example, the code that actually performs a web search or writes a file.",
+        "why": "The persona file is SOUL.md, not a tool. Billing dashboards and channels are unrelated to the skill/tool distinction."
+      }
+    },
+    {
+      "id": 10,
+      "question": "Which file in OpenClaw defines the persona and identity of an agent?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "SOUL.md"
+        },
+        {
+          "letter": "B",
+          "text": "SKILL.md"
+        },
+        {
+          "letter": "C",
+          "text": "requirements.txt"
+        },
+        {
+          "letter": "D",
+          "text": "Dockerfile"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "SOUL.md defines an agent's persona, tone, and behavioral boundaries.",
+        "why": "SKILL.md defines capabilities, not persona. requirements.txt and Dockerfile are generic project files unrelated to agent persona."
+      }
+    },
+    {
+      "id": 11,
+      "question": "What is the defining risk of running OpenClaw's Gateway on a single instance shared by multiple users?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Users may see each other's chat sessions and data"
+        },
+        {
+          "letter": "B",
+          "text": "Higher AWS billing only"
+        },
+        {
+          "letter": "C",
+          "text": "Slower CPU performance only"
+        },
+        {
+          "letter": "D",
+          "text": "Loss of Graviton compatibility"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "OpenClaw's Gateway is designed for one user per instance; sharing it across multiple users without isolation controls can expose one user's session and data to another.",
+        "why": "The core issue is data/session isolation, not just cost or performance, and it has nothing to do with processor architecture compatibility."
+      }
+    },
+    {
+      "id": 12,
+      "question": "Which communication channels were shown as supported by OpenClaw in the session?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "WhatsApp, Discord, Telegram, and Slack"
+        },
+        {
+          "letter": "B",
+          "text": "Only email"
+        },
+        {
+          "letter": "C",
+          "text": "Only SMS"
+        },
+        {
+          "letter": "D",
+          "text": "Only video calls"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "The session demonstrated integration with WhatsApp, Discord, Telegram, and Slack as connected channels.",
+        "why": "Email, SMS, and video calls were not the channels demonstrated in the session."
+      }
+    },
+    {
+      "id": 13,
+      "question": "Which of the following is the traditional, cost-heavy multi-tenancy approach where every user gets fully dedicated resources?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Pool"
+        },
+        {
+          "letter": "B",
+          "text": "Silo"
+        },
+        {
+          "letter": "C",
+          "text": "Bridge"
+        },
+        {
+          "letter": "D",
+          "text": "Serverless"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "The silo model dedicates a complete, separate set of resources to each user, maximizing isolation at the cost of linear scaling of infrastructure per tenant.",
+        "why": "Pool shares resources across users. Bridge mixes shared and dedicated resources. \"Serverless\" is a hosting model, not a multi-tenancy pattern."
+      }
+    },
+    {
+      "id": 14,
+      "question": "In the pool multi-tenancy model, what is the main security trade-off?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Higher cost than silo"
+        },
+        {
+          "letter": "B",
+          "text": "Every user shares the same resources, increasing isolation risk"
+        },
+        {
+          "letter": "C",
+          "text": "No isolation is possible at all"
+        },
+        {
+          "letter": "D",
+          "text": "It cannot run on AWS"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "In the pool model, all users share the same underlying resources, which is the cheapest option but creates the highest risk of one user's data being exposed to another.",
+        "why": "Pool is actually the cheapest option, not the most expensive. Some isolation is still possible through application-level controls, just weaker than silo/bridge. It can absolutely run on AWS."
+      }
+    },
+    {
+      "id": 15,
+      "question": "What causes a \"cold start\" when using Amazon Bedrock AgentCore?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A new session environment must initialize because it wasn't already running"
+        },
+        {
+          "letter": "B",
+          "text": "The Gateway access token has expired"
+        },
+        {
+          "letter": "C",
+          "text": "An IAM role was deleted"
+        },
+        {
+          "letter": "D",
+          "text": "DNS propagation delay"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "AgentCore provisions execution environments on a per-session basis; a request that arrives when no session is already warm triggers initialization, causing a brief delay.",
+        "why": "Token expiry, IAM role deletion, and DNS propagation are unrelated to the serverless cold-start mechanism."
+      }
+    },
+    {
+      "id": 16,
+      "question": "What does Amazon Bedrock AgentCore Memory provide?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Short-term and long-term memory of user context across sessions"
+        },
+        {
+          "letter": "B",
+          "text": "Encrypted EBS volumes"
+        },
+        {
+          "letter": "C",
+          "text": "Auto Scaling for EC2 fleets"
+        },
+        {
+          "letter": "D",
+          "text": "A CDN cache for static assets"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "AgentCore Memory manages both in-session (short-term) and cross-session (long-term) context so an agent can recall user preferences without custom infrastructure.",
+        "why": "EBS encryption, Auto Scaling, and CDN caching are unrelated AWS features, not part of AgentCore Memory."
+      }
+    },
+    {
+      "id": 17,
+      "question": "What is the purpose of the AgentCore Browser component?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A managed, cloud-based Chromium browser runtime for agents to browse live websites"
+        },
+        {
+          "letter": "B",
+          "text": "A developer IDE for writing agent code"
+        },
+        {
+          "letter": "C",
+          "text": "A CloudFormation stack viewer"
+        },
+        {
+          "letter": "D",
+          "text": "A billing dashboard for AgentCore usage"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "AgentCore Browser provides a fast, secure, cloud-hosted browser environment specifically so agents can interact with live web content.",
+        "why": "It is not a code editor, a CloudFormation viewer, or a billing tool — those are unrelated AWS concepts."
+      }
+    },
+    {
+      "id": 18,
+      "question": "Which AWS capability can enforce filtering of sensitive data flowing between an application and a foundation model?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Amazon Bedrock Guardrails"
+        },
+        {
+          "letter": "B",
+          "text": "AWS WAF"
+        },
+        {
+          "letter": "C",
+          "text": "Amazon Route 53"
+        },
+        {
+          "letter": "D",
+          "text": "AWS Config"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Bedrock Guardrails sit between the application and the model, filtering sensitive data and disallowed content in both directions.",
+        "why": "WAF protects web applications from common exploits, not model traffic specifically. Route 53 is DNS. AWS Config tracks resource configuration compliance, not content filtering."
+      }
+    },
+    {
+      "id": 19,
+      "question": "Which layer of the seven-layer AI agent attack surface represents the underlying LLM itself?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The foundational model layer"
+        },
+        {
+          "letter": "B",
+          "text": "The observability layer"
+        },
+        {
+          "letter": "C",
+          "text": "The network layer"
+        },
+        {
+          "letter": "D",
+          "text": "The credentials/insider layer"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "The foundational model layer refers to the LLM at the core of the agent, which can itself be a target — for example, through prompt injection or unsafe fine-tuning data.",
+        "why": "Observability concerns monitoring and logging. Network concerns exposure and connectivity. Credentials/insider concerns access management — none of these are the model itself."
+      }
+    },
+    {
+      "id": 20,
+      "question": "What attack type involves importing a vulnerable or malicious skill package into an agent?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Skill/dependency supply-chain attack"
+        },
+        {
+          "letter": "B",
+          "text": "Cross-site scripting"
+        },
+        {
+          "letter": "C",
+          "text": "SQL injection"
+        },
+        {
+          "letter": "D",
+          "text": "DNS spoofing"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Because OpenClaw supports importing third-party skills, an unreviewed skill can carry a vulnerable or malicious tool implementation or dependency — a supply-chain risk.",
+        "why": "Cross-site scripting, SQL injection, and DNS spoofing are unrelated web/network attack categories, not specific to importing agent skills."
+      }
+    },
+    {
+      "id": 21,
+      "question": "Why is exposing an agent's server directly to the internet considered risky?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Attackers can query it to extract information about the underlying file system"
+        },
+        {
+          "letter": "B",
+          "text": "It increases AWS costs significantly"
+        },
+        {
+          "letter": "C",
+          "text": "It disables CloudWatch logging automatically"
+        },
+        {
+          "letter": "D",
+          "text": "It requires a paid AWS support plan"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Publicly-reachable agent servers can be discovered and queried by attackers to try to extract details about the underlying system, which is why private-subnet placement is recommended.",
+        "why": "Direct internet exposure doesn't inherently change AWS pricing, doesn't disable logging, and has no relationship to support plan tiers."
+      }
+    },
+    {
+      "id": 22,
+      "question": "What networking control was recommended to keep an agent deployment isolated in production?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Placing the compute inside a private subnet with no direct inbound internet access"
+        },
+        {
+          "letter": "B",
+          "text": "Assigning it a public Elastic IP address"
+        },
+        {
+          "letter": "C",
+          "text": "Disabling all IAM roles"
+        },
+        {
+          "letter": "D",
+          "text": "Enabling public read access on the associated storage"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Keeping compute in a private subnet with no direct inbound path from the internet, combined with a layer-7 protection service for any needed public entry point, reduces the attack surface.",
+        "why": "A public Elastic IP increases exposure rather than reducing it. Disabling IAM roles removes access control rather than improving security. Public storage access is a data exposure risk, not a fix."
+      }
+    },
+    {
+      "id": 23,
+      "question": "Which AWS service was mentioned for layer-7 application protection in front of an agent deployment?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Amazon CloudFront"
+        },
+        {
+          "letter": "B",
+          "text": "Amazon RDS"
+        },
+        {
+          "letter": "C",
+          "text": "AWS Glue"
+        },
+        {
+          "letter": "D",
+          "text": "AWS Batch"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Amazon CloudFront (often paired with AWS WAF) can provide layer-7 application protection for a publicly-reachable endpoint in front of a private backend.",
+        "why": "RDS is a managed database service, Glue is a data integration/ETL service, and Batch is for batch computing jobs — none provide layer-7 protection."
+      }
+    },
+    {
+      "id": 24,
+      "question": "What is the difference between a \"tool\" and an \"MCP server\" as discussed in the session?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A tool is a specific capability an agent can call; MCP is a protocol that standardizes how agents connect to external tools and systems"
+        },
+        {
+          "letter": "B",
+          "text": "They are exactly the same thing with different names"
+        },
+        {
+          "letter": "C",
+          "text": "MCP servers only work with Amazon Bedrock"
+        },
+        {
+          "letter": "D",
+          "text": "Tools cannot use MCP under any circumstance"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "A tool is the specific executable capability; MCP is a broader, standardized connection protocol that can expose many tools/systems to an agent without custom point-to-point integrations.",
+        "why": "They are related but distinct concepts, not synonyms. MCP is not exclusive to Bedrock — it's a general protocol. Tools frequently are exposed to agents through MCP."
+      }
+    },
+    {
+      "id": 25,
+      "question": "A company runs a single OpenClaw Gateway shared across 10 different enterprise customers. Which multi-tenancy limitation makes this unsafe for production?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "One Gateway is designed to serve a single user, so sessions and data can bleed across customers"
+        },
+        {
+          "letter": "B",
+          "text": "EC2 cannot run more than one process at a time"
+        },
+        {
+          "letter": "C",
+          "text": "Graviton instances do not support multiple users"
+        },
+        {
+          "letter": "D",
+          "text": "Lightsail blueprints expire automatically after 24 hours"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "OpenClaw's Gateway architecture assumes one user per instance; sharing it across many customers without per-user isolation can expose one customer's session and data to another.",
+        "why": "EC2 can run many processes concurrently. Graviton's ARM architecture has nothing to do with user isolation. Lightsail blueprints don't have an inherent 24-hour expiry."
+      }
+    },
+    {
+      "id": 26,
+      "question": "Why doesn't simply adding an Auto Scaling Group of EC2 instances solve OpenClaw's multi-tenancy problem?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Each new instance still requires its own Gateway and per-user configuration, multiplying management overhead"
+        },
+        {
+          "letter": "B",
+          "text": "Auto Scaling Groups cannot run containerized workloads"
+        },
+        {
+          "letter": "C",
+          "text": "Auto Scaling Groups are always more expensive than Lightsail"
+        },
+        {
+          "letter": "D",
+          "text": "Auto Scaling Groups automatically disable IAM roles"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Scaling out EC2 instances doesn't remove the underlying constraint that each Gateway is tied to a specific user configuration — you now have more Gateways to manage individually rather than a solved isolation problem.",
+        "why": "Auto Scaling Groups can absolutely run containers. Cost varies by configuration, not a fixed rule versus Lightsail. IAM roles are unaffected by Auto Scaling Group usage."
+      }
+    },
+    {
+      "id": 27,
+      "question": "What is the key architectural reason Amazon Bedrock AgentCore is recommended over EC2/Lightsail for multi-tenant production agent deployments?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It isolates each session in its own environment, giving per-session isolation without managing per-user Gateways"
+        },
+        {
+          "letter": "B",
+          "text": "It is the only AWS service that supports WhatsApp integration"
+        },
+        {
+          "letter": "C",
+          "text": "It eliminates the need for a foundation model entirely"
+        },
+        {
+          "letter": "D",
+          "text": "It provides unlimited free usage for any number of users"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "AgentCore provisions an isolated execution environment per session, so many users can be served without sharing a Gateway, session, or file system with one another — solving the isolation problem architecturally rather than by adding more manually-managed instances.",
+        "why": "WhatsApp integration is handled at the channel/application layer, not tied specifically to AgentCore. A foundation model is still required for reasoning. AgentCore is consumption-based, not free."
+      }
+    },
+    {
+      "id": 28,
+      "question": "A regulated bank must prove exactly which tools an agent executed, with what parameters, and what output was returned. Which capability does this require?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Comprehensive audit logging and observability of agent tool execution"
+        },
+        {
+          "letter": "B",
+          "text": "A larger EC2 instance type"
+        },
+        {
+          "letter": "C",
+          "text": "A public Gateway endpoint"
+        },
+        {
+          "letter": "D",
+          "text": "Disabling all skills entirely"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Proving exactly what an agent did requires detailed logging of every tool call, its parameters, and its output — this is what audit logging and observability capabilities (like AgentCore Observability, CloudWatch, and CloudTrail) are built to provide.",
+        "why": "Instance size, endpoint exposure, and disabling skills don't address the requirement to trace and prove agent actions."
+      }
+    },
+    {
+      "id": 29,
+      "question": "What is the architectural trade-off of the bridge multi-tenancy model compared to pure pool or pure silo?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It shares some resources for cost efficiency while isolating sensitive resources per user, balancing cost against isolation"
+        },
+        {
+          "letter": "B",
+          "text": "It has no security benefit over the pool model"
+        },
+        {
+          "letter": "C",
+          "text": "It is always more expensive than the silo model"
+        },
+        {
+          "letter": "D",
+          "text": "It cannot be implemented on AWS"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "The bridge model deliberately mixes shared and dedicated resources — cheaper than full silo, more isolated than full pool — making it the most common real-world compromise for production multi-tenant systems.",
+        "why": "Bridge does provide meaningfully better isolation than pure pool. It's typically cheaper than full silo, not more expensive. It can be implemented on AWS using standard isolation techniques like per-tenant IAM roles and resource tagging."
+      }
+    },
+    {
+      "id": 30,
+      "question": "Why is MCP described as needing separate security consideration from the agent's own decision-making?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "MCP simply provides a connection to external tools/systems; the agent must still independently decide whether returned data should be trusted or acted on"
+        },
+        {
+          "letter": "B",
+          "text": "MCP replaces the need for IAM entirely"
+        },
+        {
+          "letter": "C",
+          "text": "MCP automatically encrypts all agent traffic"
+        },
+        {
+          "letter": "D",
+          "text": "MCP only works inside Amazon Bedrock"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "MCP is a connection protocol, not a trust or security boundary — like a USB port, it enables a connection, but doesn't decide what's safe to do with what comes through it. That decision still rests with the agent and any guardrails wrapped around it.",
+        "why": "MCP does not replace IAM-based access control, does not automatically provide encryption, and is a general protocol usable outside of Amazon Bedrock."
+      }
+    },
+    {
+      "id": 31,
+      "question": "Which of the following is NOT one of the seven layers of AI agent attack surface discussed in the session?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Foundational model layer"
+        },
+        {
+          "letter": "B",
+          "text": "Data layer"
+        },
+        {
+          "letter": "C",
+          "text": "Billing layer"
+        },
+        {
+          "letter": "D",
+          "text": "Network layer"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "The seven layers discussed were the foundational model, data, agent framework, service/tooling, observability, network, and credentials/insider access — billing is not one of the security layers described.",
+        "why": "Foundational model, data, and network are all explicitly named layers in the framework discussed in the session."
+      }
+    },
+    {
+      "id": 32,
+      "question": "Why did the instructor say long-lived SSH keys are a greater risk than they may initially appear for an OpenClaw EC2 deployment?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A leaked key committed to a public repository grants durable, standing access until manually rotated or revoked"
+        },
+        {
+          "letter": "B",
+          "text": "SSH keys expire automatically after a single use"
+        },
+        {
+          "letter": "C",
+          "text": "SSH keys are incompatible with Graviton instances"
+        },
+        {
+          "letter": "D",
+          "text": "SSH keys are region-locked to a single AWS Region"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Unlike a temporary, IAM-authenticated Session Manager connection, an SSH key remains valid indefinitely once issued — if it leaks (for example, via an accidental commit to a public repo), it provides ongoing access until someone notices and manually revokes it.",
+        "why": "SSH keys do not expire after one use, are fully compatible with Graviton instances, and are not tied to a specific AWS Region."
+      }
+    }
+  ]
+}

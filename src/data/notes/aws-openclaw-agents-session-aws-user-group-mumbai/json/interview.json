@@ -1,0 +1,186 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is OpenClaw and what problem does it solve?",
+      "answer": "OpenClaw is an open-source, self-hosted framework for building autonomous AI agents that connect to everyday messaging channels and can take real actions — not just answer questions. It solves the gap between \"chatbots that talk\" and \"agents that do,\" letting teams build custom assistants without starting an agent framework from scratch.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 2,
+      "question": "What is the difference between an agent and a standard chatbot?",
+      "answer": "A chatbot produces text in response to a prompt and stops there. An agent is handed a goal along with tools and skills, and independently decides what action to take next — including calling tools, chaining multiple steps, and continuing to act without a human re-prompting each step.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 3,
+      "question": "What is a \"harness,\" and how does Claude Code fit that description?",
+      "answer": "A harness wraps a foundation model with built-in tools but is driven deliberately by a human, one task at a time. Claude Code running in a terminal is a harness — a developer triggers each action, so it isn't autonomously deciding what to do next the way an agent is.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 4,
+      "question": "What is the Gateway in OpenClaw's architecture?",
+      "answer": "The Gateway is OpenClaw's control plane — the single place where agents, skills, plugins, and channel connections are configured and managed, accessible via CLI or a web console.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 5,
+      "question": "Name three AWS options for hosting OpenClaw and one thing that distinguishes them.",
+      "answer": "Lightsail, EC2, and EKS all keep an instance running continuously, so there's no cold start but you pay for uptime regardless of usage. Amazon Bedrock AgentCore is serverless and session-based, so it has a brief cold start but only bills for active usage.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 6,
+      "question": "What is the difference between a \"skill\" and a \"tool\" in OpenClaw?",
+      "answer": "A skill defines how and when an agent should use a capability — the decision logic. A tool is the actual code that performs the action. The skill is the instruction manual; the tool is the machine it operates.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 7,
+      "question": "Why is AWS Session Manager considered more secure than SSH keys for connecting to an EC2 instance?",
+      "answer": "SSH keys are long-lived credentials that, if leaked (for example, committed to a public repository), grant standing access until manually rotated. Session Manager authenticates through IAM and the AWS control plane, requires no open inbound port, and leaves no long-lived key that can be exposed.",
+      "difficulty": "easy",
+      "category": "application"
+    },
+    {
+      "id": 8,
+      "question": "What communication channels can OpenClaw integrate with?",
+      "answer": "The session demonstrated WhatsApp, Telegram, Slack, and Discord as supported channels, each configurable independently from the Gateway.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 9,
+      "question": "What is Amazon Bedrock AgentCore in one sentence?",
+      "answer": "It's AWS's fully managed, serverless platform for building, running, and securing production AI agents at scale, with per-session isolation and consumption-based pricing.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 10,
+      "question": "Walk me through what happens architecturally when a user sends a WhatsApp message to an OpenClaw agent running on EC2.",
+      "answer": "The message hits the channel integration configured in the Gateway, which routes it to the relevant agent's session. The agent (using its SOUL.md persona and available skills) decides whether it needs a tool — for example, a web search — calls that tool if needed, and the foundation model composes a reply, which the Gateway sends back through the WhatsApp channel.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 11,
+      "question": "Your team wants to run OpenClaw cost-effectively for a quick proof of concept. Which AWS service would you pick and why?",
+      "answer": "(Situation) The team needs a fast, low-cost proof of concept, not a production deployment. (Task) Get OpenClaw running with minimal setup time. (Action) I'd launch it from the Lightsail blueprint, since it spins up in minutes with a fixed, predictable monthly cost. (Result) The team can test OpenClaw's capabilities immediately and delete the instance the moment testing wraps up, stopping billing right away.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 12,
+      "question": "Explain the cold start trade-off between EC2/Lightsail and Bedrock AgentCore.",
+      "answer": "EC2 and Lightsail keep an instance running all the time, so there's never a cold start, but you pay for that uptime whether or not the agent is being used. AgentCore only provisions a session's execution environment when a request comes in, so idle time is free, but the very first request to a cold session incurs a short initialization delay.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 13,
+      "question": "A user reports that after enabling channel sharing in a group chat, other members can see their private conversation with the agent. What's the root cause?",
+      "answer": "(Situation) The agent was added to a shared group channel with \"channel sharing\" enabled. (Task) Diagnose why messages are visible across users. (Action) I'd check the Gateway's session configuration — by default, OpenClaw's Gateway is designed for one user per instance, so a shared channel routes all users' conversations through the same underlying session. (Result) The fix is either disabling channel sharing so each user gets a distinct session, or migrating to a per-user Gateway or AgentCore's per-session isolation.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 14,
+      "question": "What is the purpose of the SOUL.md and SKILL.md files in OpenClaw?",
+      "answer": "SOUL.md defines an agent's persona and behavioral boundaries — who it is and how it should respond. SKILL.md files define specific capabilities the agent has access to and the conditions under which it should use them, separate from the underlying tool implementation.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 15,
+      "question": "Why does the instructor recommend Graviton-based instances for running OpenClaw?",
+      "answer": "Graviton is AWS's ARM-based processor family, which typically offers a lower cost-per-vCPU than comparable x86 instances for general-purpose workloads — a meaningful saving for a continuously-running agent host.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 16,
+      "question": "What role does an orchestrator agent play when a company deploys multiple specialized agents?",
+      "answer": "The orchestrator agent receives the incoming request, determines which specialized sub-agent's skill set matches the task, routes the work to that agent, and combines the responses back into a single reply to the user.",
+      "difficulty": "medium",
+      "category": "complexity"
+    },
+    {
+      "id": 17,
+      "question": "How does Amazon Bedrock AgentCore Memory improve a customer-facing agent's usefulness over time?",
+      "answer": "AgentCore Memory stores both short-term (in-session) and long-term (cross-session) context, so an agent can recall a returning user's preferences — like timezone or past requests — without re-asking, without the team having to build and manage that memory infrastructure themselves.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 18,
+      "question": "What is a skill supply-chain attack in the context of OpenClaw, and how could it occur?",
+      "answer": "OpenClaw supports importing community-published skills. If a skill's underlying tool code or its package dependencies are vulnerable or malicious, installing it without review can introduce that vulnerability directly into the agent's capabilities — the same risk profile as pulling in an unreviewed open-source dependency.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 19,
+      "question": "Why is placing an agent's compute resources in a private subnet considered a best practice before moving to production?",
+      "answer": "Publicly-reachable agent servers can be discovered and queried by attackers to extract information about the underlying system. Keeping the compute in a private subnet, with no direct inbound internet path, removes that exposure while still allowing management access via Session Manager and controlled outbound access via a layer-7 gateway.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 20,
+      "question": "Design considerations: how would you architect a multi-tenant OpenClaw-based support system for 50 enterprise customers so that no customer can see another's data?",
+      "answer": "I'd avoid a pure pool deployment given the customer count and sensitivity, and lean toward a bridge model: a shared front-end/routing layer for cost efficiency, but a dedicated agent session, memory store, and access token per customer. For true production-grade isolation without managing 50 separate Gateways, I'd evaluate migrating the runtime to Bedrock AgentCore, where each session is isolated by the platform itself rather than by infrastructure I have to provision per customer.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 21,
+      "question": "Compare the pool, silo, and bridge multi-tenancy models and explain when each is appropriate.",
+      "answer": "Pool shares everything across users — cheapest, but weakest isolation, appropriate only when data sensitivity is low. Silo dedicates everything per user — strongest isolation, but cost and operational overhead scale linearly with tenants, appropriate for high-sensitivity or regulated customers. Bridge shares low-sensitivity infrastructure while isolating sensitive resources per user, which is the pattern most production SaaS systems land on because it balances cost against risk.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 22,
+      "question": "A financial services company must prove regulatory compliance for their AI agents. What logging and governance controls would you put in place?",
+      "answer": "I'd implement comprehensive audit logging of every tool call the agent makes — including parameters passed and outputs received — so there's a full trail of what actions the agent took and why. I'd pair that with Bedrock Guardrails to enforce topic and data restrictions, IAM policies scoping the agent to only the actions it's authorized for, and alerting that fires the moment the agent attempts an action outside its defined boundary.",
+      "difficulty": "hard",
+      "category": "application"
+    },
+    {
+      "id": 23,
+      "question": "Explain why \"one Gateway per user\" is a hard architectural constraint in OpenClaw and what breaks if it's violated at scale.",
+      "answer": "The Gateway is a single control plane instance tied to one running process — it isn't designed to partition sessions between multiple distinct users on its own. If violated, all users sharing that Gateway share the same underlying session context by default, meaning messages, file access, and conversation history can bleed across users — a data isolation failure, not just a performance issue.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 24,
+      "question": "How would you use Amazon Bedrock Guardrails together with an OpenClaw-style agent to prevent sensitive data leakage in both directions?",
+      "answer": "I'd configure Guardrails to sit between the application layer and the model call: filtering outbound prompts so sensitive fields (like account numbers) never reach the model, and filtering the model's generated responses before they're returned to the user or downstream tool, in case the model attempts to surface information it shouldn't. This gives you a policy enforcement point independent of the agent's own (potentially compromised) decision-making.",
+      "difficulty": "hard",
+      "category": "implementation"
+    },
+    {
+      "id": 25,
+      "question": "You're advising a client moving from a single EC2-hosted OpenClaw gateway to a production multi-tenant deployment on Bedrock AgentCore. What migration risks and architectural changes would you flag?",
+      "answer": "I'd flag that the mental model shifts from \"one long-lived process holding all state\" to \"per-session isolated environments,\" which means any assumption of persistent local state (files written to the instance, in-memory session data) needs to move to AgentCore Memory or an external store. I'd also flag cold-start latency for the first request per session, the need to re-map skills/tools to AgentCore Gateway-exposed APIs and Lambda functions, and a cost-model change from fixed instance billing to consumption-based billing that needs new usage forecasting.",
+      "difficulty": "expert",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 26,
+      "question": "Given the seven layers of AI agent attack surface (foundational model, data, agent framework, service/tooling, observability, network, insider/credentials), design a defense-in-depth strategy mapping specific AWS controls to each layer.",
+      "answer": "Foundational model layer — Bedrock Guardrails for topic/content restrictions. Data layer — encryption at rest/in transit and least-privilege IAM on any data store the agent touches. Agent framework layer — reviewed, pinned skill/tool dependencies and scoped execution identities. Service/tooling layer — AgentCore Gateway or a controlled API layer instead of direct, unrestricted tool access. Observability layer — CloudWatch Logs/CloudTrail plus AgentCore Observability for full tool-call tracing. Network layer — private subnets, no inbound internet path, CloudFront/WAF for any public entry point. Credentials/insider layer — Session Manager instead of SSH keys, short-lived credentials via AgentCore Identity, and audit logging of all administrative access.",
+      "difficulty": "expert",
+      "category": "tradeoffs"
+    }
+  ]
+}

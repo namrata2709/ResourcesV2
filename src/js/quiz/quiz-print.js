@@ -1,4 +1,25 @@
-// @ts-nocheck
+/**
+ * =============================================================================
+ * File: quiz-print.js
+ * Path: js/quiz/quiz-print.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Print-format picker for quiz.html — modal with 4 modes (question paper,
+ * answer key, correct answers + reasons, full answer guide). Temporarily
+ * mutates the live DOM per the chosen mode (relabels options, hides/shows
+ * explanations) before window.print(), then restores it from a snapshot
+ * afterward. Wires the .print-button click listener on DOMContentLoaded.
+ * Requires quiz-engine.js loaded first (extends its prototype).
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - js/quiz/quiz-engine.js (must load first)
+ * =============================================================================
+ */
 !function () {
     'use strict';
 

@@ -1,7 +1,25 @@
 /**
- * dsa-visual-mcq.js — Loads visual-mcq.json, renders all 4 question types:
- * fillblank, trace, output, spotbug.
- * File: js/notes/dsa/dsa-visual-mcq.js
+ * =============================================================================
+ * File: dsa-visual-mcq.js
+ * Path: js/notes/dsa/dsa-visual-mcq.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Loads visual-mcq.json and renders all 4 visual question types
+ * (fillblank, trace, output, spotbug) as a quiz-slide carousel
+ * (#visualMcqContainer). Handles answer selection, feedback,
+ * prev/next navigation, progress tracking, and reset — state persisted
+ * to localStorage (key: <pageId>-visual-mcq).
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - window.NotePageId (set by notes-page-core.js before this loads)
+ * - window.announceToScreenReader (notes-accessibility.js, optional)
+ * - window.NotesSearch (notes-search.js, optional — rebuildIndex() call)
+ * =============================================================================
  */
 
 (function () {
@@ -114,7 +132,6 @@
             const card = document.createElement('div');
             card.className = 'quiz-option-card';
             card.dataset.index = i;
-            card.dataset.correct = (i === q.correct).toString();
             card.setAttribute('tabindex', '0');
             card.setAttribute('role', 'button');
 

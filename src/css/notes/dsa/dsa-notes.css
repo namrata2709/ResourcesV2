@@ -1,8 +1,29 @@
-/* ============================================
-   DSA NOTES STYLESHEET
-   Loaded alongside styles.css + notes.css
-   File: css/dsa-notes.css
-   ============================================ */
+/*
+==============================================================================
+File: dsa-notes.css
+Path: css/notes/dsa/dsa-notes.css
+Project: Learning Dashboard
+
+Description:
+DSA-specific note styling — tags, code-language tabs, the step-image/
+animation visualisation panel, LeetCode/contest problem tables, and
+image-prompt blocks. Loaded alongside styles.css + notes.css on every
+DSA note page only.
+
+Sections:
+1. Tags
+2. Code Tabs (Implementation section)
+3. Visualisation Panel
+4. LeetCode / Contest Problem Tables
+5. Image Prompt Blocks
+6. YouTube / Contest / Interview Cards
+7. Responsive
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-06-30
+==============================================================================
+*/
 
 /* ============================================
    TAGS
@@ -98,65 +119,120 @@
     background: var(--bg-secondary, #f8fafc);
 }
 
-.viz-tab-bar {
-    display: flex;
-    background: var(--bg-tertiary, #f1f5f9);
-    border-bottom: 1px solid var(--border-color, #e2e8f0);
-}
-
 /* ---------- Tab Bar ---------- */
 
 .viz-tab-bar {
     display: flex;
-    background: var(--bg-tertiary);
     border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
 }
 
-/* ---------- Tab ---------- */
+/* ---------- Tabs ---------- */
 
 .viz-tab {
     flex: 1;
-    padding: 14px 18px;
+
+    padding: 15px 18px;
+
     font: inherit;
-    font-size: 0.95rem;
+    font-size: .95rem;
     font-weight: 600;
 
     border: none;
     border-bottom: 3px solid transparent;
 
-    background: transparent;
+    background: var(--bg-tertiary);
     color: var(--text-secondary);
 
     cursor: pointer;
-    transition: all .2s ease;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        border-color .2s ease;
 }
 
 .viz-tab:hover {
     background: var(--bg-hover);
+    color: var(--text-primary);
 }
 
 /* ---------- Active ---------- */
 
 .viz-tab.active {
     background: var(--bg-primary);
-    color: var(--accent-color, #6366f1);
-    border-bottom-color: var(--accent-color, #6366f1);
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
 }
 
-/* ---------- Dark ---------- */
+/* ============================================
+   LIGHT
+   ============================================ */
+
+[data-theme="light"] .viz-tab-bar {
+    background: #eef2f7;
+}
+
+[data-theme="light"] .viz-tab {
+    background: #eef2f7;
+    color: #64748b;
+}
+
+[data-theme="light"] .viz-tab:hover {
+    background: #e6ebf3;
+}
+
+[data-theme="light"] .viz-tab.active {
+    background: #ffffff;
+    color: #6366f1;
+    border-bottom-color: #6366f1;
+}
+
+/* ============================================
+   COMFORT
+   ============================================ */
+
+[data-theme="comfort"] .viz-tab-bar {
+    background: #ece4d3;
+}
+
+[data-theme="comfort"] .viz-tab {
+    background: #ece4d3;
+    color: #6f6045;
+}
+
+[data-theme="comfort"] .viz-tab:hover {
+    background: #e4dac6;
+}
+
+[data-theme="comfort"] .viz-tab.active {
+    background: #fffaf0;
+    color: #7c5b2f;
+    border-bottom-color: #b28b46;
+}
+
+/* ============================================
+   DARK
+   ============================================ */
+
+[data-theme="dark"] .viz-tab-bar {
+    background: #1b2232;
+}
+
+[data-theme="dark"] .viz-tab {
+    background: #242d3f;
+    color: #9ca3af;
+}
+
+[data-theme="dark"] .viz-tab:hover {
+    background: #2d3850;
+    color: #e5e7eb;
+}
 
 [data-theme="dark"] .viz-tab.active {
     background: #111827;
-    color: #a5b4fc;
+    color: #ffffff;
     border-bottom-color: #818cf8;
-}
-
-/* ---------- Comfort ---------- */
-
-[data-theme="comfort"] .viz-tab.active {
-    background: #f8f2e7;
-    color: #7c5b2f;
-    border-bottom-color: #b28b46;
 }
 
 .viz-images {
@@ -209,6 +285,8 @@
 }
 
 .viz-counter {
+    display: inline-block;
+    text-align: center;
     font-size: 0.85rem;
     color: var(--text-secondary, #64748b);
     font-family: 'Courier New', monospace;
@@ -276,17 +354,8 @@
     text-decoration: underline;
 }
 
-.viz-tab {
-    background: transparent;
-    color: var(--text-secondary);
-    border-bottom: 2px solid transparent;
-}
 
-[data-theme="dark"] .viz-tab,
-[data-theme="comfort"] .viz-tab {
-    background: transparent;
-    color: var(--text-secondary);
-}
+
 
 /* ============================================
    LEETCODE / CONTEST PROBLEM TABLES

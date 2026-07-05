@@ -1,0 +1,207 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is Docker, in one sentence?",
+      "answer": "Docker is a platform for packaging an application with everything it needs to run into a portable container that behaves the same on any machine with the Docker engine installed.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 2,
+      "question": "What's the difference between a Docker image and a Docker container?",
+      "answer": "An image is the read-only, built template; a container is a running instance of that image. You can start many containers from one image.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 3,
+      "question": "Why are Docker containers faster to start than virtual machines?",
+      "answer": "Containers share the host's OS kernel instead of booting a full guest operating system, so there's far less to initialize — usually seconds instead of minutes.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 4,
+      "question": "What does the FROM instruction in a Dockerfile do?",
+      "answer": "It sets the base image the new image is built on top of, such as node:11-alpine, which supplies the OS layer and runtime the rest of the Dockerfile builds on.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 5,
+      "question": "What's the purpose of the EXPOSE instruction, and does it actually open a port?",
+      "answer": "EXPOSE documents which port the containerized app listens on; it doesn't publish that port to the host by itself — you still need the -p flag on docker run to map it.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 6,
+      "question": "What does the -d flag do on docker run?",
+      "answer": "It runs the container in detached mode, meaning it runs in the background and returns your terminal immediately instead of attaching to the container's output.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 7,
+      "question": "What does docker ps show you?",
+      "answer": "A list of currently running containers, including their container ID, image, status, and published ports.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 8,
+      "question": "How do you check the logs of a running container?",
+      "answer": "docker logs <container-name-or-id prints the container's standard output and error streams, which is usually the first place to look when a container isn't behaving.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 9,
+      "question": "What is Amazon ECR?",
+      "answer": "Amazon Elastic Container Registry is AWS's managed service for storing and distributing private Docker images, similar in role to Docker Hub but integrated with IAM and other AWS services.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 10,
+      "question": "What's the difference between docker stop and docker rm?",
+      "answer": "docker stop gracefully stops a running container but leaves it on disk; docker rm deletes the container entirely. You typically stop before you remove.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 11,
+      "question": "Why did the containerized Node app fail to connect to the database the first time it was run in this lab?",
+      "answer": "The container was started without the APP_DB_HOST environment variable, so the app fell back to a hardcoded IP address baked into the source code that didn't match the actual MySQL host.",
+      "difficulty": "easy",
+      "category": "application"
+    },
+    {
+      "id": 12,
+      "question": "What command do you use to open a shell inside a running container?",
+      "answer": "docker exec -ti <container-id sh opens an interactive shell session inside the container so you can inspect files, processes, or environment variables directly.",
+      "difficulty": "easy",
+      "category": "implementation"
+    },
+    {
+      "id": 13,
+      "question": "Why did this lab attach an IAM role to the EC2 instance instead of running aws configure with an access key?",
+      "answer": "An attached IAM role gives the instance temporary, automatically-rotated credentials with no secret stored on disk, which is safer than a long-lived access key that could be copied, leaked, or forgotten in a config file.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 14,
+      "question": "What's the purpose of a security group in this lab?",
+      "answer": "It's a stateful virtual firewall controlling which inbound traffic — SSH, HTTP on port 80, the app on port 3000, and MySQL on port 3306 — is allowed to reach each EC2 instance, and from where.",
+      "difficulty": "easy",
+      "category": "complexity"
+    },
+    {
+      "id": 15,
+      "question": "A teammate says \"our app works locally but breaks in the container — the database connection just times out.\" Walk through how you'd debug it.",
+      "answer": "(Situation) The containerized app can't reach the database that works fine outside the container. (Task) Find why the network path is broken. (Action) I'd check docker inspect on both containers for their network and IP, confirm the app was launched with the correct APP_DB_HOST value via -e, run docker logs to see the exact connection error, and confirm both containers are on the same Docker network. (Result) In almost every case like this the fix is either a missing/incorrect environment variable or the two containers being on different networks.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 16,
+      "question": "Why did this lab pass the database host as an environment variable instead of hardcoding it into the Dockerfile?",
+      "answer": "Hardcoding a specific IP into the image would tie that image to one environment — the same image needs to work with a different database host in dev, staging, and production, so the value belongs in the container's runtime configuration, not baked into the build.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 17,
+      "question": "What happens to data written to a MySQL container if that container is deleted, and how would you prevent losing it?",
+      "answer": "Data written after the image was built lives only in the container's writable layer and is lost when the container is removed unless a Docker volume or bind mount is attached to persist it outside the container's lifecycle.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 18,
+      "question": "Explain the difference between an image tag and an image digest.",
+      "answer": "A tag like \"latest\" is a mutable, human-friendly pointer that can be reassigned to a different image at any time; a digest is an immutable SHA-256 hash of the exact image content, so it always identifies one specific build.",
+      "difficulty": "medium",
+      "category": "complexity"
+    },
+    {
+      "id": 19,
+      "question": "Why do you need to authenticate Docker to Amazon ECR before pushing an image, and how is that authentication typically done?",
+      "answer": "ECR repositories are private by default and protected by IAM, so the Docker client needs short-lived credentials; you get an authorization token with aws ecr get-login-password and pipe it into docker login so subsequent push/pull commands are authorized.",
+      "difficulty": "medium",
+      "category": "implementation"
+    },
+    {
+      "id": 20,
+      "question": "A client's application container works fine when tested alone but can't reach the database container after both are restarted. What's the most likely cause and how would you confirm it?",
+      "answer": "(Situation) Both containers restarted and connectivity broke. (Task) Determine why. (Action) Container internal IP addresses on the default bridge network aren't guaranteed to stay the same across restarts, so I'd run docker inspect on the database container to get its current IP and compare it against what the app container was launched with. (Result) If the IPs differ, that's the cause — the fix is either relaunching the app container with the new IP or, better, using a user-defined Docker network with DNS-based container name resolution so IPs don't need to be tracked manually.",
+      "difficulty": "medium",
+      "category": "application"
+    },
+    {
+      "id": 21,
+      "question": "Why did this lab use a security group with a self-referencing rule for port 3306 instead of opening it to \"My IP\" like the other ports?",
+      "answer": "Port 3306 only needs to be reachable from other instances doing legitimate database work — the app and container host — not from your personal laptop directly, so scoping the source to the security group itself keeps the database off the public internet while still letting the lab's own instances talk to it.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 22,
+      "question": "Why is it good practice to run docker image prune periodically?",
+      "answer": "Every build and rebuild can leave behind unused intermediate images and layers, which quietly consume disk space; prune removes the ones no longer referenced by any container.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 23,
+      "question": "Why would you choose a smaller base image like node:11-alpine over the full node:11 image?",
+      "answer": "Smaller base images mean smaller image sizes, faster builds and pulls, and a reduced attack surface since fewer packages are present — the trade-off is that Alpine's minimal package set can occasionally miss a library a dependency expects.",
+      "difficulty": "medium",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 24,
+      "question": "How does port mapping differ from the EXPOSE instruction, conceptually?",
+      "answer": "EXPOSE is documentation baked into the image about which port the app listens on internally; port mapping via -p is a runtime decision about whether and how that internal port is made reachable from the host machine.",
+      "difficulty": "medium",
+      "category": "complexity"
+    },
+    {
+      "id": 25,
+      "question": "This lab manually dumped and reloaded a MySQL database into a container. Why might a production team avoid running their production database itself inside a container?",
+      "answer": "Databases need durable, high-performance persistent storage and careful backup/failover handling; teams commonly prefer a managed service like Amazon RDS for the database tier and reserve containers for stateless application logic that's easy to scale and replace.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 26,
+      "question": "If you needed to run two instances of the node_app container simultaneously on the same host, what would you need to change from this lab's setup?",
+      "answer": "Each container needs a unique name and a unique host port to map to (since two containers can't both bind host port 3000), and both should be pointed at the same APP_DB_HOST so they share the same backend data.",
+      "difficulty": "hard",
+      "category": "application"
+    },
+    {
+      "id": 27,
+      "question": "What are the architectural trade-offs of migrating this lab's setup from standalone containers to Amazon ECS in production?",
+      "answer": "ECS adds orchestration — automatic restarts, scaling based on load, rolling deployments, and integration with a load balancer — at the cost of more moving pieces to configure (task definitions, services, IAM roles, networking) compared to a single docker run command; it's the right trade for anything beyond a single fixed host.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 28,
+      "question": "Why does an image digest matter more than a tag when you need reproducible deployments?",
+      "answer": "Because \"latest\" can silently point to a different build tomorrow than it does today, pinning a deployment to a specific digest guarantees you're always running the exact bytes that were tested, which matters for auditability and rollback.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    },
+    {
+      "id": 29,
+      "question": "This lab attached AdministratorAccess to a lab-only IAM user for convenience. What would a least-privilege version of this lab's IAM permissions actually need to contain?",
+      "answer": "Scoped EC2 permissions to launch/terminate specific instance types and manage the lab's security group and key pair, IAM permissions limited to creating and passing the one ECR role, and ECR permissions limited to repository creation and image push/pull — deliberately excluding broad access to unrelated services the lab never touches.",
+      "difficulty": "hard",
+      "category": "tradeoffs"
+    }
+  ]
+}

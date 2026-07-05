@@ -12,7 +12,9 @@ A free, self-paced study hub with structured notes, quizzes, and hands-on labs.
 
 ## Tech
 
-Static site, no framework, no build step — vanilla HTML/CSS/JS, hosted on GitHub Pages.
+Static site, no framework — vanilla HTML/CSS/JS, hosted on GitHub Pages.
+A Node build step (`npm run build`, via `tools/minify.js`) minifies and
+copies `src/` to `dist/` before every deploy (see `.github/workflows/`).
 Content is authored in Markdown and compiled to HTML via Python scripts (see `python/`).
 
 ## License

@@ -1,10 +1,25 @@
 /**
- * Dashboard Manager
- * Fetches data/index/dashboard-cards.json and renders one card per entry.
- * Cards can be subject entry-points (AWS, DSA, ...) or standalone modules
- * that cut across subjects (Quiz). Adding a new card later requires only
- * a new entry in data/index/dashboard-cards.json — no HTML changes.
- * File: js/dashboard.js
+ * =============================================================================
+ * File: dashboard.js
+ * Path: js/dashboard.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Dashboard home (index.html) card renderer. Fetches
+ * data/index/dashboard-cards.json and renders one card per entry — cards
+ * can be subject entry-points (AWS, DSA) or standalone cross-subject
+ * modules (Quiz). Adding a future subject is a JSON-only change, no
+ * HTML/JS edits required. Stays at js/ root deliberately, not under
+ * js/shared/ — it's a dashboard-page-only singleton with no siblings.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - window.SiteConfig (js/shared/site-config.js)
+ * - data/index/dashboard-cards.json
+ * =============================================================================
  */
 
 (function () {
@@ -25,7 +40,7 @@
         if (!grid) return;
 
         try {
-            const response = await fetch('data/index/dashboard-cards.json');
+            const response = await fetch(window.SiteConfig.dataPath('index/dashboard-cards.json'));
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const data = await response.json();

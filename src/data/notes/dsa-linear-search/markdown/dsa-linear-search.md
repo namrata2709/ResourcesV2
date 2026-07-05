@@ -8,7 +8,7 @@ date_modified:
 keywords: [linear search, sequential search, array traversal, unsorted search, brute force search, linear scan]
 tags: [searching, arrays, beginner, brute-force]
 prerequisites: []
-when_to_use: Use when the input array or list is unsorted and you need to find a value, count occurrences, or confirm existence; also use when the dataset is small enough that O(n) is acceptable and avoiding a sort is preferable.
+when_to_use: Use when the problem gives an unsorted array, linked list, or data stream and asks to find a value, its position, or whether it exists; also when n ≤ ~20, the input cannot be mutated, or you need all occurrences rather than just the first.
 comparison_topic: Binary Search
 lc_tag_url: https://leetcode.com/tag/array/
 cp_algorithms_url: null
@@ -46,17 +46,17 @@ That is the entire algorithm. There is no preprocessing step, no auxiliary struc
 The key invariant: after checking index `i`, every element at indices `0` through `i` has been ruled out. The unseen suffix `arr[i+1…n-1]` is the remaining search space, and it shrinks by exactly one element per iteration.
 [/important]
 
-A concrete trace on `arr = [4, 2, 7, 1, 9, 3]`, searching for `target = 9`:
+A concrete trace on `arr = [3, 7, 1, 9, 4, 6, 2, 8]`, searching for `target = 4`:
 
-- Index 0: `4 ≠ 9` → continue
-- Index 1: `2 ≠ 9` → continue
-- Index 2: `7 ≠ 9` → continue
-- Index 3: `1 ≠ 9` → continue
-- Index 4: `9 == 9` → **return 4**
+- Index 0: `3 ≠ 4` → continue
+- Index 1: `7 ≠ 4` → continue
+- Index 2: `1 ≠ 4` → continue
+- Index 3: `9 ≠ 4` → continue
+- Index 4: `4 == 4` → **return 4**
 
-Five comparisons to find an element near the end of a six-element array — exactly what you'd expect from a left-to-right scan.
+Five comparisons to find the target near the middle of an eight-element array — exactly what you'd expect from a left-to-right scan.
 
-[image:inline-01-trace-example.png|Linear search step-by-step on [4,2,7,1,9,3] searching for 9 — each cell is highlighted as it is compared, with the match highlighted in green at index 4]
+[image:inline-01-trace-example.png|Linear search step-by-step on [3,7,1,9,4,6,2,8] searching for 4 — each cell is highlighted as it is compared, with the match highlighted in green at index 4]
 
 </collapsible-section>
 
@@ -138,7 +138,7 @@ It is tempting to say "average case is O(n/2) = O(n)" and leave it at that. The 
 | Works on linked lists | Yes | No (no random access) |
 | Works on streams | Yes | No (needs indexed access) |
 | Preprocessing cost | None | O(n log n) to sort if unsorted |
-| Implementation complexity | Trivial | Moderate (off-by-one errors are common) |
+| Implementation complexity | Minimal (one loop, one comparison) | Moderate (off-by-one errors are common) |
 
 The crossover point — where binary search starts winning despite the sort cost — depends on how many times you search the same dataset. If you search once, linear search is usually better because sorting costs O(n log n) but one linear scan costs O(n). If you search k times, the total cost is O(n + k log n) with sorting versus O(kn) without; binary search wins when `k > n / log n`.
 
@@ -149,7 +149,7 @@ The crossover point — where binary search starts winning despite the sort cost
 
 - **Returning the value instead of the index.** Most problems ask where the element is, not what it equals. Returning `arr[i]` instead of `i` is a silent bug that passes many tests by coincidence.
 - **Off-by-one at the boundary.** Using `i < n - 1` instead of `i < n` misses the last element. Using `i <= n` causes an index-out-of-bounds on the extra iteration.
-- **Assuming the first result is unique.** If the problem asks for the *last* occurrence or *all* occurrences, returning on the first match produces a wrong answer that is easy to overlook in testing.
+- **Assuming the first result is unique.** If the problem asks for the *last* occurrence or *all* occurrences, returning on the first match produces a wrong answer that is straightforward to overlook in testing.
 - **Forgetting to handle the not-found case.** Falling through the loop without returning `-1` (or `None`) leaves the caller with an undefined or garbage value. Always have an explicit sentinel return after the loop.
 - **Using linear search on a sorted array when n is large.** If the interviewer tells you the array is sorted and n can be 10⁶, they expect binary search. Defaulting to a loop signals unawareness of the sorted property.
 - **Mutating input in sentinel search without restoring.** The sentinel trick places the target at `arr[n-1]` temporarily; forgetting to restore the original last element corrupts the caller's data.
@@ -571,6 +571,13 @@ cat: complexity
 [/interview]
 
 [interview]
+q: How does the number of comparisons in linear search change when the array contains duplicates?
+a: The count of comparisons does not change — linear search still checks indices 0 through k, where k is the position of the first match, regardless of duplicates. Duplicates only affect which index is returned (always the leftmost). If you need the last occurrence, the scan always runs to completion in O(n). If you need all occurrences, the scan also runs to O(n). Duplicates never reduce the comparison count below the position of the first hit.
+d: easy
+cat: complexity
+[/interview]
+
+[interview]
 q: How would you implement a type-generic linear search in a statically typed language?
 a: Use generics (Java/C++) or templates (C++) with an equality comparator or Comparable interface. In Java: `public static <T> int linearSearch(T[] arr, T target, Comparator<T> cmp)`, comparing via `cmp.compare(arr[i], target) == 0`. In C++: `template<typename T, typename Pred> int linearSearch(vector<T>& arr, Pred predicate)`. The predicate approach is the most flexible — it decouples the search from the equality definition, enabling searches like "first element satisfying condition" without changing the function signature.
 d: medium
@@ -740,7 +747,7 @@ o: 4 | 1 | 2 | [1, 2, 4]
 c: 1
 e: Standard linear search returns the FIRST occurrence. Index 1 holds value 4 and is the first match; the algorithm returns immediately.
 w: 4 is the value itself, not the index. 2 is the second occurrence (index 2). Returning a list requires the find-all variant.
-d: intermediate
+d: beginner
 [/mcq]
 
 [mcq]
@@ -749,7 +756,7 @@ o: Linear search is faster on average | Linear search uses less space | Linear s
 c: 1
 e: A linear scan over an array uses O(1) extra memory — no hash table overhead. Hash tables require O(n) extra space for the buckets and collision structures, plus O(n) time to build.
 w: Hash table is O(1) average — faster than O(n). Both work on unsorted data conceptually. Linear search is O(n) worst case, not O(1).
-d: intermediate
+d: beginner
 [/mcq]
 
 [mcq]
@@ -758,7 +765,7 @@ o: Binary search | Linear search | Hash table lookup | B-tree search
 c: 1
 e: A stream delivers elements sequentially with no way to jump to an arbitrary position or re-read earlier elements. Linear search naturally consumes elements one by one, making it the only applicable general search strategy.
 w: Binary search requires random access and re-reads. Hash table lookup requires the full dataset to be ingested first. B-tree search requires an indexed structure.
-d: intermediate
+d: beginner
 [/mcq]
 
 [mcq]
@@ -821,7 +828,7 @@ o: Always O(1) | O(n) in the worst case for any single element | Approaches O(1)
 c: 2
 e: Move-to-front self-organizes the list so the most frequently accessed elements cluster at the front. After enough queries, the top-k most popular elements are at positions 1..k and are found in O(k) comparisons. For the single most popular element, the expected cost approaches O(1).
 w: Always O(1) is false — rare elements stay near the back. O(n) worst-case for a single element is true but misses the optimization point. O(n²) is wrong; shuffling is O(n) but rarely triggered.
-d: advanced
+d: intermediate
 [/mcq]
 
 [mcq]
@@ -866,7 +873,7 @@ o: Worst-case time | Average time for unsuccessful searches | Space complexity |
 c: 1
 e: For unsuccessful searches on sorted data, without early exit you always scan all n elements. With early exit you stop at the first element exceeding the target — on average halfway through, cutting unsuccessful-search time to n/2. Worst case (target would be the largest) still visits n elements.
 w: Worst-case time remains O(n) (target larger than all elements). Space is unchanged at O(1). Best case is already O(1) — target at index 0.
-d: advanced
+d: intermediate
 [/mcq]
 
 [mcq]
@@ -1205,6 +1212,16 @@ SHOW:
 - Target value "4" shown in a box on the right labeled "target"
 - An arrow from the array to a green result box showing "Found at index 4"
 - A red result path showing "Not found → return -1" as an alternative outcome below
+---
+inline-01-trace-example.png:
+CONCEPT: Step-by-step comparison trace showing how linear search eliminates elements one by one until the target is found.
+SHOW:
+- Array [3, 7, 1, 9, 4, 6, 2, 8] with index labels 0–7 below each cell
+- Cells at indices 0–3 (values 3, 7, 1, 9) greyed out with small ✗ marks indicating failed comparisons
+- Cell at index 4 (value 4) highlighted bright green with a ✓ checkmark
+- An orange pointer arrow labelled "i" sitting below index 4
+- Target badge "target = 4" in the top-right corner
+- Comparison annotations: "3≠4", "7≠4", "1≠4", "9≠4", "4==4 ✓" shown above or below each cell
 ---
 step-01-initial.png:
 CONCEPT: Initial state — the pointer is at index 0 and no elements have been examined yet.

@@ -1,22 +1,79 @@
-/* ============================================
-   DSA PRINT STYLESHEET
-   Loaded ONLY inside the print preview window, injected by dsa-print.js
-   right after notes-print.js opens that window. Covers every class
-   notes-print.css has no rule for: code-tabs, viz-panel, problem/contest
-   tables, and the new MCQ/Interview wrapper chrome introduced when the
-   schema was fixed to match notes-mcq.js/notes-interview.js exactly.
-   File: css/dsa-print.css
-   ============================================ */
+/*
+==============================================================================
+File: dsa-print.css
+Path: css/notes/dsa/dsa-print.css
+Project: Learning Dashboard
+
+Description:
+Print-only overrides for DSA note pages. Loaded ONLY inside the print
+preview window, injected by notes-print.js right after it opens that
+window. Covers everything notes-print.css has no rule for: code tabs,
+the viz panel, problem/contest tables, and MCQ/Interview wrapper chrome.
+
+Sections:
+1. Visualisation (static image sequence + a printed link to the
+   interactive animation, since the iframe itself can't render on paper)
+2. Implementation (active language panel only)
+3. LeetCode / Contest Problem Tables
+4. MCQ Wrapper Chrome
+5. Interview Wrapper Chrome
+6. Visual Questions
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-07-04
+==============================================================================
+*/
 
 /* ============================================
-   VISUALISATION — animation iframe has no place on paper,
-   show the full static image sequence instead of just "active"
+   VISUALISATION — the animation iframe itself can't render on paper, so
+   print shows the full static image sequence (as before) PLUS a visible
+   line pointing to the interactive version, using its fully-resolved
+   URL (stamped onto data-print-url by
+   installVisualisationPrintTransform() in dsa-print.js — see there for
+   why .href rather than the raw relative attribute is used). This
+   replaces fully hiding .viz-animation: the iframe/tab-bar/nav are still
+   hidden, but the "Open full screen ↗" link and its URL now survive
+   into print instead of disappearing along with the rest of that view.
    ============================================ */
 
-.viz-animation,
+.viz-animation {
+    display: block !important; /* overrides the inline display:none the on-screen tab switcher sets */
+}
+
+.viz-animation iframe,
 .viz-tab-bar,
 .viz-nav {
     display: none !important;
+}
+
+.viz-animation-footer {
+    display: block !important;
+    border-top: 1pt dashed #999;
+    background: none;
+    padding: 0.3cm 0;
+    margin-top: 0.3cm;
+}
+
+.viz-fullscreen-link {
+    border: none;
+    padding: 0;
+    background: none;
+    color: #111;
+    text-decoration: underline;
+    font-size: 9pt;
+}
+
+.viz-fullscreen-link::before {
+    content: "🎬 Interactive animation: ";
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.viz-fullscreen-link::after {
+    content: " (" attr(data-print-url) ")";
+    font-weight: 400;
+    word-break: break-all;
 }
 
 .viz-step-img {
@@ -104,16 +161,6 @@
    touches them. Hide the interactive chrome, keep the slides.
    ============================================ */
 
-.quiz-info,
-.quiz-counter,
-.quiz-score-display,
-.quiz-summary-section,
-.quiz-summary-btn,
-.quiz-reset-container,
-.quiz-reset-btn {
-    display: none !important;
-}
-
 .quiz-carousel-container {
     border: none;
     padding: 0;
@@ -128,12 +175,3 @@
     display: none !important;
 }
 
-/* ============================================
-   VISUAL QUESTIONS — reuses .quiz-slide/.quiz-option-card styling
-   from notes-print.css already (same class names), only the
-   wrapper navigation needs hiding, same pattern as MCQ above
-   ============================================ */
-
-#visualMcqContainer + .quiz-navigation {
-    display: none !important;
-}

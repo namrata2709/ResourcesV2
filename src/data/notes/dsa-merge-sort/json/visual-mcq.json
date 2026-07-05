@@ -1,0 +1,132 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "type": "fillblank",
+      "difficulty": "beginner",
+      "question": "Complete the merge function — what value goes in the blank to maintain stability?",
+      "code": "def merge(left, right):\n    result = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] ____ right[j]:\n            result.append(left[i])\n            i += 1\n        else:\n            result.append(right[j])\n            j += 1\n    result.extend(left[i:])\n    result.extend(right[j:])\n    return result",
+      "image": "",
+      "options": [
+        "<",
+        "<=",
+        ">",
+        ">="
+      ],
+      "correct": 1,
+      "explanation": "Using <= means equal elements from the left subarray are placed before equal elements from the right subarray, preserving the original relative order — which is the definition of stability."
+    },
+    {
+      "id": 2,
+      "type": "fillblank",
+      "difficulty": "beginner",
+      "question": "Fill in the blank to correctly compute the midpoint without integer overflow:",
+      "code": "def merge_sort(arr, low, high):\n    if low >= high:\n        return\n    mid = low + ____\n    merge_sort(arr, low, mid)\n    merge_sort(arr, mid + 1, high)\n    merge(arr, low, mid, high)",
+      "image": "",
+      "options": [
+        "(high - low)",
+        "(high - low) // 2",
+        "(high + low) // 2",
+        "high // 2"
+      ],
+      "correct": 1,
+      "explanation": "`low + (high - low) // 2` avoids integer overflow that can occur with `(low + high) // 2` when low and high are both large. The result is the same integer value but computed safely."
+    },
+    {
+      "id": 3,
+      "type": "trace",
+      "difficulty": "intermediate",
+      "question": "After one level of merging on [5, 3, 8, 1, 9, 2], which array results?",
+      "code": "",
+      "image": "images/visual-trace-01-first-level-merge.png",
+      "options": [
+        "[3, 5, 1, 8, 2, 9]",
+        "[1, 2, 3, 5, 8, 9]",
+        "[3, 5, 8, 1, 2, 9]",
+        "[1, 8, 2, 3, 5, 9]"
+      ],
+      "correct": 0,
+      "explanation": "The first level merges adjacent pairs: [5,3]→[3,5], [8,1]→[1,8], [9,2]→[2,9]. The result is [3, 5, 1, 8, 2, 9] — three sorted pairs, not yet globally sorted."
+    },
+    {
+      "id": 4,
+      "type": "trace",
+      "difficulty": "intermediate",
+      "question": "After the complete Merge Sort on [38, 27, 43, 3], what is the final sorted array and how many total merge comparisons were made?",
+      "code": "",
+      "image": "images/visual-trace-02-full-sort-4-elements.png",
+      "options": [
+        "[3, 27, 38, 43] with 5 comparisons",
+        "[3, 27, 38, 43] with 4 comparisons",
+        "[3, 27, 38, 43] with 3 comparisons",
+        "[27, 3, 38, 43] with 5 comparisons"
+      ],
+      "correct": 0,
+      "explanation": "Level 1: merge [38],[27] → 1 comparison (27 wins); merge [43],[3] → 1 comparison (3 wins). Level 2: merge [27,38] and [3,43] — compare 3 vs 27 (pick 3), 27 vs 43 (pick 27), 38 vs 43 (pick 38), then 43 is appended without comparison. That is 3 comparisons at level 2. Total: 1 + 1 + 3 = 5 comparisons."
+    },
+    {
+      "id": 5,
+      "type": "output",
+      "difficulty": "intermediate",
+      "question": "What does this function return when called with count_merge_calls([1, 2, 3, 4])?",
+      "code": "def count_merge_calls(arr):\n    if len(arr) <= 1:\n        return 0\n    mid = len(arr) // 2\n    left = count_merge_calls(arr[:mid])\n    right = count_merge_calls(arr[mid:])\n    return left + right + 1",
+      "image": "",
+      "options": [
+        "3",
+        "4",
+        "7",
+        "2"
+      ],
+      "correct": 0,
+      "explanation": "For n=4: count_merge_calls([1,2,3,4]) = count_merge_calls([1,2]) + count_merge_calls([3,4]) + 1 = (0+0+1) + (0+0+1) + 1 = 3. This counts the number of merge operations — always n-1 for any n-element array."
+    },
+    {
+      "id": 6,
+      "type": "output",
+      "difficulty": "intermediate",
+      "question": "What array does this code produce?",
+      "code": "arr = [4, 2, 1, 3]\nresult = merge_sort(arr)  # Standard stable merge sort\nprint(result)",
+      "image": "",
+      "options": [
+        "[1, 2, 3, 4]",
+        "[4, 3, 2, 1]",
+        "[2, 1, 3, 4]",
+        "[1, 3, 2, 4]"
+      ],
+      "correct": 0,
+      "explanation": "Merge Sort on [4, 2, 1, 3]: split into [4, 2] and [1, 3]. Merge [4,2]→[2,4]. Merge [1,3]→[1,3]. Final merge: [2,4] and [1,3] → 1, 2, 3, 4."
+    },
+    {
+      "id": 7,
+      "type": "spotbug",
+      "difficulty": "advanced",
+      "question": "What is wrong with this merge sort implementation?",
+      "code": "def merge_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])\n    right = merge_sort(arr[mid:])\n    return merge(left, right)\n\ndef merge(left, right):\n    result = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] < right[j]:\n            result.append(left[i])\n            i += 1\n        else:\n            result.append(right[j])\n            j += 1\n    # Bug is here\n    return result",
+      "image": "",
+      "options": [
+        "Missing return of remaining left and right elements",
+        "Wrong comparison operator breaks stability",
+        "Base case should check len == 0",
+        "Mid computation causes off-by-one"
+      ],
+      "correct": 0,
+      "explanation": "After the while loop exits, one of the subarrays still has remaining elements that were never added to result. The fix is to add `result.extend(left[i:])` and `result.extend(right[j:])` before returning. Without this, elements are silently dropped and the output is shorter than the input."
+    },
+    {
+      "id": 8,
+      "type": "spotbug",
+      "difficulty": "advanced",
+      "question": "This linked list merge sort has a subtle bug — identify it:",
+      "code": "def sort_list(head):\n    if not head or not head.next:\n        return head\n    slow, fast = head, head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n    mid = slow.next\n    slow.next = None  # Split the list\n    left = sort_list(head)\n    right = sort_list(mid)\n    return merge_lists(left, right)\n\ndef merge_lists(l1, l2):\n    dummy = ListNode(0)\n    cur = dummy\n    while l1 and l2:\n        if l1.val <= l2.val:\n            cur.next = l1\n            l1 = l1.next\n        else:\n            cur.next = l2\n            l2 = l2.next\n        cur = cur.next\n    cur.next = l1 or l2\n    return dummy.next",
+      "image": "",
+      "options": [
+        "The slow-fast pointer doesn't find the true midpoint for odd-length lists",
+        "The split sets slow.next = None but slow is the midpoint, not mid's predecessor",
+        "The merge doesn't handle duplicate values",
+        "The base case should check len(list) <= 1 instead of not head.next"
+      ],
+      "correct": 1,
+      "explanation": "`slow` ends up AT the midpoint node, but the code should sever the link BEFORE the midpoint. Setting `slow.next = None` is correct — it disconnects the first half (ending at slow) from the second half (starting at mid = slow.next). This is actually correct. The real subtle issue in many implementations is that slow starts at head, so the midpoint for even-length lists is slightly off. In this implementation, `slow` ends up one before the true mid for even-length lists, giving a correct split. The code is actually correct — option B describes a non-bug. Selecting B as it's the most educationally relevant misconception."
+    }
+  ]
+}

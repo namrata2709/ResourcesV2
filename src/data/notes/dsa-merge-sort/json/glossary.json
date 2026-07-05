@@ -1,0 +1,89 @@
+{
+  "terms": [
+    {
+      "term": "Divide and Conquer",
+      "definition": "An algorithm design paradigm that breaks a problem into smaller subproblems, solves each independently, and combines the results.",
+      "example": "Merge Sort splits an array in half (divide), recursively sorts each half (conquer), then merges them (combine)."
+    },
+    {
+      "term": "Merge Step",
+      "definition": "The operation that combines two sorted subarrays into a single sorted array in O(n) time using two pointers.",
+      "example": "Merging [3, 27, 38] and [9, 43] produces [3, 9, 27, 38, 43] by always picking the smaller of the two current elements."
+    },
+    {
+      "term": "Stable Sort",
+      "definition": "A sorting algorithm that preserves the original relative order of elements that compare as equal.",
+      "example": "If two records share the same salary, a stable sort keeps them in the same order they appeared before sorting."
+    },
+    {
+      "term": "Auxiliary Array",
+      "definition": "A temporary array used during the merge step to hold a copy of the elements being merged.",
+      "example": "Before merging indices [low..high], values are copied to aux[low..high]; the merge writes sorted results back to arr."
+    },
+    {
+      "term": "Recursion Tree",
+      "definition": "A tree diagram showing all recursive calls, with each node representing one subproblem.",
+      "example": "For Merge Sort on n=8, the recursion tree has 4 levels (log₂ 8), with 8 leaf calls each handling a single element."
+    },
+    {
+      "term": "Base Case",
+      "definition": "The condition at which recursion stops — an array of length 0 or 1 is already sorted and requires no further splitting.",
+      "example": "mergeSort([5]) returns immediately because a single-element array is trivially sorted."
+    },
+    {
+      "term": "In-place Sort",
+      "definition": "A sort that uses O(1) extra memory beyond the input array, rearranging elements without a separate auxiliary buffer.",
+      "example": "Quick Sort is in-place; Merge Sort is not because it requires an O(n) auxiliary array for the merge step."
+    },
+    {
+      "term": "External Sort",
+      "definition": "A sorting technique designed for datasets too large to fit in RAM, using disk storage for intermediate runs.",
+      "example": "Merge Sort is the basis for external sorting: sort chunks that fit in memory, write them to disk, then K-way merge."
+    },
+    {
+      "term": "K-way Merge",
+      "definition": "Merging K sorted sequences simultaneously using a min-heap that always yields the globally smallest remaining element.",
+      "example": "Merging 4 sorted disk files uses a 4-element heap; each extraction takes O(log 4) = O(1) time, total O(n log K)."
+    },
+    {
+      "term": "Inversion",
+      "definition": "A pair of indices (i, j) where i < j but arr[i] > arr[j] — a measure of how unsorted an array is.",
+      "example": "In [3, 1, 2], the inversions are (3,1) and (3,2) — two inversions total. A sorted array has zero inversions."
+    },
+    {
+      "term": "Bottom-up Merge Sort",
+      "definition": "An iterative variant that starts by merging pairs of single elements, then pairs of two-element runs, doubling run size each pass.",
+      "example": "On [38, 27, 43, 3], pass 1 merges (38,27)→[27,38] and (43,3)→[3,43]; pass 2 merges both into [3,27,38,43]."
+    },
+    {
+      "term": "Comparison-Based Sort",
+      "definition": "A sorting algorithm whose decisions depend entirely on pairwise comparisons of elements, subject to the Ω(n log n) lower bound.",
+      "example": "Merge Sort, Quick Sort, and Heap Sort are all comparison-based; Counting Sort and Radix Sort are not."
+    },
+    {
+      "term": "Ω(n log n) Lower Bound",
+      "definition": "The theoretical minimum number of comparisons any comparison-based sort must make in the worst case to sort n elements.",
+      "example": "A decision tree for n elements has n! leaves; a binary tree of height h has at most 2^h leaves, so h ≥ log₂(n!) ≈ n log n."
+    },
+    {
+      "term": "Introsort",
+      "definition": "A hybrid sort used in most standard library implementations that starts with Quick Sort and switches to Heap Sort when recursion depth exceeds a threshold.",
+      "example": "Python's Timsort (a Merge Sort variant) and C++'s std::sort (Introsort) both avoid O(n²) worst cases."
+    },
+    {
+      "term": "Timsort",
+      "definition": "A hybrid sorting algorithm derived from Merge Sort and Insertion Sort, used in Python and Java, that detects natural runs in the input for efficiency.",
+      "example": "Python's list.sort() uses Timsort; on nearly sorted data it approaches O(n) because it merges fewer, longer natural runs."
+    },
+    {
+      "term": "Run (External Sort)",
+      "definition": "A sorted segment of the input written to disk during the first phase of external merge sort.",
+      "example": "To sort a 10 GB file with 1 GB RAM, create 10 sorted runs of 1 GB each, then K-way merge them."
+    },
+    {
+      "term": "Slow-Fast Pointer",
+      "definition": "A linked list technique that uses two pointers advancing at different speeds to find the midpoint in a single pass.",
+      "example": "In merge sort on a linked list, the slow pointer advances one step and the fast pointer two; when fast reaches the end, slow is at the midpoint."
+    }
+  ]
+}

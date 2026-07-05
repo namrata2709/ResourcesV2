@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Building Production-Ready Agents with OpenClaw on AWS — covers AWS concepts, architecture, best practices, and exam preparation. Keywords: OpenClaw, autonomous AI agents, Amazon Bedrock AgentCore, AWS Lightsail, Amazon EC2, multi-tenancy, agent security, AWS Session Manager. Beginner to intermediate level.">
+    <meta name="keywords" content="OpenClaw, autonomous AI agents, Amazon Bedrock AgentCore, AWS Lightsail, Amazon EC2, multi-tenancy, agent security, AWS Session Manager, AWS, cloud, certification">
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/data/notes/aws-openclaw-agents-session-aws-user-group-mumbai/notes.html">
+    <meta property="og:title" content="Building Production-Ready Agents with OpenClaw on AWS - AWS Notes">
+    <meta property="og:description" content="Building Production-Ready Agents with OpenClaw on AWS — covers AWS concepts, architecture, best practices, and exam preparation. Keywords: OpenClaw, autonomous AI agents, Amazon Bedrock AgentCore, AWS Lightsail, Amazon EC2, multi-tenancy, agent security, AWS Session Manager. Beginner to intermediate level.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/data/notes/aws-openclaw-agents-session-aws-user-group-mumbai/notes.html">
+    <title>Building Production-Ready Agents with OpenClaw on AWS - AWS Notes</title>
+    <link rel="stylesheet" href="../../../css/styles.css">
+    <link rel="stylesheet" href="../../../css/notes/notes.css">
+    <script src="../../../js/shared/site-config.js"></script>
+</head>
+<body data-subject="aws">
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Building Production-Ready Agents with OpenClaw on AWS - AWS Notes",
+    "description": "Building Production-Ready Agents with OpenClaw on AWS — covers AWS concepts, architecture, best practices, and exam preparation. Keywords: OpenClaw, autonomous AI agents, Amazon Bedrock AgentCore, AWS Lightsail, Amazon EC2, multi-tenancy, agent security, AWS Session Manager. Beginner to intermediate level.",
+    "author": {
+        "@type": "Person",
+        "name": "Namrata Mulwani",
+        "email": "awslecturenotes@gmail.com"
+    },
+    "datePublished": "2026-06-27",
+    "dateModified": "2026-06-27",
+    "publisher": {
+        "@type": "Person",
+        "name": "Namrata Mulwani"
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://namrata2709.github.io/Resources/data/notes/aws-openclaw-agents-session-aws-user-group-mumbai/notes.html"
+    },
+    "articleSection": "AWS Notes",
+    "keywords": [
+        "OpenClaw",
+        "autonomous AI agents",
+        "Amazon Bedrock AgentCore",
+        "AWS Lightsail",
+        "Amazon EC2",
+        "multi-tenancy",
+        "agent security",
+        "AWS Session Manager"
+    ],
+    "educationalLevel": "Beginner to Intermediate"
+}
+</script>
+
+<div id="pageLoader" class="page-loader">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Loading...</p>
+</div>
+
+<div class="note-container">
+
+<div class="success-box">
+    <p>
+        🎓 <strong>Lecture by:</strong> <a href="https://www.linkedin.com/in/anirudh-sharma-279248142/" target="_blank" rel="noopener noreferrer">Anirudh Sharma</a><br>
+        💬 <strong>Session:</strong> <a href="https://www.linkedin.com/company/awsugmum/" target="_blank" rel="noopener noreferrer">AWS User Group Mumbai — Building Production-Ready Agents with OpenClaw on AWS &rarr;</a>
+    </p>
+</div>
+
+<div class="highlight-box" role="note" aria-label="When to use">
+    <p><strong>When to use:</strong> When you need to run an always-on, autonomous AI agent (not just a chatbot) that acts on your behalf across channels like WhatsApp or Slack, and you have to decide between self-hosting it on EC2/Lightsail or running it on a managed, session-isolated runtime like Bedrock AgentCore.</p>
+</div>
+
+<div class="note-content">
+
+<details class="collapsible-section" open>
+<summary><h2 id="introduction">Introduction</h2></summary>
+<div class="section-content">
+
+<p>Think of a personal assistant you hire versus a call-center script you read from. The script only answers what it's asked, in the order it's written. A real assistant checks your calendar, books the table, and sends the follow-up email — without you asking for each step separately. <span class="exam-highlight-sentence"><span class="exam-highlight-term" data-term="OpenClaw">OpenClaw</span> is an open-source framework for building the second kind: <span class="exam-highlight-term" data-term="autonomous agents">autonomous agents</span> that can take real actions on your behalf, not just answer questions.</span></p>
+
+<p><span class="exam-highlight-term" data-term="OpenClaw">OpenClaw</span> is a self-hosted, open-source personal AI assistant that connects to the messaging channels you already use — WhatsApp, Telegram, Slack, Discord, and others — and gives a foundation model the ability to read files, run terminal commands, browse the web, and call external tools. Where a standard chatbot only produces text, an OpenClaw agent is wired up with <span class="exam-highlight-term" data-term="skills">skills</span> and <span class="exam-highlight-term" data-term="tools">tools</span> that let it actually do things: create a file, check a website, or trigger a workflow.</p>
+
+<p>The session, delivered at AWS User Group Mumbai on 27 June 2026 by Anirudh Sharma, focused specifically on the part most tutorials skip: what happens when you try to run OpenClaw in <span class="exam-highlight-term" data-term="production">production</span>, for more than one user, without it becoming a security incident. That question pulls in several AWS services — Amazon EC2, AWS Lightsail, Amazon EKS, AWS Session Manager, and Amazon Bedrock AgentCore — each representing a different point on the trade-off between cost, control, and isolation.</p>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-overview.png" alt="High-level flow: a user message on WhatsApp/Slack travels through the OpenClaw Gateway to an agent, which uses skills and tools backed by a foundation model, running on an AWS compute option" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>High-level flow: a user message on WhatsApp/Slack travels through the OpenClaw Gateway to an agent, which uses skills and tools backed by a foundation model, running on an AWS compute option</em></p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="agents-vs-chatbots-vs-harnesses">Agents vs. Chatbots vs. Harnesses</h2></summary>
+<div class="section-content">
+
+<p>Three terms get used almost interchangeably in casual conversation, but the session drew a precise line between them, and the distinction matters for how you architect a deployment.</p>
+
+<ul>
+<li><span class="exam-highlight-term" data-term="Chatbot">Chatbot</span> — a conversational interface that answers questions using a foundation model. Tools like a standard ChatGPT or Claude conversation fall here: you ask, it answers, nothing happens outside the chat window.</li>
+<li><span class="exam-highlight-term" data-term="Harness">Harness</span> — a tool that wraps a foundation model with some built-in functions (read a file, run a command) but is invoked deliberately by a human, one task at a time, inside a specific environment such as a terminal or IDE. Claude Code, running on a developer's laptop, is an example — it has tools, but the human is still driving each interaction.</li>
+<li><span class="exam-highlight-term" data-term="Autonomous agent">Autonomous agent</span> — a system that is handed a goal and a set of <span class="exam-highlight-term" data-term="skills">skills</span>, <span class="exam-highlight-term" data-term="tools">tools</span>, and a <span class="exam-highlight-term" data-term="foundation model">foundation model</span>, and then decides for itself which tool to call, when, and in what order, to reach that goal — often continuing to act without a human confirming each individual step.</li>
+</ul>
+
+<p><span class="exam-highlight-sentence">The defining property of an autonomous agent is that the model itself decides what action to take next, not just what to say.</span> OpenClaw sits in this third category: give it a task like "watch this inbox and draft replies," and it will keep acting on new messages without being re-prompted each time.</p>
+
+<div class="info-box">
+    <p>The instructor gave a direct example: integrating OpenClaw on a personal laptop using his own OS user account meant the agent could read local files and run any terminal command he could run — because it inherited his own permissions. This is the same principle as an IAM role: the agent's blast radius is exactly as large as the identity it runs as.</p>
+</div>
+
+<p>A useful real-world contrast raised in the session: a multinational customer wanted a <span class="exam-highlight-term" data-term="call-center agent">call-center agent</span> as the first point of contact for customer queries. A plain LLM-backed chatbot could answer simple FAQ-level questions, but a production call-center agent needs specific <span class="exam-highlight-term" data-term="skills">skills</span>, access to a knowledge base (via retrieval-augmented generation), and the ability to escalate to a human for anything outside its defined scope — which is exactly the skill/tool/scaffolding model OpenClaw provides.</p>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="core-architecture-gateway-agents-skills-and-tools">Core Architecture: Gateway, Agents, Skills, and Tools</h2></summary>
+<div class="section-content">
+
+<p>OpenClaw's architecture is built around four pieces that fit together like a car's dashboard, driver, checklist, and engine.</p>
+
+<p><span class="exam-highlight-term" data-term="The Gateway">The Gateway</span> is the control plane — the dashboard. <span class="exam-highlight-sentence">Every configuration action in OpenClaw, from creating an agent to installing a plugin to connecting a channel, happens through the Gateway</span>, which is accessible via a CLI or a web console. When you launch OpenClaw for the first time, the console issues an <span class="exam-highlight-term" data-term="access token">access token</span> — an encoded string used to authenticate any client that talks to that Gateway.</p>
+
+<p><span class="exam-highlight-term" data-term="Agents">Agents</span> are the drivers. Each agent has its own persona, defined in a <code>SOUL.md</code> file — a markdown file that tells the agent who it is, how it should talk, and what its boundaries are (for example, "reply in under 500 characters" or "never discuss topics outside customer support"). Multiple agents can exist under a single Gateway, each potentially wired to a different channel or persona.</p>
+
+<p><span class="exam-highlight-term" data-term="Skills">Skills</span> are the checklist — they define *how* and *when* an agent should use a capability. A <code>SKILL.md</code> file describes a specific activity, like "searching the web when the agent doesn't know an answer," without containing the actual implementation code.</p>
+
+<p><span class="exam-highlight-term" data-term="Tools">Tools</span> are the engine — the actual executable capability behind a skill. Reading a file, writing a file, and making an HTTP request are all tools. A skill tells the agent when to reach for a tool; the tool is what actually runs.</p>
+
+<div class="highlight-box">
+    <p>This distinction matters operationally: a &lt;span class="exam-highlight-term" data-term="skill supply-chain risk"&gt;skill supply-chain risk&lt;/span&gt; exists because OpenClaw supports importing community-published skills. Installing a skill you haven't reviewed means trusting code you haven't audited — the skill's underlying tool implementation and its package dependencies could be vulnerable or malicious.</p>
+</div>
+
+<p>The <span class="exam-highlight-term" data-term="foundation model">foundation model</span> — Claude, GPT, or any other model, since OpenClaw is explicitly <span class="exam-highlight-term" data-term="model-agnostic">model-agnostic</span> — is the brain. Skills and tools give that brain a body: without them, the model can only produce text; with them, it can act.</p>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-agentcore-architecture.png" alt="OpenClaw's Gateway, agent personas (SOUL.md), skills (SKILL.md), and tools layered on top of a swappable foundation model" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>OpenClaw's Gateway, agent personas (SOUL.md), skills (SKILL.md), and tools layered on top of a swappable foundation model</em></p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="deployment-options-on-aws">Deployment Options on AWS</h2></summary>
+<div class="section-content">
+
+<p>OpenClaw runs as a continuously-running process, which means it needs somewhere to live besides a personal laptop — the moment the laptop sleeps, the agent (and any channel connected to it, like a WhatsApp bot) goes offline. The session walked through four ways to host it, each with a different cost/control/isolation trade-off.</p>
+
+<table>
+<thead><tr>
+<th>Option</th>
+<th>What it is</th>
+<th>Startup experience</th>
+<th>Best for</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><span class="exam-highlight-term" data-term="AWS Lightsail">AWS Lightsail</span></td>
+<td>A simplified VPS with a pre-built OpenClaw blueprint</td>
+<td>Spin up in minutes from a blueprint; instance is billed continuously</td>
+<td>Fast personal or small-team proof of concepts</td>
+</tr>
+<tr>
+<td><span class="exam-highlight-term" data-term="Amazon EC2">Amazon EC2</span></td>
+<td>Full virtual machine, more configuration control</td>
+<td>CloudFormation templates can bootstrap OpenClaw into the instance's user data at launch</td>
+<td>Teams needing custom networking, instance types, or Graviton</td>
+</tr>
+<tr>
+<td><span class="exam-highlight-term" data-term="Amazon EKS">Amazon EKS</span></td>
+<td>Kubernetes-based container orchestration</td>
+<td>OpenClaw runs as a long-lived pod/daemon process</td>
+<td>Teams already standardized on Kubernetes for other workloads</td>
+</tr>
+<tr>
+<td><span class="exam-highlight-term" data-term="Amazon Bedrock AgentCore">Amazon Bedrock AgentCore</span></td>
+<td>Fully managed, serverless agent runtime</td>
+<td>No always-on instance; a session spins up on demand</td>
+<td>Production, multi-tenant, or compliance-sensitive deployments</td>
+</tr>
+</tbody></table>
+
+<p><span class="exam-highlight-term" data-term="Lightsail, EC2, and EKS">Lightsail, EC2, and EKS</span> all share the same underlying trade-off: the instance (or pod) runs continuously, so you avoid a <span class="exam-highlight-term" data-term="cold start">cold start</span> — the agent is always warm and ready to answer — but you pay for that instance whether or not anyone is actively talking to the agent, and you are responsible for patching, scaling, and securing the VM yourself.</p>
+
+<p><span class="exam-highlight-term" data-term="Amazon Bedrock AgentCore">Amazon Bedrock AgentCore</span> takes the opposite trade-off. It is a fully managed, serverless platform purpose-built for hosting production agents, with modular components — <span class="exam-highlight-term" data-term="Runtime">Runtime</span> (the isolated execution environment), <span class="exam-highlight-term" data-term="Gateway">Gateway</span> (turns APIs and Lambda functions into agent-callable tools), <span class="exam-highlight-term" data-term="Memory">Memory</span> (short- and long-term context storage), <span class="exam-highlight-term" data-term="Browser">Browser</span> (a managed Chromium runtime for agents to browse the web), <span class="exam-highlight-term" data-term="Identity">Identity</span> (credential brokering to downstream services), <span class="exam-highlight-term" data-term="Policy">Policy</span>, and <span class="exam-highlight-term" data-term="Observability">Observability</span>. Because sessions spin up on demand inside per-session micro-environments, a request that arrives when no session is already running experiences a <span class="exam-highlight-term" data-term="cold start">cold start</span> — typically in the low single-digit seconds — while the environment initializes. <span class="exam-highlight-sentence">AgentCore's compute pricing only bills for active CPU and memory usage, not idle wait time</span>, which is why it can be more cost-efficient than an always-on EC2 instance for spiky or low-volume traffic.</p>
+
+<div class="info-box">
+    <p>Graviton-based EC2 instances (AWS's ARM-based processor family) were specifically recommended for self-hosted OpenClaw deployments because they typically offer a lower cost-per-vCPU than comparable x86 instances for the same general-purpose workload.</p>
+</div>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-deployment-options.png" alt="Comparison of always-on Lightsail/EC2/EKS versus on-demand Bedrock AgentCore, highlighting the cold-start versus continuous-billing trade-off" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Comparison of always-on Lightsail/EC2/EKS versus on-demand Bedrock AgentCore, highlighting the cold-start versus continuous-billing trade-off</em></p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="multi-tenancy-and-isolation-models">Multi-Tenancy and Isolation Models</h2></summary>
+<div class="section-content">
+
+<p>Any team taking an agent to production for more than one customer or business unit runs into the same question: how do you make sure Customer A's data, sessions, and files never leak into Customer B's view? The session framed this using three standard multi-tenancy patterns.</p>
+
+<p><span class="exam-highlight-term" data-term="Pool model">Pool model</span> — every user shares the same underlying resources: one compute instance, one database, one Gateway. It is the cheapest option, but <span class="exam-highlight-sentence">isolation is weakest in the pool model because a bug or misconfiguration can expose one user's data to another</span>.</p>
+
+<p><span class="exam-highlight-term" data-term="Silo model">Silo model</span> — every user gets their own fully dedicated set of resources (their own EC2 instance, their own database). Isolation is excellent, but cost scales linearly with the number of users — 10 customers means 10 separate stacks to provision, patch, and monitor.</p>
+
+<p><span class="exam-highlight-term" data-term="Bridge model">Bridge model</span> (also called a "pool-and-silo hybrid") — some resources are shared for cost efficiency, while sensitive resources are isolated per user. This is what most production systems settle on in practice: shared infrastructure where isolation doesn't matter, dedicated resources where it does.</p>
+
+<div class="error-box">
+    <p>OpenClaw's own documentation is explicit that its **Gateway is designed for a single user per instance**. If multiple people share one Gateway — for example, by adding an OpenClaw agent to a shared WhatsApp or Telegram group — every conversation with the agent flows through the same underlying session by default, and users can end up seeing each other's messages and data. The instructor demonstrated this happening on his own deployment after enabling channel sharing in a group chat.</p>
+</div>
+
+<p>A tempting but incomplete fix is to put an Auto Scaling Group in front of multiple EC2 instances. <span class="exam-highlight-sentence">This does not solve the multi-tenancy problem on its own, because each new instance still needs its own Gateway, its own access token, and its own per-user routing configuration</span> — you've multiplied the management overhead without eliminating the underlying one-Gateway-per-user constraint.</p>
+
+<p>This is exactly the gap <span class="exam-highlight-term" data-term="Amazon Bedrock AgentCore">Amazon Bedrock AgentCore</span> is designed to close: because AgentCore Runtime provisions an isolated micro-environment <span class="exam-highlight-term" data-term="per session">per session</span> rather than per long-lived instance, many users can be served from the same platform without sharing a session, a Gateway, or file-system access with one another.</p>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-multi-tenancy.png" alt="Pool, silo, and bridge multi-tenancy models compared against AgentCore's per-session isolation" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Pool, silo, and bridge multi-tenancy models compared against AgentCore's per-session isolation</em></p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="security-model">Security Model</h2></summary>
+<div class="section-content">
+
+<p>Security was the largest single theme of the session, framed around a "seven layers" model of where an AI agent deployment can be attacked: the <span class="exam-highlight-term" data-term="foundational model">foundational model</span>, the <span class="exam-highlight-term" data-term="data layer">data layer</span>, the <span class="exam-highlight-term" data-term="agent framework">agent framework</span>, the <span class="exam-highlight-term" data-term="service/tooling layer">service/tooling layer</span>, <span class="exam-highlight-term" data-term="observability">observability</span>, the <span class="exam-highlight-term" data-term="network">network</span>, and <span class="exam-highlight-term" data-term="credentials/insider access">credentials/insider access</span>. A few concrete risks anchored each layer.</p>
+
+<p>**Credential exposure — SSH keys vs. Session Manager.** Before SSH keys, engineers connected to servers with a username and password, which was vulnerable to guessing. SSH keys improved on this with cryptographic signing, but <span class="exam-highlight-sentence">an SSH key is still a long-lived credential — if a developer accidentally commits it to a public repository, anyone can use it until it is manually rotated</span>. <span class="exam-highlight-term" data-term="AWS Systems Manager Session Manager">AWS Systems Manager Session Manager</span> removes this risk entirely: it connects you to an instance through the AWS control plane, using your IAM identity to check permissions, with no need to open inbound port 22 and no long-lived key to leak. An instance can sit in a fully private subnet, with no internet gateway at all, and still be reachable through Session Manager.</p>
+
+<p><span class="exam-highlight-term" data-term="Network exposure.">Network exposure.</span> Publicly-reachable OpenClaw servers are searchable on the open internet, and once discovered, can potentially be queried to extract details about the underlying file system. <span class="exam-highlight-sentence">Production agent deployments should sit inside a private subnet with no direct inbound path from the internet</span>, fronted by a layer-7 protection service (such as Amazon CloudFront) and continuously monitored (for example, with Amazon GuardDuty or a similar runtime security tool) for unusual access patterns.</p>
+
+<p>**Prompt injection and skill supply-chain risk.** Because OpenClaw supports importing third-party skills, <span class="exam-highlight-sentence">an imported skill can carry a vulnerable or malicious dependency without the person installing it realizing it</span>. Review a skill's underlying tool code before installing it, the same way you'd review a new npm or pip package.</p>
+
+<p><span class="exam-highlight-term" data-term="Data exfiltration via MCP.">Data exfiltration via MCP.</span> The <span class="exam-highlight-term" data-term="Model Context Protocol (MCP)">Model Context Protocol (MCP)</span> gives an agent a standardized way to connect to external tools and systems — described in the session as being "like a USB port" for agents. MCP itself is not a security boundary: it just provides the connection. The agent — and the guardrails wrapped around it — still has to decide whether data returned from an MCP-connected tool should be trusted, and whether sensitive data should ever be sent out through it in the first place. <span class="exam-highlight-term" data-term="Amazon Bedrock Guardrails">Amazon Bedrock Guardrails</span> can sit between an application and the foundation model to block sensitive data from crossing in either direction.</p>
+
+<p><span class="exam-highlight-term" data-term="Model training data leakage.">Model training data leakage.</span> If a custom model is fine-tuned on data that includes sensitive information without careful review, that information can resurface in the model's generated responses later. Guardrails can be configured to block specific topic categories (e.g., speech that shouldn't be handled, or susceptibility to prompt injection) as an additional control layer.</p>
+
+<p><span class="exam-highlight-term" data-term="Insider access and audit logging.">Insider access and audit logging.</span> <span class="exam-highlight-sentence">Because an agent can execute real actions, knowing exactly which tools it called, with what parameters, and what output it received is not optional in a regulated industry — it's the evidence base for compliance.</span> This is especially critical for regulated sectors like banking, where a regulator (the session referenced RBI-style guidance as an example) may require proof that an agent's actions stayed within its defined capability boundary.</p>
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-security-layers.png" alt="The seven layers of AI agent attack surface: foundational model, data, agent framework, service/tooling, observability, network, and credentials/insider access" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>The seven layers of AI agent attack surface: foundational model, data, agent framework, service/tooling, observability, network, and credentials/insider access</em></p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="pricing">Pricing</h2></summary>
+<div class="section-content">
+
+<p>OpenClaw itself is free and open source — you are only billed for the AWS infrastructure it runs on and for foundation model inference (if you're calling a hosted model rather than a local one).</p>
+
+<ul>
+<li><span class="exam-highlight-term" data-term="Lightsail">Lightsail</span>: fixed monthly rate per instance plan, billed continuously regardless of agent usage. Deleting the instance stops billing immediately, which is why the instructor called it "cost effective" for short-lived experimentation — spin it up, test, delete it.</li>
+<li><span class="exam-highlight-term" data-term="EC2 / EKS">EC2 / EKS</span>: standard on-demand (or reserved/spot) compute pricing for whatever instance type or node group you choose, plus storage and data transfer. Cost scales with instance size and uptime, not with how much the agent is actually doing.</li>
+<li><span class="exam-highlight-term" data-term="Amazon Bedrock AgentCore">Amazon Bedrock AgentCore</span>: consumption-based across its modular components. <span class="exam-highlight-term" data-term="Runtime">Runtime</span> bills per vCPU-hour and per GB-hour of active use only — idle time waiting on a model response or a tool call is not charged. <span class="exam-highlight-term" data-term="Gateway">Gateway</span> bills per tool call, <span class="exam-highlight-term" data-term="Memory">Memory</span> bills per stored/retrieved record, and <span class="exam-highlight-term" data-term="Identity">Identity</span> carries no additional charge when used through Runtime or Gateway. Foundation model inference (token usage) is billed separately at standard Amazon Bedrock rates on top of any AgentCore component charges.</li>
+</ul>
+
+<div class="error-box">
+    <p>Idle session accumulation is a common AgentCore cost surprise: sessions that aren't explicitly closed can continue to be billed until their timeout expires. Set an appropriate session timeout and clean up unused agents and Lightsail/EC2 instances to avoid ongoing charges.</p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="security-best-practices">Security Best Practices</h2></summary>
+<div class="section-content">
+
+<ul>
+<li>Connect to any EC2-hosted Gateway using <span class="exam-highlight-term" data-term="AWS Session Manager">AWS Session Manager</span>, not SSH keys — this removes the need to open port 22 and eliminates a long-lived credential entirely.</li>
+<li>Place OpenClaw's compute (EC2, Lightsail, or EKS nodes) inside a <span class="exam-highlight-term" data-term="private subnet">private subnet</span> with no direct inbound internet access, and put a layer-7 control such as CloudFront or AWS WAF in front of anything that must be reachable externally.</li>
+<li>Never share a single Gateway across multiple end users. If more than one user needs access, either provision a per-user Gateway (silo model) or move to Bedrock AgentCore's per-session isolation.</li>
+<li>Review the source of any third-party <span class="exam-highlight-term" data-term="skill">skill</span> before installing it — treat it with the same scrutiny as an unreviewed open-source package.</li>
+<li>Wrap agent-to-model traffic with <span class="exam-highlight-term" data-term="Amazon Bedrock Guardrails">Amazon Bedrock Guardrails</span> to filter sensitive data flowing in either direction, and to block disallowed topic categories.</li>
+<li>Enable comprehensive audit logging of every tool call an agent makes — including parameters passed and output returned — especially in regulated industries.</li>
+<li>Grant the agent's identity (IAM role, OS user, or AgentCore Identity binding) only the minimum permissions it needs to perform its defined skills — the agent inherits exactly the blast radius of whatever identity it runs as.</li>
+</ul>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="common-mistakes-troubleshooting">Common Mistakes & Troubleshooting</h2></summary>
+<div class="section-content">
+
+<table>
+<thead><tr>
+<th>Symptom</th>
+<th>Likely Cause</th>
+<th>Fix</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Two users in the same group chat can see each other's replies from the agent</td>
+<td>Channel/session sharing enabled on a single Gateway shared by multiple users</td>
+<td>Disable channel sharing, or move each user to a dedicated Gateway/AgentCore session</td>
+</tr>
+<tr>
+<td>Agent is slow to respond the very first time it's used after a period of inactivity</td>
+<td>Cold start on a serverless runtime (Bedrock AgentCore) as a new session environment initializes</td>
+<td>Expected behavior for serverless hosting — typically resolves within a few seconds; use an always-on instance if the workload cannot tolerate any cold start</td>
+</tr>
+<tr>
+<td>Leaked SSH key found in a public repository</td>
+<td>Committing a <code>.pem</code> file or key contents alongside application code</td>
+<td>Rotate the key immediately, remove it from git history, and migrate to Session Manager going forward</td>
+</tr>
+<tr>
+<td>Agent appears to have access to more files/commands than expected</td>
+<td>Agent was integrated using a personal user account with broad local permissions</td>
+<td>Run the agent under a scoped, dedicated identity with least-privilege access, not a personal admin account</td>
+</tr>
+<tr>
+<td>Auto Scaling doesn't fix a multi-user data-isolation issue</td>
+<td>Each new EC2 instance still requires its own Gateway and per-user configuration</td>
+<td>Address the isolation problem architecturally (silo/bridge model or AgentCore), not just by adding compute</td>
+</tr>
+<tr>
+<td>Unexpected AgentCore charges appear on the bill</td>
+<td>Idle sessions not closed within the configured timeout, or Observability (billed through CloudWatch) left unmonitored</td>
+<td>Set explicit session timeouts and review CloudWatch usage regularly</td>
+</tr>
+</tbody></table>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="exam-tips">Exam Tips</h2></summary>
+<div class="section-content">
+
+<ul>
+<li><span class="exam-highlight-term" data-term="AWS Session Manager">AWS Session Manager</span> is the standard exam answer whenever a scenario mentions "connect to an EC2 instance without opening inbound port 22" or "instance in a private subnet with no internet gateway."</li>
+<li>Remember the <span class="exam-highlight-term" data-term="cold start trade-off">cold start trade-off</span>: always-on compute (EC2, Lightsail, EKS) has no cold start but bills continuously; serverless/on-demand compute (Bedrock AgentCore, Lambda) has a cold start but bills only for active usage.</li>
+<li><span class="exam-highlight-sentence">Bedrock AgentCore Runtime bills for active CPU and memory consumption only — idle I/O wait time (waiting on a model or tool response) is not charged.</span> This is a frequently tested distinction versus traditional pre-allocated compute pricing.</li>
+<li>Know the three multi-tenancy patterns by name and trade-off: <span class="exam-highlight-term" data-term="pool">pool</span> (cheapest, weakest isolation), <span class="exam-highlight-term" data-term="silo">silo</span> (strongest isolation, highest cost), <span class="exam-highlight-term" data-term="bridge">bridge</span> (mixed).</li>
+<li>Graviton = <span class="exam-highlight-term" data-term="ARM-based">ARM-based</span> AWS-designed processor family, generally lower cost-per-vCPU than comparable x86 instances for general-purpose workloads.</li>
+<li>If a question describes an agent needing short-term and long-term memory of user preferences across sessions, the answer is <span class="exam-highlight-term" data-term="Bedrock AgentCore Memory">Bedrock AgentCore Memory</span>, not a manually-managed database (though AgentCore Memory can be backed by one under the hood).</li>
+<li>If a question describes exposing an internal API or Lambda function as a callable tool for an agent, the answer is <span class="exam-highlight-term" data-term="Bedrock AgentCore Gateway">Bedrock AgentCore Gateway</span>.</li>
+</ul>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="visualisation">Visualisation</h2></summary>
+<div class="section-content">
+
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-overview.png" alt="High-level flow: a user message on WhatsApp/Slack travels through the OpenClaw Gateway to an agent, which uses skills and tools backed by a foundation model, running on an AWS compute option" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>High-level flow: a user message on WhatsApp/Slack travels through the OpenClaw Gateway to an agent, which uses skills and tools backed by a foundation model, running on an AWS compute option</em></p>
+</div>
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-agentcore-architecture.png" alt="OpenClaw's Gateway, agent personas (SOUL.md), skills (SKILL.md), and tools layered on top of a swappable foundation model" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>OpenClaw's Gateway, agent personas (SOUL.md), skills (SKILL.md), and tools layered on top of a swappable foundation model</em></p>
+</div>
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-deployment-options.png" alt="Comparison of always-on Lightsail/EC2/EKS versus on-demand Bedrock AgentCore, highlighting the cold-start versus continuous-billing trade-off" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Comparison of always-on Lightsail/EC2/EKS versus on-demand Bedrock AgentCore, highlighting the cold-start versus continuous-billing trade-off</em></p>
+</div>
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-multi-tenancy.png" alt="Pool, silo, and bridge multi-tenancy models compared against AgentCore's per-session isolation" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Pool, silo, and bridge multi-tenancy models compared against AgentCore's per-session isolation</em></p>
+</div>
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-security-layers.png" alt="The seven layers of AI agent attack surface: foundational model, data, agent framework, service/tooling, observability, network, and credentials/insider access" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>The seven layers of AI agent attack surface: foundational model, data, agent framework, service/tooling, observability, network, and credentials/insider access</em></p>
+</div>
+<div class="diagram-container">
+<img src="images/aws-openclaw-agents-session-aws-user-group-mumbai-cheatsheet.png" alt="One-page cheat sheet: deployment options, multi-tenancy models, and top security controls for running OpenClaw on AWS" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>One-page cheat sheet: deployment options, multi-tenancy models, and top security controls for running OpenClaw on AWS</em></p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="implementation">Implementation</h2></summary>
+<div class="section-content">
+
+<h3 id="console-setup">Console Setup — Deploying OpenClaw on Lightsail</h3>
+
+<ol>
+<li>Open the Amazon Lightsail console and choose <span class="exam-highlight-term" data-term="Create instance">Create instance</span>.</li>
+<li>Under <span class="exam-highlight-term" data-term="Select a blueprint">Select a blueprint</span>, choose the OpenClaw blueprint (listed under app-based blueprints if available in your region, or launched from a template shared by the OpenClaw community).</li>
+<li>Select an instance plan sized for a personal or small-team workload.</li>
+<li>Launch the instance and wait for it to enter the <span class="exam-highlight-term" data-term="Running">Running</span> state.</li>
+<li>Connect to the instance and open the OpenClaw onboarding flow to generate a Gateway <span class="exam-highlight-term" data-term="access token">access token</span>.</li>
+<li>Use the access token to connect a channel (WhatsApp, Telegram, Slack, or Discord) to your new agent.</li>
+</ol>
+
+<h3 id="aws-cli">AWS CLI — Connecting Securely via Session Manager</h3>
+
+<pre><code class="language-bash">
+# Start a Session Manager session to an EC2-hosted OpenClaw Gateway
+# (no inbound port 22 required — the instance can be in a private subnet)
+aws ssm start-session --target i-0123456789abcdef0
+
+# Check the Session Manager plugin is installed locally first
+session-manager-plugin --version
+</code></pre>
+
+<h3 id="sdk-python">SDK (Python Boto3) — Calling an Agent Through Bedrock AgentCore</h3>
+
+<pre><code class="language-python">
+import boto3
+
+client = boto3.client(&quot;bedrock-agentcore&quot;)
+
+response = client.invoke_agent_runtime(
+    agentRuntimeArn=&quot;arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/my-openclaw-style-agent&quot;,
+    payload={&quot;input&quot;: {&quot;text&quot;: &quot;Summarize today&#x27;s open support tickets&quot;}},
+)
+
+print(response[&quot;completion&quot;])
+</code></pre>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="overall-summary">Overall Summary</h2></summary>
+<div class="section-content">
+
+<div class="highlight-box">
+    <p><strong>Key Takeaways:</strong></p>
+    <ul>
+        <li>OpenClaw is an open-source framework for building &lt;span class="exam-highlight-term" data-term="autonomous agents"&gt;autonomous agents&lt;/span&gt; — systems that decide what action to take, not just what to say — distinct from chatbots and from harnesses like Claude Code.</li>
+        <li>Its architecture has four layers: the &lt;span class="exam-highlight-term" data-term="Gateway"&gt;Gateway&lt;/span&gt; (control plane), &lt;span class="exam-highlight-term" data-term="agents"&gt;agents&lt;/span&gt; (persona via `SOUL.md`), &lt;span class="exam-highlight-term" data-term="skills"&gt;skills&lt;/span&gt; (when/how to act, via `SKILL.md`), and &lt;span class="exam-highlight-term" data-term="tools"&gt;tools&lt;/span&gt; (the actual executable capability).</li>
+        <li>AWS offers a spectrum of hosting options: &lt;span class="exam-highlight-term" data-term="Lightsail/EC2/EKS"&gt;Lightsail/EC2/EKS&lt;/span&gt; are always-on and simple to start but bill continuously and require self-managed security; &lt;span class="exam-highlight-term" data-term="Amazon Bedrock AgentCore"&gt;Amazon Bedrock AgentCore&lt;/span&gt; is serverless, session-isolated, and bills only for active usage.</li>
+        <li>OpenClaw's Gateway is architecturally designed for &lt;span class="exam-highlight-term" data-term="one user per instance"&gt;one user per instance&lt;/span&gt; — sharing it across users without isolation controls is the single biggest production risk raised in the session.</li>
+        <li>Multi-tenancy has three standard patterns: &lt;span class="exam-highlight-term" data-term="pool"&gt;pool&lt;/span&gt; (shared, cheap, weak isolation), &lt;span class="exam-highlight-term" data-term="silo"&gt;silo&lt;/span&gt; (dedicated, strong isolation, expensive), and &lt;span class="exam-highlight-term" data-term="bridge"&gt;bridge&lt;/span&gt; (a practical mix of both).</li>
+        <li>&lt;span class="exam-highlight-term" data-term="AWS Session Manager"&gt;AWS Session Manager&lt;/span&gt; replaces long-lived SSH keys for connecting to EC2 instances, removing the need to open inbound port 22.</li>
+        <li>Security spans seven layers — model, data, agent framework, service/tooling, observability, network, and credentials/insider access — and needs a control at each layer, not just at the model.</li>
+        <li>&lt;span class="exam-highlight-term" data-term="Amazon Bedrock Guardrails"&gt;Amazon Bedrock Guardrails&lt;/span&gt; and comprehensive audit logging of tool calls are the two controls most directly tied to regulatory compliance for agent deployments.</li>
+        <li>Cost model in one line: always-on compute (Lightsail/EC2/EKS) charges for uptime regardless of usage; Bedrock AgentCore charges only for active CPU/memory time plus per-call tool and memory usage.</li>
+    </ul>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="glossary">📖 Glossary</h2></summary>
+<div class="section-content">
+<div id="glossaryContainer" data-glossary-source="json/glossary.json"></div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="interview-questions">🎤 Interview Questions</h2></summary>
+<div class="section-content">
+<p class="interview-intro">📚 Test your understanding with these questions.</p>
+<div class="interview-progress">
+    <p id="interviewProgress">Progress: 0/? (0%)</p>
+</div>
+<div class="flashcard-navigation">
+    <button onclick="previousInterviewQuestion()" class="nav-btn" id="prevInterviewBtn">&#8592; Previous</button>
+    <span id="interviewCounter" class="card-counter">1 / ?</span>
+    <button onclick="nextInterviewQuestion()" class="nav-btn" id="nextInterviewBtn">Next &#8594;</button>
+</div>
+<div class="flashcard-deck" id="interviewContainer" data-interview-source="json/interview.json"></div>
+<div class="quiz-reset-container">
+    <button onclick="resetInterviewProgress()" class="quiz-reset-btn">🔄 Reset Progress</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="multiple-choice-questions">📝 Multiple Choice Questions</h2></summary>
+<div class="section-content">
+<div class="quiz-header-info">
+    <p>Test your knowledge with immediate feedback.</p>
+</div>
+<div class="quiz-navigation">
+    <button onclick="previousQuestion()" class="quiz-nav-btn" id="prevBtn">&#8592; Previous</button>
+    <div class="quiz-info">
+        <span class="quiz-counter" id="quizCounter">Question 1 of ?</span>
+        <span class="quiz-score-display" id="quizScoreDisplay">Score: 0/0 (0%)</span>
+    </div>
+    <button onclick="nextQuestion()" class="quiz-nav-btn" id="nextBtn">Next &#8594;</button>
+</div>
+<div class="quiz-carousel-container" id="quizContainer" data-mcq-source="json/mcq.json"></div>
+<div class="quiz-summary-section">
+    <button onclick="showQuizSummary()" class="quiz-summary-btn">📊 View Summary</button>
+    <div class="quiz-reset-container">
+        <button onclick="resetEntireQuiz()" class="quiz-reset-btn">🔄 Reset Quiz</button>
+    </div>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="hands-on-projects">💼 Hands-On Projects</h2></summary>
+<div class="section-content">
+<details class="project-block" open>
+<summary><h3 class="project-title">Project 1: Deploy OpenClaw on Amazon Lightsail Using the Official Blueprint</h3></summary>
+<div class="project-content">
+<p class="project-objective"><strong>Objective:</strong> Launch a working OpenClaw Gateway on Lightsail, connect a channel, and confirm secure access before cleaning up.</p>
+<div class="project-meta"><span class="meta-time">⏱ 30-45 min</span> <span class="meta-cost">💰 Lightsail&#x27;s smallest plan is billed at its standard hourly-equivalent monthly rate — delete the instance immediately after the exercise to stop billing.</span> <span class="meta-prereqs">📋 Prerequisites: AWS account · Basic familiarity with the AWS Management Console · A messaging account (WhatsApp, Telegram, Slack, or Discord) to connect as a test channel</span></div>
+<ol class="project-steps">
+<li>Sign in to the AWS Management Console and navigate to the Amazon Lightsail console</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-lightsail-console-home.png</code> — Screenshot showing the Lightsail console landing page with the &quot;Create instance&quot; button visible</li>
+<li>Click Create instance and select the OpenClaw application blueprint (or a shared community template if the official blueprint isn&#x27;t listed in your region)</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-select-blueprint.png</code> — Screenshot showing the blueprint selection screen with the OpenClaw option highlighted</li>
+<li>Choose an instance plan sized for a small proof of concept and click Create instance</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-instance-plan-selected.png</code> — Screenshot showing the chosen instance plan and the final Create instance button before launch</li>
+<li>Wait for the instance status to change from Pending to Running</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-instance-running.png</code> — Screenshot showing the instance list with the new instance&#x27;s status badge reading &quot;Running&quot;</li>
+<li>Open the instance&#x27;s public IP or connect via the browser-based SSH client, and complete the OpenClaw onboarding flow to generate a Gateway access token</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-gateway-access-token.png</code> — Screenshot showing the generated Gateway access token in the onboarding screen (redact/blur the actual token value before sharing)</li>
+<li>In the Gateway console, add a channel (for example, Telegram) using a test bot token, and confirm the channel shows a Connected status</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-channel-connected.png</code> — Screenshot showing the channel configuration panel with the new channel&#x27;s status set to &quot;Connected&quot;</li>
+<li>Send a test message through the connected channel and confirm the agent responds</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-test-message-response.png</code> — Screenshot showing the chat thread with the test message and the agent&#x27;s reply visible</li>
+<li>[warning]Cleanup — delete the Lightsail instance from the console once testing is complete to stop billing immediately[/warning]</li>
+<li class="screenshot-placeholder"><span class="screenshot-label">📷 Screenshot:</span> <code>screenshot-instance-deleted.png</code> — Screenshot showing the instance list with the test instance no longer present, confirming deletion</li>
+</ol>
+</div>
+</details>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="learning-checklist">☑️ Learning Checklist</h2></summary>
+<div class="section-content">
+<div class="checklist-progress">
+    <p>Progress: <span id="checklistProgress">0/0</span></p>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+    </div>
+</div>
+<div id="checklistContainer" data-checklist-source="json/checklist.json"></div>
+<div class="quiz-reset-container">
+    <button onclick="resetChecklist()" class="quiz-reset-btn">🔄 Reset Checklist</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="reflection-questions">🤔 Reflection Questions</h2></summary>
+<div class="section-content">
+<div class="question-block">
+<h4>1. If you were deploying OpenClaw for a personal use case versus a multi-tenant business, how would your AWS service choice change and why?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Think about the cost/isolation trade-off between an always-on Lightsail/EC2 instance and Bedrock AgentCore&#x27;s per-session isolation.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>2. Why might &quot;channel sharing&quot; being enabled by default catch a first-time OpenClaw user off guard, and what does that suggest about default security settings in open-source agent frameworks?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Consider that OpenClaw&#x27;s own documentation states the Gateway is designed for one user per instance.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>3. How would you decide whether a new agent capability belongs in a skill definition or a tool implementation?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Think about the difference between the &quot;how/when&quot; decision logic (skill) and the actual executable code (tool).</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>4. What would need to be true about your latency requirements for a cold start of a few seconds to be unacceptable?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Compare a live phone call interaction against an asynchronous chat message that can tolerate a short delay.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>5. Why does MCP&#x27;s usefulness as a generic connector also expand the security attack surface described in the session?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Consider that MCP is a connection protocol, not a trust boundary — every new MCP server represents a new decision about what to trust.</p>
+</div>
+</details>
+</div>
+<div class="question-block">
+<h4>6. If you inherited an OpenClaw deployment running on a single EC2 instance for 200 users, what would be your first three questions before recommending a migration?</h4>
+<details class="hint-details">
+<summary class="hint-summary">💡 Hint</summary>
+<div class="hint-content">
+<p>Start with how the Gateway, sessions, and data isolation are currently configured for those 200 users today.</p>
+</div>
+</details>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="links-references">Links & References</h2></summary>
+<div class="section-content">
+<ul>
+    <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html" target="_blank" rel="noopener">Amazon Bedrock AgentCore — Official Overview</a></li>
+    <li><a href="https://aws.amazon.com/bedrock/agentcore/pricing/" target="_blank" rel="noopener">Amazon Bedrock AgentCore — Pricing</a></li>
+    <li><a href="https://aws.amazon.com/bedrock/agentcore/faqs/" target="_blank" rel="noopener">Amazon Bedrock AgentCore — FAQs</a></li>
+    <li><a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html" target="_blank" rel="noopener">AWS Systems Manager — Session Manager User Guide</a></li>
+    <li><a href="https://docs.aws.amazon.com/ec2/" target="_blank" rel="noopener">Amazon EC2 — Official Documentation</a></li>
+    <li><a href="https://docs.aws.amazon.com/lightsail/" target="_blank" rel="noopener">Amazon Lightsail — Official Documentation</a></li>
+    <li><a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html" target="_blank" rel="noopener">AWS Well-Architected Framework — Security Pillar</a></li>
+    <li><a href="https://github.com/openclaw/openclaw" target="_blank" rel="noopener">OpenClaw — Official GitHub Repository</a></li>
+</ul>
+</div>
+</details>
+
+<div class="tags" aria-label="Topic tags">
+    <span class="tag">AI Agents</span>
+    <span class="tag">AWS</span>
+    <span class="tag">OpenClaw</span>
+    <span class="tag">Bedrock AgentCore</span>
+    <span class="tag">Security</span>
+</div>
+
+
+</div><!-- end note-content -->
+
+</div><!-- end note-container -->
+<div id="footerRoot" data-subject="aws"></div>
+
+<script src="../../../js/notes/notes-page-core.js" async="false"></script>
+
+</body>
+</html>

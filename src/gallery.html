@@ -1,0 +1,206 @@
+<!--
+==============================================================================
+File: gallery.html
+Path: gallery.html
+Project: Learning Dashboard
+
+Description:
+Universal image gallery page. Reads ?folder=<topic|all> from URL;
+gallery.js loads notes-index.json to resolve image paths and renders
+either a single folder's images or all images site-wide. Grid/list view,
+search filtering, lightbox, keyboard nav, and per-image download.
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-07-03
+
+Dependencies:
+- css/styles.css
+- css/notes/gallery.css
+- js/shared/site-config.js
+- js/notes/gallery.js
+- data/index/notes-index.json (fetched at runtime by gallery.js)
+==============================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Browse AWS training session images including architecture diagrams, whiteboards, screenshots, and visual learning resources. Free educational materials for AWS certification.">
+    <meta name="keywords"
+        content="AWS diagrams, AWS architecture images, AWS training screenshots, cloud computing diagrams, AWS visual resources, whiteboard notes">
+    <meta name="author" content="Namrata Mulwani">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Images Gallery - Learning Dashboard">
+    <meta property="og:description"
+        content="Visual learning resources including architecture diagrams, whiteboards, and training session screenshots.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/gallery.html">
+    <meta property="og:image" content="https://namrata2709.github.io/Resources/images/gallery-preview.png">
+    <meta property="og:site_name" content="Learning Dashboard (Notes By Namrata)">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Images Gallery - AWS Learning Dashboard">
+    <meta name="twitter:description"
+        content="Visual learning resources including architecture diagrams and training screenshots.">
+    <meta name="twitter:image" content="https://namrata2709.github.io/Resources/images/gallery-preview.png">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/gallery.html">
+
+
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="color-scheme" content="light dark">
+
+    <title>Images Gallery - Learning Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/notes/gallery.css">
+    <script src="js/shared/site-config.js"></script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ImageGallery",
+      "name": "Learning Dashboard Images Gallery",
+      "description": "Visual learning resources including architecture diagrams, whiteboards, and training screenshots",
+      "url": "https://namrata2709.github.io/Resources/gallery.html",
+      "author": {
+        "@type": "Person",
+        "name": "Namrata Mulwani",
+        "email": "awslecturenotes@gmail.com"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Namrata Mulwani"
+      },
+      "inLanguage": "en",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Learning Dashboard (Notes By Namrata)",
+        "url": "https://namrata2709.github.io/Resources/"
+      },
+      "educationalUse": "Visual Learning",
+      "educationalLevel": "Beginner to Intermediate"
+    }
+    </script>
+</head>
+
+<body>
+    <noscript>
+        <style>#pageLoader { display: none; }</style>
+        <div class="noscript">
+            <h2>JavaScript Required</h2>
+            <p>This website relies on JavaScript for navigation and interactive learning features.</p>
+            <p>Please enable JavaScript.</p>
+        </div>
+    </noscript>
+    <!-- Loading State -->
+    <div id="pageLoader" class="page-loader">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Loading images...</p>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+        <span class="theme-icon"></span>
+    </button>
+
+    <!-- Breadcrumb Navigation -->
+
+
+    <div class="gallery-container">
+
+        <div class="gallery-header">
+            <p id="galleryDescription">Visual learning resources from training sessions</p>
+
+            <!-- Gallery Stats -->
+            <div class="gallery-stats">
+                <div class="stat-item">
+                    <span class="stat-icon">🖼️</span>
+                    <span id="imageCount">0 images</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">📁</span>
+                    <span id="folderName">All Folders</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">📅</span>
+                    <span id="dateInfo">Various Dates</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search images..."
+                oninput="filterImages()" aria-label="Search images">
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="setView('grid', this)" title="Grid View"
+                    aria-label="Grid view">⊞</button>
+                <button class="view-btn" onclick="setView('list', this)" title="List View"
+                    aria-label="List view">☰</button>
+            </div>
+        </div>
+
+        <!-- Gallery -->
+        <div class="gallery" id="gallery">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">Loading images...</p>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state hidden" id="emptyState">
+            <div class="empty-state-icon">🔍</div>
+            <h3>No images found</h3>
+            <p>Try adjusting your search or check back later</p>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-message hidden" id="errorState">
+            <h3>⚠️ Failed to Load Images</h3>
+            <p>Could not load images from the specified folder.</p>
+            <button class="retry-btn" onclick="location.reload()">🔄 Retry</button>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close lightbox">✕</button>
+            <button class="lightbox-nav lightbox-prev" onclick="navigateImage(-1)"
+                aria-label="Previous image">‹</button>
+            <button class="lightbox-nav lightbox-next" onclick="navigateImage(1)" aria-label="Next image">›</button>
+            <img class="lightbox-image" id="lightboxImage" src="" alt="">
+            <div class="lightbox-info">
+                <div class="lightbox-name" id="lightboxName"></div>
+                <div class="lightbox-counter" id="lightboxCounter"></div>
+                <button class="download-btn" onclick="downloadImage()">⬇ Download</button>
+            </div>
+        </div>
+
+        <!-- Keyboard Hint -->
+        <div class="keyboard-hint">
+            Use <kbd>←</kbd> <kbd>→</kbd> to navigate or <kbd>ESC</kbd> to close
+        </div>
+    </div>
+
+    <!-- Footer with License & Disclaimer (injected by js/shared/footer.js) -->
+    <div id="footerRoot"></div>
+
+    <!-- External JS -->
+    <script src="js/notes/gallery.js" defer></script>
+</body>
+
+</html>

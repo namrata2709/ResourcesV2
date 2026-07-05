@@ -1,10 +1,36 @@
-/**
- * Gallery Stylesheet for Image Galleries
- * Additional styles for images.html gallery pages
- * File location: css/gallery.css
- * Dependencies: Uses CSS variables from notes.css
- * Version: 2.0 - Enhanced with 3-theme system
- */
+/*
+==============================================================================
+File: gallery.css
+Path: css/notes/gallery.css
+Project: Learning Dashboard
+
+Description:
+Styling for images.html — the universal image gallery used by every note
+folder (?folder=<topic|all>). Grid/list view toggle, image cards, empty
+state, lightbox with keyboard nav, loading/error states.
+
+Dependencies:
+- Uses CSS custom properties defined in notes.css (--bg-card, --accent, etc.)
+
+Sections:
+1. Gallery Container / Header / Stats
+2. Controls (search, view toggle)
+3. Gallery Grid View
+4. Image Cards
+5. Empty State
+6. Lightbox
+7. Lightbox Controls
+8. Keyboard Navigation Hint
+9. Loading / Error States
+10. Responsive
+11. Print Styles
+12. Accessibility Enhancements
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-06-30
+==============================================================================
+*/
 
 /* ============================================
    GALLERY CONTAINER

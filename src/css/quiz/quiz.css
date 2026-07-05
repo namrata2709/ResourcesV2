@@ -1,23 +1,28 @@
-/**
- * Quiz Stylesheet — AWS Learning Dashboard
- * File: css/quiz.css
- * Load on: quiz.html, quiz-index.html
- * Requires: css/styles.css loaded first (provides all CSS variables)
- *
- * PHASE 1: Quiz list, question cards, options, explanations,
- *          difficulty badges, toast, print button, print instructions,
- *          print media query, quiz-specific responsive overrides.
- *
- * PHASE 2 additions (marked ★):
- *   ★ #18  Progress bar
- *   ★ #22  Question navigator
- *   ★ #15  Live score badge
- *   ★ #16  Score summary card
- *   ★ #17  Per-question result badge
- *   ★ #23  Next-question button
- *   ★ #28  .sr-only utility
- *   ★      Nav-highlight flash on scroll-to
- */
+/*
+==============================================================================
+File: quiz.css
+Path: css/quiz/quiz.css
+Project: Learning Dashboard
+
+Description:
+Quiz runner styling, shared by quiz.html and quiz-index.html. Requires
+css/styles.css loaded first (provides the CSS custom properties this file
+reads). Phase 1 covers the quiz list, question cards, options,
+explanations, difficulty badges, toast, and print instructions/media
+query. Phase 2 (marked ★ inline) added the progress bar, question
+navigator, live score badge, score summary card, per-question result
+badge, next-question button, .sr-only utility, and nav-highlight flash.
+
+⚠️ Known dead code: `.difficulty-badge` is unused (PROJECT.md §8 — removed
+from quiz-index.css during the quiz-list→quiz-index rename, but a
+duplicate definition was left behind here; safe to delete once confirmed
+nothing else references it).
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-06-30
+==============================================================================
+*/
 
 /* ============================================================
    QUIZ LIST PAGE  (quiz-index.html)

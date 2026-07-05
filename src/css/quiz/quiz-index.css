@@ -1,6 +1,22 @@
-/* ============================================================
-   QUIZ LIST PAGE  (quiz-index.html)
-   ============================================================ */
+/*
+==============================================================================
+File: quiz-index.css
+Path: css/quiz/quiz-index.css
+Project: Learning Dashboard
+
+Description:
+Styling for quiz-index.html (renamed from quiz-list.css; the dead
+.difficulty-badge rule from the old version was removed in this rename).
+Quiz card grid for the quiz listing page.
+
+Sections:
+1. Quiz List Grid / Cards
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-06-30
+==============================================================================
+*/
 
 .quiz-list {
     display: grid;

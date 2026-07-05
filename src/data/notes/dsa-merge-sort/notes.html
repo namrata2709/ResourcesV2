@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Merge Sort — covers theory, implementation, complexity analysis, LeetCode problems, and interview questions. Keywords: merge sort, divide and conquer, sorting algorithm, stable sort, O(n log n), recursive sort, external sort. Beginner to expert level.">
+    <meta name="keywords" content="merge sort, divide and conquer, sorting algorithm, stable sort, O(n log n), recursive sort, external sort, AWS, cloud, certification">
+    <link rel="canonical" href="https://namrata2709.github.io/Resources/data/notes/dsa-merge-sort/notes.html">
+    <meta property="og:title" content="Merge Sort - DSA Notes">
+    <meta property="og:description" content="Merge Sort — covers theory, implementation, complexity analysis, LeetCode problems, and interview questions. Keywords: merge sort, divide and conquer, sorting algorithm, stable sort, O(n log n), recursive sort, external sort. Beginner to expert level.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://namrata2709.github.io/Resources/data/notes/dsa-merge-sort/notes.html">
+    <title>Merge Sort - DSA Notes</title>
+    <link rel="stylesheet" href="../../../css/styles.css">
+    <link rel="stylesheet" href="../../../css/notes/notes.css">
+    <link rel="stylesheet" href="../../../css/notes/dsa/dsa-notes.css">
+    <script src="../../../js/shared/site-config.js"></script>
+</head>
+<body data-subject="dsa">
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Merge Sort - DSA Notes",
+    "description": "Merge Sort — covers theory, implementation, complexity analysis, LeetCode problems, and interview questions. Keywords: merge sort, divide and conquer, sorting algorithm, stable sort, O(n log n), recursive sort, external sort. Beginner to expert level.",
+    "author": {
+        "@type": "Person",
+        "name": "Namrata Mulwani",
+        "email": "awslecturenotes@gmail.com"
+    },
+    "datePublished": "2026-06-23",
+    "dateModified": "2026-06-23",
+    "publisher": {
+        "@type": "Person",
+        "name": "Namrata Mulwani"
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://namrata2709.github.io/Resources/data/notes/dsa-merge-sort/notes.html"
+    },
+    "articleSection": "DSA Notes",
+    "keywords": [
+        "merge sort",
+        "divide and conquer",
+        "sorting algorithm",
+        "stable sort",
+        "O(n log n)",
+        "recursive sort",
+        "external sort"
+    ],
+    "educationalLevel": "Beginner to Expert"
+}
+</script>
+
+<div id="pageLoader" class="page-loader">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Loading...</p>
+</div>
+
+<div class="note-container">
+
+
+
+<div class="highlight-box" role="note" aria-label="When to use">
+    <p><strong>When to use:</strong> Use when the problem requires a stable sort, when sorting linked lists (where random access is expensive), or when you need guaranteed O(n log n) worst-case performance and can afford O(n) extra memory. Also the go-to algorithm for external sorting when data does not fit in memory.</p>
+</div>
+
+<div class="note-content">
+
+<details class="collapsible-section" open>
+<summary><h2 id="introduction">Introduction</h2></summary>
+<div class="section-content">
+
+<p>Imagine you have two piles of playing cards, and each pile is already sorted in order. Merging them into one sorted pile is almost effortless — compare the top cards of each pile and always place the smaller one onto your new pile. You never have to shuffle through either pile; you only ever look at the top. That single insight is the entire engine behind Merge Sort.</p>
+
+<p><span class="exam-highlight-term" data-term="Merge Sort">Merge Sort</span> is a <span class="exam-highlight-term" data-term="divide-and-conquer">divide-and-conquer</span> sorting algorithm that splits an array in half, recursively sorts each half, then merges the two sorted halves back into one. <span class="exam-highlight-sentence">The merge step is where all the real work happens — splitting is almost free, but merging guarantees order.</span></p>
+
+<p>Invented by John von Neumann in 1945, it was among the first algorithms formally analysed for correctness and complexity. Unlike algorithms that try to sort in-place by swapping elements, Merge Sort takes a different trade: it uses O(n) extra memory to guarantee O(n log n) time in every case — best, average, and worst.</p>
+
+<div class="info-box">
+    <p>Merge Sort is one of the few comparison-based sorting algorithms that offers *guaranteed* O(n log n) regardless of input order. Quick Sort is faster in practice but can degrade to O(n²) on bad inputs without careful pivot selection.</p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="divide-and-conquer-the-big-picture">Divide and Conquer: The Big Picture</h2></summary>
+<div class="section-content">
+
+<p>Divide and conquer algorithms solve a problem by breaking it into smaller subproblems of the same type, solving each subproblem independently, then combining the results. Merge Sort is the textbook example of this pattern.</p>
+
+<p>The three phases are:</p>
+
+<ol>
+<li><span class="exam-highlight-term" data-term="Divide">Divide</span> — Split the array at its midpoint into a left half and a right half.</li>
+<li><span class="exam-highlight-term" data-term="Conquer">Conquer</span> — Recursively apply Merge Sort to each half.</li>
+<li><span class="exam-highlight-term" data-term="Combine">Combine</span> — Merge the two sorted halves into a single sorted array.</li>
+</ol>
+
+<p>The recursion bottoms out when a subarray has length 0 or 1 — an array of one element is already sorted by definition. This base case is what prevents infinite recursion.</p>
+
+<div class="highlight-box">
+    <p>The recursive tree has &lt;span class="exam-highlight-term" data-term="log n levels"&gt;log n levels&lt;/span&gt; (because each level halves the problem size). At every level, the total work done by all merge operations is exactly O(n). This gives the O(n log n) total — not an approximation, but an exact characterisation.</p>
+</div>
+
+<p>Consider sorting <code>[38, 27, 43, 3]</code>:</p>
+
+<pre><code>
+           [38, 27, 43, 3]
+               /       \
+        [38, 27]       [43, 3]
+         /    \         /    \
+       [38]  [27]    [43]    [3]
+         \    /         \    /
+        [27, 38]        [3, 43]
+               \       /
+           [3, 27, 38, 43]
+</code></pre>
+
+<p>Each leaf is a trivially sorted array of one element. Merges happen on the way back up.</p>
+
+<div class="diagram-container">
+<img src="images/inline-01-recursion-tree.png" alt="Recursion tree for Merge Sort on [38, 27, 43, 3" loading="lazy" decoding="async" class="provided-image">
+<p class="image-caption"><em>Recursion tree for Merge Sort on [38, 27, 43, 3</em></p>
+</div> — split phase going down, merge phase coming back up]
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="the-merge-step-in-depth">The Merge Step in Depth</h2></summary>
+<div class="section-content">
+
+<p>The merge step is the heart of the algorithm. Given two sorted subarrays, the goal is to produce one sorted array containing all their elements.</p>
+
+<p>The classic two-pointer approach maintains one index into each subarray. At each step, compare the current elements of both subarrays and copy the smaller one into the output. When one subarray is exhausted, copy the remaining elements of the other subarray directly.</p>
+
+<pre><code>
+Left:  [3, 27, 38]
+Right: [9, 10, 43]
+
+i=0, j=0 → compare 3 vs 9 → pick 3   → output: [3]
+i=1, j=0 → compare 27 vs 9 → pick 9  → output: [3, 9]
+i=1, j=1 → compare 27 vs 10 → pick 10 → output: [3, 9, 10]
+i=1, j=2 → compare 27 vs 43 → pick 27 → output: [3, 9, 10, 27]
+i=2, j=2 → compare 38 vs 43 → pick 38 → output: [3, 9, 10, 27, 38]
+i=3 (exhausted) → copy remaining [43] → output: [3, 9, 10, 27, 38, 43]
+</code></pre>
+
+<p><span class="exam-highlight-sentence">Every element is visited exactly once during a merge, so merging two subarrays of total length k costs O(k) time.</span></p>
+
+<p><span class="exam-highlight-term" data-term="Why does this produce a sorted result?">Why does this produce a sorted result?</span> Because both subarrays are sorted before the merge begins, the element chosen at each step is always the globally minimum remaining element across both subarrays. Induction confirms this: if you always take the smallest available, the output sequence is non-decreasing.</p>
+
+<div class="info-box">
+    <p>The merge step requires O(n) auxiliary memory — you cannot merge two sorted subarrays in-place without significantly more complex algorithms. In-place merge exists but runs in O(n log n) instead of O(n), making the total complexity O(n log² n).</p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="stability-why-it-matters">Stability: Why It Matters</h2></summary>
+<div class="section-content">
+
+<p>A sort is <span class="exam-highlight-term" data-term="stable">stable</span> if equal elements appear in the same relative order in the output as they did in the input. Merge Sort is stable provided the merge step is implemented correctly.</p>
+
+<p>The key rule: when the current elements from the left and right subarrays are equal, always pick the one from the <span class="exam-highlight-term" data-term="left">left</span> subarray first. This preserves the original relative order of equal elements.</p>
+
+<p>Why does stability matter? Consider sorting a list of employees first by salary (already done), then by department. A stable sort on department will keep employees within the same department sorted by salary. An unstable sort might scramble the salary order inside departments, forcing you to sort on multiple keys simultaneously.</p>
+
+<div class="highlight-box">
+    <p>Stable sorting is essential whenever records have multiple keys and you want to sort by successive keys independently. Quick Sort (in its standard form) is not stable; Merge Sort is, which is a decisive reason to choose it in these scenarios.</p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="merge-sort-on-linked-lists">Merge Sort on Linked Lists</h2></summary>
+<div class="section-content">
+
+<p>Arrays and linked lists are both sorted efficiently by Merge Sort, but for opposite reasons. On an array, finding the midpoint and accessing elements by index is O(1). On a linked list, random access is O(n), but finding the midpoint with the slow-fast pointer trick is O(n), and merging two sorted lists requires only pointer manipulation — no extra memory.</p>
+
+<p><span class="exam-highlight-sentence">Merge Sort is the preferred algorithm for sorting linked lists because it avoids random access entirely and achieves O(1) auxiliary space (beyond the recursion stack).</span></p>
+
+<p>Quick Sort on a linked list is much less elegant: partitioning requires scanning the entire list, and random pivot selection is difficult. Merge Sort's structure — always splitting at the midpoint — maps cleanly onto pointer operations.</p>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="external-merge-sort">External Merge Sort</h2></summary>
+<div class="section-content">
+
+<p>When a dataset is too large to fit in RAM — think multi-terabyte log files or database tables — you need an <span class="exam-highlight-term" data-term="external sorting">external sorting</span> algorithm that minimises disk I/O. Merge Sort's structure makes it ideal.</p>
+
+<p>The approach has two phases:</p>
+
+<ol>
+<li><span class="exam-highlight-term" data-term="Sort runs">Sort runs</span> — Divide the file into chunks that fit in memory, sort each chunk in memory, and write the sorted chunks (called *runs*) back to disk.</li>
+<li><span class="exam-highlight-term" data-term="K-way merge">K-way merge</span> — Use a priority queue (min-heap) to simultaneously merge K sorted runs. The heap always yields the globally smallest remaining element across all runs, using only K elements of RAM at any moment.</li>
+</ol>
+
+<p>This is how most databases, MapReduce frameworks, and file systems implement sorting under the hood. <span class="exam-highlight-sentence">External Merge Sort can sort a file of arbitrary size using only O(K) main memory, where K is the number of runs being merged at once.</span></p>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="complexity-analysis">Complexity Analysis</h2></summary>
+<div class="section-content">
+
+<table>
+<thead><tr>
+<th>Case</th>
+<th>Time</th>
+<th>Space</th>
+<th>Why</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Best</td>
+<td>O(n log n)</td>
+<td>O(n)</td>
+<td>Even on a sorted input, all splits and merges still happen</td>
+</tr>
+<tr>
+<td>Average</td>
+<td>O(n log n)</td>
+<td>O(n)</td>
+<td>log n levels of recursion, each level totals O(n) merge work</td>
+</tr>
+<tr>
+<td>Worst</td>
+<td>O(n log n)</td>
+<td>O(n)</td>
+<td>No pivot-selection problem; worst case equals best case</td>
+</tr>
+</tbody></table>
+
+<p><span class="exam-highlight-term" data-term="Auxiliary space:">Auxiliary space:</span> The merge step requires a temporary array of size n at each level. However, at most O(n) extra space is needed at any one time because the recursion processes one branch before backtracking. The recursion stack itself adds O(log n) frames.</p>
+
+<p><span class="exam-highlight-term" data-term="Comparison count:">Comparison count:</span> In the best case (already sorted input), roughly n/2 comparisons are made per level (every left element is smaller than every right element). In the worst case, approximately n − 1 comparisons per merge. The exact count is between n log n / 2 and n log n comparisons.</p>
+
+<div class="info-box">
+    <p>Merge Sort is &lt;span class="exam-highlight-term" data-term="comparison-optimal"&gt;comparison-optimal&lt;/span&gt; — no comparison-based sort can do better than Ω(n log n) in the worst case. Merge Sort achieves this bound exactly.</p>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="comparison-merge-sort-vs-quick-sort">Comparison: Merge Sort vs Quick Sort</h2></summary>
+<div class="section-content">
+
+<table>
+<thead><tr>
+<th>Feature</th>
+<th>Merge Sort</th>
+<th>Quick Sort</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Worst-case time</td>
+<td>O(n log n) — always</td>
+<td>O(n²) — on sorted/reverse input without randomisation</td>
+</tr>
+<tr>
+<td>Average-case time</td>
+<td>O(n log n)</td>
+<td>O(n log n) — with ~1.39n log n comparisons on average</td>
+</tr>
+<tr>
+<td>Space</td>
+<td>O(n) auxiliary array</td>
+<td>O(log n) stack space (in-place)</td>
+</tr>
+<tr>
+<td>Stability</td>
+<td>Stable</td>
+<td>Not stable (standard partition)</td>
+</tr>
+<tr>
+<td>Cache performance</td>
+<td>Poor — accesses two separate arrays</td>
+<td>Excellent — in-place, cache-friendly</td>
+</tr>
+<tr>
+<td>Linked list sorting</td>
+<td>Natural — O(1) extra space</td>
+<td>Awkward — random access required</td>
+</tr>
+<tr>
+<td>External sorting</td>
+<td>Yes — the standard approach</td>
+<td>No — requires random access</td>
+</tr>
+<tr>
+<td>Practical speed</td>
+<td>Slower in practice (more copies)</td>
+<td>Faster in practice on RAM (locality)</td>
+</tr>
+</tbody></table>
+
+<p><span class="exam-highlight-term" data-term="Rule of thumb:">Rule of thumb:</span> For general in-memory sorting, Quick Sort (with randomised pivot or introsort) wins in practice due to cache effects. For stable sorting, linked list sorting, external sorting, or guaranteed worst-case bounds, use Merge Sort.</p>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="common-mistakes">Common Mistakes</h2></summary>
+<div class="section-content">
+
+<ul>
+<li><span class="exam-highlight-term" data-term="Off-by-one in the split:">Off-by-one in the split:</span> Using <code>mid = (low + high) / 2</code> is correct, but forgetting that the left half is <code>[low, mid]</code> and the right half is <code>[mid+1, high]</code> causes overlapping or missing elements.</li>
+<li><span class="exam-highlight-term" data-term="Not copying back:">Not copying back:</span> In the standard array implementation, sorted results are written to a temporary array. Forgetting to copy them back to the original array means the sort has no effect on the caller's data.</li>
+<li><span class="exam-highlight-term" data-term="Merging into the wrong array:">Merging into the wrong array:</span> Allocating a fresh temporary array inside every recursive call costs O(n log n) extra memory. Allocate one auxiliary array of size n upfront and reuse it.</li>
+<li><span class="exam-highlight-term" data-term="Breaking stability:">Breaking stability:</span> Choosing the right element when left and right elements are equal destroys stability. Always prefer the left side on ties.</li>
+<li><span class="exam-highlight-term" data-term="Forgetting the base case:">Forgetting the base case:</span> Without a check for arrays of length 0 or 1, the recursion runs forever. The base case must return immediately when <code>low &gt;= high</code>.</li>
+<li><span class="exam-highlight-term" data-term="Integer overflow when computing mid:">Integer overflow when computing mid:</span> In languages with fixed-width integers, <code>(low + high) / 2</code> can overflow for large indices. Use <code>low + (high - low) / 2</code> instead.</li>
+</ul>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="links-and-references">Links & References</h2></summary>
+<div class="section-content">
+<ul>
+    <li><a href="https://cp-algorithms.com/sequences/merge-sort.html" target="_blank" rel="noopener">CP Algorithms — Merge Sort</a></li>
+    <li><a href="https://cses.fi/problemset/task/1193" target="_blank" rel="noopener">CSES Problem Set — Inversions (classic Merge Sort application)</a></li>
+    <li>CLRS Chapter 2 — Getting Started (Section 2.3: Merge Sort)</li>
+    <li>Competitive Programmer's Handbook — Chapter 3: Sorting (Merge Sort)</li>
+    <li><a href="https://www.geeksforgeeks.org/merge-sort/" target="_blank" rel="noopener">GeeksForGeeks — Merge Sort</a></li>
+    <li><a href="https://bugs.python.org/file4451/timsort.txt" target="_blank" rel="noopener">Tim Peters — Timsort (Python's sort, a Merge Sort derivative)</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Merge_sort" target="_blank" rel="noopener">Wikipedia — Merge Sort</a></li>
+</ul>
+</div>
+</details>
+
+<details class="collapsible-section" open>
+<summary><h2 id="visualisation">Visualisation</h2></summary>
+<div class="section-content">
+<div class="viz-panel">
+
+    <div class="viz-tab-bar" role="tablist">
+        <button class="viz-tab active"
+                role="tab" aria-selected="true"
+                aria-controls="viz-images" id="tab-images">
+<p>Step-by-Step</p>
+        </button>
+        <button class="viz-tab"
+                role="tab" aria-selected="false"
+                aria-controls="viz-animation" id="tab-animation">
+<p>Animation</p>
+        </button>
+    </div>
+
+    <div class="viz-images" id="viz-images" role="tabpanel"
+         aria-labelledby="tab-images">
+        <img src="images/step-01-initial.png" alt="Step 1: The initial array and the recursive splitting phase — divide until single elements" class="viz-step-img active" data-step="1" data-caption="Step 1: The initial array and the recursive splitting phase — divide until single elements">
+        <img src="images/step-02-leaf-merges.png" alt="Step 2: First merges at the leaf level — combining pairs of single elements into sorted pairs" class="viz-step-img" data-step="2" data-caption="Step 2: First merges at the leaf level — combining pairs of single elements into sorted pairs">
+        <img src="images/step-03-mid-merges.png" alt="Step 3: Second level merges — combining sorted pairs into sorted groups of four" class="viz-step-img" data-step="3" data-caption="Step 3: Second level merges — combining sorted pairs into sorted groups of four">
+        <img src="images/step-04-final-merge.png" alt="Step 4: Final merge — combining two sorted halves into the fully sorted array" class="viz-step-img" data-step="4" data-caption="Step 4: Final merge — combining two sorted halves into the fully sorted array">
+        <img src="images/step-05-complexity.png" alt="Step 5: Complexity summary and when-to-use guide" class="viz-step-img" data-step="5" data-caption="Step 5: Complexity summary and when-to-use guide">
+        <div class="viz-nav" aria-label="Image navigation">
+            <button id="viz-prev" aria-label="Previous step">&#8592; Prev</button>
+            <div class="viz-counter">
+                <span>Step <span id="viz-current">1</span></span>
+                <span>of <span id="viz-total">5</span></span>
+            </div>
+            <button id="viz-next" aria-label="Next step">Next &#8594;</button>
+        </div>
+        <p class="image-caption" id="viz-caption">Step 1: The initial array and the recursive splitting phase — divide until single elements</p>
+    </div>
+
+    <div class="viz-animation" id="viz-animation" role="tabpanel"
+         aria-labelledby="tab-animation" style="display:none;">
+        <iframe src="merge-sort-animation.html" width="100%" height="780"
+                frameborder="0" title="Interactive animation"
+                loading="lazy"></iframe>
+        <div class="viz-animation-footer">
+            <a href="merge-sort-animation.html" target="_blank"
+               rel="noopener" class="viz-fullscreen-link">
+<p>Open full screen &#8599;</p>
+            </a>
+        </div>
+    </div>
+
+</div>
+</div>
+</details>
+
+<details class="collapsible-section" open>
+<summary><h2 id="implementation">Implementation</h2></summary>
+<div class="section-content">
+
+<div class="code-tab-bar" role="tablist">
+    <button class="code-tab active" role="tab" aria-selected="true" data-lang="python">Python</button>
+    <button class="code-tab" role="tab" aria-selected="false" data-lang="java">Java</button>
+    <button class="code-tab" role="tab" aria-selected="false" data-lang="cpp">C++</button>
+</div>
+<div class="code-panel active" id="code-python">
+<pre><code class="language-python"># Time: O(n log n) | Space: O(n)
+def merge_sort(arr):
+    if len(arr) &lt;= 1:
+        return arr
+
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    while i &lt; len(left) and j &lt; len(right):
+        # Use &lt;= to maintain stability: prefer left on equal elements
+        if left[i] &lt;= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+
+# In-place variant using auxiliary array (avoids repeated slice creation)
+# Time: O(n log n) | Space: O(n)
+def merge_sort_inplace(arr, aux, low, high):
+    if low &gt;= high:
+        return
+    mid = low + (high - low) // 2
+    merge_sort_inplace(arr, aux, low, mid)
+    merge_sort_inplace(arr, aux, mid + 1, high)
+    merge_inplace(arr, aux, low, mid, high)
+
+def merge_inplace(arr, aux, low, mid, high):
+    aux[low:high+1] = arr[low:high+1]
+    i, j = low, mid + 1
+    for k in range(low, high + 1):
+        if i &gt; mid:
+            arr[k] = aux[j]; j += 1
+        elif j &gt; high:
+            arr[k] = aux[i]; i += 1
+        elif aux[i] &lt;= aux[j]:
+            arr[k] = aux[i]; i += 1
+        else:
+            arr[k] = aux[j]; j += 1</code></pre>
+</div>
+<div class="code-panel" id="code-java" style="display:none;">
+<pre><code class="language-java">// Time: O(n log n) | Space: O(n)
+public class MergeSort {
+
+    public static void mergeSort(int[] arr, int[] aux, int low, int high) {
+        if (low &gt;= high) return;
+        int mid = low + (high - low) / 2;
+        mergeSort(arr, aux, low, mid);
+        mergeSort(arr, aux, mid + 1, high);
+        merge(arr, aux, low, mid, high);
+    }
+
+    private static void merge(int[] arr, int[] aux, int low, int mid, int high) {
+        // Copy to auxiliary array
+        for (int k = low; k &lt;= high; k++) aux[k] = arr[k];
+
+        int i = low, j = mid + 1;
+        for (int k = low; k &lt;= high; k++) {
+            if (i &gt; mid)                    arr[k] = aux[j++];
+            else if (j &gt; high)              arr[k] = aux[i++];
+            else if (aux[i] &lt;= aux[j])      arr[k] = aux[i++];  // &lt;= for stability
+            else                            arr[k] = aux[j++];
+        }
+    }
+
+    public static void sort(int[] arr) {
+        int[] aux = new int[arr.length];
+        mergeSort(arr, aux, 0, arr.length - 1);
+    }
+}</code></pre>
+</div>
+<div class="code-panel" id="code-cpp" style="display:none;">
+<pre><code class="language-cpp">// Time: O(n log n) | Space: O(n)
+#include &lt;vector&gt;
+using namespace std;
+
+void merge(vector&lt;int&gt;&amp; arr, vector&lt;int&gt;&amp; aux, int low, int mid, int high) {
+    // Copy segment to auxiliary
+    for (int k = low; k &lt;= high; k++) aux[k] = arr[k];
+
+    int i = low, j = mid + 1;
+    for (int k = low; k &lt;= high; k++) {
+        if      (i &gt; mid)           arr[k] = aux[j++];
+        else if (j &gt; high)          arr[k] = aux[i++];
+        else if (aux[i] &lt;= aux[j])  arr[k] = aux[i++];  // &lt;= for stability
+        else                        arr[k] = aux[j++];
+    }
+}
+
+void mergeSort(vector&lt;int&gt;&amp; arr, vector&lt;int&gt;&amp; aux, int low, int high) {
+    if (low &gt;= high) return;
+    int mid = low + (high - low) / 2;
+    mergeSort(arr, aux, low, mid);
+    mergeSort(arr, aux, mid + 1, high);
+    merge(arr, aux, low, mid, high);
+}
+
+void sort(vector&lt;int&gt;&amp; arr) {
+    vector&lt;int&gt; aux(arr.size());
+    mergeSort(arr, aux, 0, (int)arr.size() - 1);
+}</code></pre>
+</div>
+
+<h3 id="dry-run">Dry Run</h3>
+
+<p>Let's trace <code>merge_sort([38, 27, 43, 3, 9, 82, 10])</code> step by step.</p>
+
+<p>The array has 7 elements, so <code>mid = 3</code>. The left half <code>[38, 27, 43, 3]</code> is recursed into first. That call splits into <code>[38, 27]</code> and <code>[43, 3]</code>. Going deeper, <code>[38, 27]</code> splits into <code>[38]</code> and <code>[27]</code> — both base cases. Merging <code>[38]</code> and <code>[27]</code> compares 38 vs 27, picks 27 first, then 38, producing <code>[27, 38]</code>. Back up one level, <code>[43, 3]</code> merges similarly: 43 vs 3 — picks 3, then 43, giving <code>[3, 43]</code>. Now merging <code>[27, 38]</code> and <code>[3, 43]</code>: compare 27 vs 3, pick 3; compare 27 vs 43, pick 27; compare 38 vs 43, pick 38; 43 remains, producing <code>[3, 27, 38, 43]</code>.</p>
+
+<p>The right half <code>[9, 82, 10]</code> follows similarly. <code>[9]</code> and <code>[82]</code> merge to <code>[9, 82]</code>. Then <code>[9, 82]</code> and <code>[10]</code> merge: 9 vs 10 picks 9; 82 vs 10 picks 10; 82 remains — result <code>[9, 10, 82]</code>.</p>
+
+<p>The final merge combines <code>[3, 27, 38, 43]</code> and <code>[9, 10, 82]</code>: 3 vs 9 → 3; 27 vs 9 → 9; 27 vs 10 → 10; 27 vs 82 → 27; 38 vs 82 → 38; 43 vs 82 → 43; 82 remains. Final result: <code>[3, 9, 10, 27, 38, 43, 82]</code>.</p>
+
+<h3 id="variations">Variations</h3>
+
+<pre><code class="language-python">
+# Variation: Bottom-up iterative Merge Sort (no recursion stack)
+# Time: O(n log n) | Space: O(n)
+def merge_sort_iterative(arr):
+    n = len(arr)
+    aux = arr[:]
+    size = 1
+    while size &lt; n:
+        for low in range(0, n, size * 2):
+            mid = min(low + size - 1, n - 1)
+            high = min(low + size * 2 - 1, n - 1)
+            if mid &lt; high:
+                merge_inplace(arr, aux, low, mid, high)
+        size *= 2
+    return arr
+
+
+# Variation: Count inversions during merge (classic interview problem)
+# Time: O(n log n) | Space: O(n)
+def count_inversions(arr):
+    if len(arr) &lt;= 1:
+        return arr, 0
+    mid = len(arr) // 2
+    left, left_inv = count_inversions(arr[:mid])
+    right, right_inv = count_inversions(arr[mid:])
+    merged, split_inv = merge_count(left, right)
+    return merged, left_inv + right_inv + split_inv
+
+
+def merge_count(left, right):
+    result, inversions = [], 0
+    i = j = 0
+    while i &lt; len(left) and j &lt; len(right):
+        if left[i] &lt;= right[j]:
+            result.append(left[i]); i += 1
+        else:
+            # All remaining left elements form inversions with right[j]
+            inversions += len(left) - i
+            result.append(right[j]); j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result, inversions
+</code></pre>
+
+</div>
+</details>
+
+<details class="collapsible-section" open>
+<summary><h2 id="summary">Summary</h2></summary>
+<div class="section-content">
+
+<p>Merge Sort is a stable, divide-and-conquer sorting algorithm that guarantees O(n log n) time in all cases by recursively splitting arrays and merging sorted halves. Its predictability and stability make it the algorithm of choice when worst-case guarantees, stable ordering, or external sorting are required, even though it trades an extra O(n) memory to achieve this.</p>
+
+<div class="highlight-box">
+    <p><strong>Key Takeaways:</strong></p>
+    <ul>
+        <li>Merge Sort splits until single elements, then merges — all real work is in the O(n) merge step, repeated over O(log n) levels</li>
+        <li>It guarantees O(n log n) in best, average, and worst case — no degenerate input can make it slower</li>
+        <li>Stability (preserving equal elements' original order) requires always preferring the left element on ties during merge</li>
+        <li>Prefer Merge Sort over Quick Sort when sorting linked lists, needing stable sort, or sorting data that exceeds RAM (external sort)</li>
+        <li>The count-inversions problem, external sort, and K-way merge are canonical interview extensions that all reduce to the merge step</li>
+    </ul>
+</div>
+
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="glossary">📖 Glossary</h2></summary>
+<div class="section-content">
+<div id="glossaryContainer" data-glossary-source="json/glossary.json"></div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="interview-questions">🎤 Interview Questions</h2></summary>
+<div class="section-content">
+<p class="interview-intro">📚 Test your understanding with these questions.</p>
+<div class="interview-progress">
+    <p id="interviewProgress">Progress: 0/? (0%)</p>
+</div>
+<div class="flashcard-navigation">
+    <button onclick="previousInterviewQuestion()" class="nav-btn" id="prevInterviewBtn">&#8592; Previous</button>
+    <span id="interviewCounter" class="card-counter">1 / ?</span>
+    <button onclick="nextInterviewQuestion()" class="nav-btn" id="nextInterviewBtn">Next &#8594;</button>
+</div>
+<div class="flashcard-deck" id="interviewContainer" data-interview-source="json/interview.json"></div>
+<div class="quiz-reset-container">
+    <button onclick="resetInterviewProgress()" class="quiz-reset-btn">🔄 Reset Progress</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="multiple-choice-questions">📝 Multiple Choice Questions</h2></summary>
+<div class="section-content">
+<div class="quiz-header-info">
+    <p>Test your knowledge with immediate feedback.</p>
+</div>
+<div class="quiz-navigation">
+    <button onclick="previousQuestion()" class="quiz-nav-btn" id="prevBtn">&#8592; Previous</button>
+    <div class="quiz-info">
+        <span class="quiz-counter" id="quizCounter">Question 1 of ?</span>
+        <span class="quiz-score-display" id="quizScoreDisplay">Score: 0/0 (0%)</span>
+    </div>
+    <button onclick="nextQuestion()" class="quiz-nav-btn" id="nextBtn">Next &#8594;</button>
+</div>
+<div class="quiz-carousel-container" id="quizContainer" data-mcq-source="json/mcq.json"></div>
+<div class="quiz-summary-section">
+    <button onclick="showQuizSummary()" class="quiz-summary-btn">📊 View Summary</button>
+    <div class="quiz-reset-container">
+        <button onclick="resetEntireQuiz()" class="quiz-reset-btn">🔄 Reset Quiz</button>
+    </div>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="visual-questions">Visual Questions</h2></summary>
+<div class="section-content">
+<div class="quiz-header-info">
+    <span id="visualMcqCounter">Question 1 of ?</span>
+    <span id="visualMcqProgress">Answered: 0/0</span>
+</div>
+<div id="visualMcqContainer" data-visual-mcq-source="json/visual-mcq.json"></div>
+<div class="quiz-navigation">
+    <button id="visualPrevBtn" class="quiz-nav-btn" disabled>&#8592; Prev</button>
+    <button id="visualNextBtn" class="quiz-nav-btn">Next &#8594;</button>
+</div>
+<div class="quiz-reset-container">
+    <button onclick="resetVisualMcq()" class="quiz-reset-btn">🔄 Reset Progress</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="leetcode-problems">LeetCode Problems</h2></summary>
+<div class="section-content">
+<div id="problemsContainer" data-problems-source="json/problems.json"></div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="contest-problems">Contest Problems</h2></summary>
+<div class="section-content">
+<div id="contestContainer" data-contest-source="json/contest.json"></div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="learning-checklist">☑️ Learning Checklist</h2></summary>
+<div class="section-content">
+<div class="checklist-progress">
+    <p>Progress: <span id="checklistProgress">0/0</span></p>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+    </div>
+</div>
+<div id="checklistContainer" data-checklist-source="json/checklist.json"></div>
+<div class="quiz-reset-container">
+    <button onclick="resetChecklist()" class="quiz-reset-btn">🔄 Reset Checklist</button>
+</div>
+</div>
+</details>
+
+<details class="collapsible-section">
+<summary><h2 id="youtube-recommendations">YouTube Recommendations</h2></summary>
+<div class="section-content">
+
+<div class="interview-question">
+    <strong>Merge Sort Algorithm</strong> &mdash; Abdul Bari<br>
+    <span>Beginner</span> &middot; Abdul Bari's visual walkthrough builds intuition from scratch, tracing the recursion tree and merge step side by side — the clearest first exposure to why Merge Sort works before any code.<br>
+    <a href="https://www.youtube.com/watch?v=mB5HXBb_HY8" target="_blank" rel="noopener">Watch &#8599;</a>
+</div>
+
+<div class="interview-question">
+    <strong>Merge Sort | Sorting Algorithm</strong> &mdash; NeetCode<br>
+    <span>Intermediate</span> &middot; NeetCode walks through Python implementation with clean visual annotations, covering the stable merge condition and dry-run on a concrete example — ideal bridge between intuition and interview-ready code.<br>
+    <a href="https://www.youtube.com/watch?v=MsYZSinhuFo" target="_blank" rel="noopener">Watch &#8599;</a>
+</div>
+
+<div class="interview-question">
+    <strong>Merge Sort — MIT OpenCourseWare 6.006</strong> &mdash; MIT OpenCourseWare<br>
+    <span>Advanced</span> &middot; MIT 6.006 lecture covers the recurrence, Master Theorem proof, comparison with other sorts, and extensions — essential for anyone who needs to reason formally about Merge Sort's correctness and optimality.<br>
+    <a href="https://www.youtube.com/watch?v=Kg4bqzAqRBM" target="_blank" rel="noopener">Watch &#8599;</a>
+</div>
+
+</div>
+</details>
+
+<div class="tags" aria-label="Topic tags">
+    <span class="tag">sorting</span>
+    <span class="tag">divide-and-conquer</span>
+    <span class="tag">recursion</span>
+    <span class="tag">stable-sort</span>
+</div>
+
+
+</div><!-- end note-content -->
+
+</div><!-- end note-container -->
+<div id="footerRoot" data-subject="dsa"></div>
+
+<script src="../../../js/notes/notes-page-core.js" async="false"></script>
+
+</body>
+</html>

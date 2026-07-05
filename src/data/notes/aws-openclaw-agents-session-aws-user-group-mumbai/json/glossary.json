@@ -1,0 +1,129 @@
+{
+  "terms": [
+    {
+      "term": "OpenClaw",
+      "definition": "An open-source, self-hosted framework for building autonomous AI agents that connect to messaging channels and can take real actions, not just answer questions.",
+      "example": "e.g. Running OpenClaw with a WhatsApp channel lets you message an agent that can read files, run commands, and search the web on your behalf."
+    },
+    {
+      "term": "Autonomous Agent",
+      "definition": "An AI system that is given a goal and a set of tools, then independently decides which actions to take and in what order to reach that goal.",
+      "example": "e.g. An agent told to \"monitor this inbox\" keeps checking and drafting replies without being re-prompted for each new email."
+    },
+    {
+      "term": "Agent Harness",
+      "definition": "A tool that wraps a foundation model with built-in functions but is invoked deliberately by a human for one task at a time.",
+      "example": "e.g. Claude Code running in a terminal is a harness — a developer triggers each action rather than the model acting continuously on its own."
+    },
+    {
+      "term": "Gateway",
+      "definition": "OpenClaw's control plane — the single point through which agents, skills, channels, and settings are configured.",
+      "example": "e.g. All configuration for a new WhatsApp-connected agent happens by logging into the Gateway console."
+    },
+    {
+      "term": "Skill",
+      "definition": "A definition of how and when an agent should use a capability, stored as a `SKILL.md` file, without the underlying implementation code.",
+      "example": "e.g. A \"web search\" skill tells the agent to search online whenever it doesn't already know an answer."
+    },
+    {
+      "term": "Tool",
+      "definition": "The actual executable capability behind a skill — the code that performs an action such as reading a file or making an HTTP request.",
+      "example": "e.g. The tool behind a \"web search\" skill is the code that actually queries a search API."
+    },
+    {
+      "term": "SOUL.md",
+      "definition": "The markdown file in OpenClaw that defines an agent's persona, tone, and behavioral boundaries.",
+      "example": "e.g. A SOUL.md file might instruct an agent to always reply in under 500 characters and never discuss unrelated topics."
+    },
+    {
+      "term": "Model Context Protocol (MCP)",
+      "definition": "A standardized protocol that lets an AI agent connect to external tools, data sources, and systems.",
+      "example": "e.g. An agent uses an MCP server to query a company's internal ticketing system without a custom integration being written for it."
+    },
+    {
+      "term": "Foundation Model",
+      "definition": "The underlying large language model that provides an agent's reasoning and language capabilities.",
+      "example": "e.g. OpenClaw is model-agnostic, so the same agent configuration can run on Claude, GPT, or another model."
+    },
+    {
+      "term": "Amazon Bedrock AgentCore",
+      "definition": "A fully managed, serverless AWS platform for building, deploying, and securing production AI agents at scale, with any framework or foundation model.",
+      "example": "e.g. A team migrates a self-hosted agent to AgentCore to get per-session isolation without managing EC2 instances."
+    },
+    {
+      "term": "AgentCore Runtime",
+      "definition": "The AgentCore component that provides a secure, serverless execution environment for an agent, billed for active CPU and memory usage only.",
+      "example": "e.g. A support agent's Runtime session spins up when a customer messages it and shuts down after the conversation ends."
+    },
+    {
+      "term": "AgentCore Gateway",
+      "definition": "The AgentCore component that turns APIs and Lambda functions into tools an agent can call, and connects to existing MCP servers.",
+      "example": "e.g. An internal inventory API is exposed through AgentCore Gateway so an agent can check stock levels."
+    },
+    {
+      "term": "AgentCore Memory",
+      "definition": "The AgentCore component that manages an agent's short-term (in-session) and long-term (cross-session) memory without custom infrastructure.",
+      "example": "e.g. An agent remembers a returning customer's timezone and preferences across separate conversations using AgentCore Memory."
+    },
+    {
+      "term": "AgentCore Browser",
+      "definition": "A managed, cloud-based Chromium browser runtime that lets an agent navigate and interact with live websites.",
+      "example": "e.g. A research agent uses AgentCore Browser to pull the latest market data from a live webpage."
+    },
+    {
+      "term": "Cold Start",
+      "definition": "The delay experienced the first time a serverless environment (such as an AgentCore Runtime session) has to initialize before it can respond.",
+      "example": "e.g. The first message to an idle agent takes a few extra seconds while its session environment spins up."
+    },
+    {
+      "term": "Multi-Tenancy",
+      "definition": "The architectural challenge of serving multiple customers or users from shared infrastructure while keeping their data and sessions isolated from one another.",
+      "example": "e.g. A SaaS company must ensure Customer A's agent conversations never appear in Customer B's session."
+    },
+    {
+      "term": "Pool Model",
+      "definition": "A multi-tenancy pattern where every user shares the same underlying resources, minimizing cost but weakening isolation.",
+      "example": "e.g. Ten customers all use the same EC2 instance and database in a pool deployment."
+    },
+    {
+      "term": "Silo Model",
+      "definition": "A multi-tenancy pattern where every user gets fully dedicated resources, maximizing isolation at higher cost.",
+      "example": "e.g. Each enterprise customer gets their own EC2 instance and database in a silo deployment."
+    },
+    {
+      "term": "Bridge Model",
+      "definition": "A multi-tenancy pattern that shares some resources across users while isolating sensitive resources per user.",
+      "example": "e.g. All customers share a common Gateway front-end, but each has a dedicated agent session and data store."
+    },
+    {
+      "term": "AWS Session Manager",
+      "definition": "An AWS Systems Manager capability that lets you connect to an EC2 instance through the AWS control plane using IAM permissions, without opening inbound port 22 or using SSH keys.",
+      "example": "e.g. An instance in a fully private subnet with no internet gateway can still be reached for troubleshooting via Session Manager."
+    },
+    {
+      "term": "Amazon EC2",
+      "definition": "AWS's resizable virtual server service, offering full control over the operating system and networking configuration.",
+      "example": "e.g. A team runs OpenClaw on an EC2 instance bootstrapped via CloudFormation user data."
+    },
+    {
+      "term": "AWS Lightsail",
+      "definition": "A simplified AWS compute service with pre-built blueprints, designed for fast setup with less configuration than raw EC2.",
+      "example": "e.g. Launching OpenClaw from a Lightsail blueprint gets an instance running within minutes."
+    },
+    {
+      "term": "Amazon Bedrock Guardrails",
+      "definition": "A configurable safety layer that can filter sensitive content and enforce topic restrictions on traffic flowing to and from a foundation model.",
+      "example": "e.g. Guardrails block a customer's financial account number from being sent to the LLM in a support conversation."
+    },
+    {
+      "term": "AWS Graviton",
+      "definition": "AWS's family of ARM-based processors, generally offering a lower cost-per-vCPU than comparable x86 instances for general-purpose workloads.",
+      "example": "e.g. Running OpenClaw on a Graviton-based EC2 instance can reduce compute cost versus an equivalent x86 instance."
+    },
+    {
+      "term": "Orchestrator Agent",
+      "definition": "An agent responsible for receiving a request, routing sub-tasks to specialized agents, and combining their responses into a single answer.",
+      "example": "e.g. An orchestrator agent routes a billing question to a billing-specialist agent and a technical question to a support-specialist agent."
+    }
+  ]
+}

@@ -1,7 +1,23 @@
 /**
- * Checklist Interactive Features v1.0
- * Loads checklist items from JSON and renders dynamically
- * File: js/notes-checklist.js
+ * =============================================================================
+ * File: notes-checklist.js
+ * Path: js/notes/notes-checklist.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Interactive learning checklist for note pages (#checklistContainer).
+ * Loads categories/items from JSON, renders a checkbox table per
+ * category, tracks checked state in localStorage
+ * (key: <pageId>-checklist-state), and shows progress as a percentage.
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - window.NotePageId (set by notes-page-core.js before this loads)
+ * - window.NotesSearch (notes-search.js, optional — rebuildIndex() call)
+ * =============================================================================
  */
 
 (function () {

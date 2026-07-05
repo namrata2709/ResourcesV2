@@ -1,0 +1,900 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is OpenClaw?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A managed AWS monitoring dashboard"
+        },
+        {
+          "letter": "B",
+          "text": "An open-source AI agent that runs locally and connects to tools via Skills"
+        },
+        {
+          "letter": "C",
+          "text": "A paid SaaS chatbot platform"
+        },
+        {
+          "letter": "D",
+          "text": "An AWS Lambda runtime"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "OpenClaw is explicitly an open-source, locally-run AI agent that connects to external tools through Skills, not a hosted dashboard or managed service.",
+        "why": "A managed dashboard implies a hosted UI, which OpenClaw isn't; it's not a paid SaaS product; it isn't an AWS Lambda runtime, it runs on the user's own machine."
+      }
+    },
+    {
+      "id": 2,
+      "question": "What two components make up the minimum structure of a Skill?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A Dockerfile and a YAML config"
+        },
+        {
+          "letter": "B",
+          "text": "A folder and a SKILL.md file"
+        },
+        {
+          "letter": "C",
+          "text": "A Lambda function and an API Gateway route"
+        },
+        {
+          "letter": "D",
+          "text": "A CloudFormation template and a script"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "A skill is one folder plus one SKILL.md file — there is no required Docker, Lambda, or CloudFormation layer.",
+        "why": "Dockerfile/YAML, Lambda/API Gateway, and CloudFormation/script all describe heavier infrastructure patterns not required by OpenClaw's skill format."
+      }
+    },
+    {
+      "id": 3,
+      "question": "Which chat channels can OpenClaw connect to, per the session?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Only WhatsApp"
+        },
+        {
+          "letter": "B",
+          "text": "Only email"
+        },
+        {
+          "letter": "C",
+          "text": "WhatsApp, Telegram, and Slack"
+        },
+        {
+          "letter": "D",
+          "text": "Only SMS"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "The session names WhatsApp, Telegram, and Slack as supported channels, since OpenClaw is channel-agnostic by design.",
+        "why": "WhatsApp-only, email-only, and SMS-only all undersell the channel-agnostic design described in the session."
+      }
+    },
+    {
+      "id": 4,
+      "question": "What does SKILL.md primarily tell the agent?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The pricing of the AWS services involved"
+        },
+        {
+          "letter": "B",
+          "text": "When to trigger, what command to run, and how to handle errors"
+        },
+        {
+          "letter": "C",
+          "text": "The full source code of the underlying script"
+        },
+        {
+          "letter": "D",
+          "text": "The user's AWS account ID"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "SKILL.md defines triggers, the invocation command, output format, and error handling for the agent to follow.",
+        "why": "Pricing isn't part of a skill definition; the script's full source lives separately in scripts/; the account ID is supplied via environment variables, not SKILL.md."
+      }
+    },
+    {
+      "id": 5,
+      "question": "What does the agent do once a skill is triggered?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It generates an answer purely from its training data"
+        },
+        {
+          "letter": "B",
+          "text": "It executes the underlying script and returns its real output"
+        },
+        {
+          "letter": "C",
+          "text": "It asks the user to open the AWS console manually"
+        },
+        {
+          "letter": "D",
+          "text": "It queues the request for a human operator"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "The agent runs the actual script referenced by the skill and relays that script's real output back to the user.",
+        "why": "Answering from training data would risk hallucinated infra state; asking the user to open the console defeats the purpose of the skill; there's no human-operator queue in this design."
+      }
+    },
+    {
+      "id": 6,
+      "question": "Which AWS service is used to retrieve CPU utilization in this skill?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "AWS Config"
+        },
+        {
+          "letter": "B",
+          "text": "AWS CloudTrail"
+        },
+        {
+          "letter": "C",
+          "text": "Amazon CloudWatch"
+        },
+        {
+          "letter": "D",
+          "text": "AWS X-Ray"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "CloudWatch's GetMetricStatistics call is what the skill uses to compute the CPU average.",
+        "why": "Config tracks resource configuration compliance, not metrics; CloudTrail logs API calls, not performance metrics; X-Ray traces distributed application requests, not infrastructure CPU."
+      }
+    },
+    {
+      "id": 7,
+      "question": "What time window does the skill use for its CPU average?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1 minute"
+        },
+        {
+          "letter": "B",
+          "text": "5 minutes"
+        },
+        {
+          "letter": "C",
+          "text": "15 minutes"
+        },
+        {
+          "letter": "D",
+          "text": "1 hour"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "The skill reports CPU utilization as a 15-minute average pulled from CloudWatch.",
+        "why": "1 minute and 5 minutes are shorter windows than documented; 1 hour is longer than the 15-minute window actually used."
+      }
+    },
+    {
+      "id": 8,
+      "question": "Which tool runs the TypeScript script without a separate build step?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "ts-node-dev"
+        },
+        {
+          "letter": "B",
+          "text": "webpack"
+        },
+        {
+          "letter": "C",
+          "text": "tsx"
+        },
+        {
+          "letter": "D",
+          "text": "babel"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "tsx is named explicitly in the session and the repo as the TypeScript runner used to execute the script directly.",
+        "why": "ts-node-dev, webpack, and babel are all real tools but none of them is the one documented for this specific skill."
+      }
+    },
+    {
+      "id": 9,
+      "question": "What credential type should NEVER be used to run this skill?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "An IAM user with a read-only policy"
+        },
+        {
+          "letter": "B",
+          "text": "Temporary credentials from an assumed role"
+        },
+        {
+          "letter": "C",
+          "text": "Root account credentials"
+        },
+        {
+          "letter": "D",
+          "text": "An access key scoped to Describe/List/Get actions"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Root account credentials are explicitly warned against, since they grant unrestricted account access with no IAM boundary to limit the agent.",
+        "why": "A read-only IAM user, assumed-role temporary credentials, and a scoped Describe/List/Get key are all acceptable or recommended credential types."
+      }
+    },
+    {
+      "id": 10,
+      "question": "Which environment variable is optional rather than required?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "AWS_ACCESS_KEY_ID"
+        },
+        {
+          "letter": "B",
+          "text": "AWS_SECRET_ACCESS_KEY"
+        },
+        {
+          "letter": "C",
+          "text": "AWS_REGION"
+        },
+        {
+          "letter": "D",
+          "text": "AWS_SESSION_TOKEN"
+        }
+      ],
+      "correctAnswer": "D",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "AWS_SESSION_TOKEN is only needed for temporary or assumed-role credentials, while the other three are always required.",
+        "why": "AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION are all marked required in SKILL.md's documented environment variables."
+      }
+    },
+    {
+      "id": 11,
+      "question": "What command switches OpenClaw from the config agent to the main agent?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "openclaw gateway restart"
+        },
+        {
+          "letter": "B",
+          "text": "talk to agent"
+        },
+        {
+          "letter": "C",
+          "text": "npx tsx scripts/aws-health.ts"
+        },
+        {
+          "letter": "D",
+          "text": "openclaw login"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "\"talk to agent\" is the documented command that switches context into the main conversational agent where skills actually run.",
+        "why": "gateway restart reloads config but doesn't switch agents; the tsx command runs the script directly, bypassing the agent entirely; there's no documented \"openclaw login\" command in this flow."
+      }
+    },
+    {
+      "id": 12,
+      "question": "After editing openclaw.json, what must you do for changes to take effect?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Reinstall Node.js"
+        },
+        {
+          "letter": "B",
+          "text": "Restart the OpenClaw gateway"
+        },
+        {
+          "letter": "C",
+          "text": "Recreate the IAM user"
+        },
+        {
+          "letter": "D",
+          "text": "Nothing — changes apply instantly"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "\"openclaw gateway restart\" is explicitly required after any config change for it to be picked up.",
+        "why": "Reinstalling Node.js and recreating the IAM user are unrelated to config reload; changes do not apply instantly without a restart."
+      }
+    },
+    {
+      "id": 13,
+      "question": "Which ECS API call sequence does the skill follow to build its report?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "RunTask, then StopTask, then DescribeTasks"
+        },
+        {
+          "letter": "B",
+          "text": "ListClusters, then ListServices, then DescribeServices, then ListTasks, then DescribeTasks"
+        },
+        {
+          "letter": "C",
+          "text": "CreateService, then UpdateService, then DescribeServices"
+        },
+        {
+          "letter": "D",
+          "text": "DescribeClusters only"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "This is the documented walk-through chain used to gather full ECS cluster, service, and task data.",
+        "why": "RunTask/StopTask are mutating actions never used by a read-only skill; CreateService/UpdateService are also mutating actions; DescribeClusters alone wouldn't surface per-service or per-task detail."
+      }
+    },
+    {
+      "id": 14,
+      "question": "What does an EC2 \"system status check\" specifically detect?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Application-level errors in the guest OS"
+        },
+        {
+          "letter": "B",
+          "text": "Underlying AWS hardware failures"
+        },
+        {
+          "letter": "C",
+          "text": "IAM permission issues"
+        },
+        {
+          "letter": "D",
+          "text": "DNS resolution failures"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "System status checks catch hardware-layer problems with the underlying AWS infrastructure, distinct from instance/OS-level checks.",
+        "why": "Guest-OS errors are covered by instance status checks instead; IAM issues surface as AccessDeniedException, not a status check; DNS failures aren't part of EC2 status checks at all."
+      }
+    },
+    {
+      "id": 15,
+      "question": "What does ECS \"deployment rollout state\" indicate?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The cost of the current deployment"
+        },
+        {
+          "letter": "B",
+          "text": "Whether the deployment is COMPLETED, IN_PROGRESS, or FAILED"
+        },
+        {
+          "letter": "C",
+          "text": "The number of available instance types"
+        },
+        {
+          "letter": "D",
+          "text": "The region the cluster is deployed in"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "These three values, COMPLETED, IN_PROGRESS, and FAILED, are the documented possible rollout states.",
+        "why": "Cost isn't reported by DescribeServices; available instance types relate to EC2, not an ECS deployment; the region is set via configuration, not the rollout state field."
+      }
+    },
+    {
+      "id": 16,
+      "question": "Why does the skill report the last 5 stopped ECS tasks with stop reasons?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "To calculate billing for stopped tasks"
+        },
+        {
+          "letter": "B",
+          "text": "To help detect crash-loop patterns that a single snapshot would miss"
+        },
+        {
+          "letter": "C",
+          "text": "To automatically restart them"
+        },
+        {
+          "letter": "D",
+          "text": "To delete old task definitions"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Repeated recent stops sharing the same reason reveal a crash loop that wouldn't be visible from a single point-in-time running count.",
+        "why": "The skill doesn't compute billing; it never restarts tasks, since it's read-only by design; it also never deletes task definitions."
+      }
+    },
+    {
+      "id": 17,
+      "question": "Which IAM action prefixes are present in the skill's policy?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Create*, Put*, Delete*"
+        },
+        {
+          "letter": "B",
+          "text": "Describe*, List*, Get*"
+        },
+        {
+          "letter": "C",
+          "text": "Terminate*, Stop*, Modify*"
+        },
+        {
+          "letter": "D",
+          "text": "Attach*, Detach*, Update*"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Only the non-mutating Describe/List/Get action prefixes are granted, matching the skill's read-only design.",
+        "why": "Create/Put/Delete, Terminate/Stop/Modify, and Attach/Detach/Update are all mutating action families excluded from this policy on purpose."
+      }
+    },
+    {
+      "id": 18,
+      "question": "Which error indicates the calling IAM identity lacks a required permission?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "CredentialsProviderError"
+        },
+        {
+          "letter": "B",
+          "text": "ResourceNotFoundException"
+        },
+        {
+          "letter": "C",
+          "text": "AccessDeniedException"
+        },
+        {
+          "letter": "D",
+          "text": "ThrottlingException"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "AccessDeniedException maps directly to insufficient IAM permissions for the requested action.",
+        "why": "CredentialsProviderError indicates missing/invalid credentials rather than a permission gap; ResourceNotFoundException means the resource doesn't exist; ThrottlingException relates to rate limits, not permissions."
+      }
+    },
+    {
+      "id": 19,
+      "question": "Which error would you see if you queried a non-existent ECS cluster name?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "CredentialsProviderError"
+        },
+        {
+          "letter": "B",
+          "text": "AccessDeniedException"
+        },
+        {
+          "letter": "C",
+          "text": "ResourceNotFoundException"
+        },
+        {
+          "letter": "D",
+          "text": "ValidationException"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "A wrong or nonexistent cluster name maps to ResourceNotFoundException, as documented in the skill's error handling.",
+        "why": "CredentialsProviderError relates to credentials, not cluster names; AccessDeniedException relates to permissions; ValidationException typically relates to malformed input rather than a missing resource."
+      }
+    },
+    {
+      "id": 20,
+      "question": "What flag scopes the health check to EC2 only?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "--ec2-only"
+        },
+        {
+          "letter": "B",
+          "text": "--only ec2"
+        },
+        {
+          "letter": "C",
+          "text": "--mode ec2"
+        },
+        {
+          "letter": "D",
+          "text": "--filter=ec2"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "\"--only ec2\" is the exact documented flag for limiting the script to EC2 checks.",
+        "why": "--ec2-only, --mode ec2, and --filter=ec2 are plausible-sounding but not the documented flag syntax used by this script."
+      }
+    },
+    {
+      "id": 21,
+      "question": "What flag scopes ECS checks to a single named cluster?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "--only ecs --cluster my-cluster-name"
+        },
+        {
+          "letter": "B",
+          "text": "--ecs-cluster=my-cluster-name"
+        },
+        {
+          "letter": "C",
+          "text": "--cluster-only my-cluster-name"
+        },
+        {
+          "letter": "D",
+          "text": "--scope ecs:my-cluster-name"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "\"--only ecs --cluster my-cluster-name\" is the exact documented invocation for scoping to one cluster.",
+        "why": "The other three options use plausible but undocumented flag syntax not supported by this script."
+      }
+    },
+    {
+      "id": 22,
+      "question": "What is the relationship between {baseDir} in SKILL.md's invoke command and the skill folder?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "{baseDir} is a hardcoded absolute path"
+        },
+        {
+          "letter": "B",
+          "text": "{baseDir} is resolved by OpenClaw to the skill's own folder location"
+        },
+        {
+          "letter": "C",
+          "text": "{baseDir} refers to the user's home directory"
+        },
+        {
+          "letter": "D",
+          "text": "{baseDir} is unused and can be omitted"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "{baseDir} is a placeholder OpenClaw substitutes at runtime with the path to the skill's own folder, making the command portable across installs.",
+        "why": "It is not hardcoded, it isn't the home directory, and it isn't unused — it's essential to the cd command actually working."
+      }
+    },
+    {
+      "id": 23,
+      "question": "Why might multiple users sharing one OpenClaw instance be a security concern?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It increases AWS billing"
+        },
+        {
+          "letter": "B",
+          "text": "The model becomes less accurate with more users"
+        },
+        {
+          "letter": "C",
+          "text": "Users may share the same file system, breaking user isolation"
+        },
+        {
+          "letter": "D",
+          "text": "It disables CloudWatch metrics"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Shared file system access across users can break isolation guarantees between sessions, which was raised as a core security concern in the session Q&A.",
+        "why": "Billing isn't directly tied to sharing an instance; model accuracy isn't affected by the number of users; CloudWatch metrics are unrelated to this concern."
+      }
+    },
+    {
+      "id": 24,
+      "question": "What is the correct AWS SDK v3 action to add for RDS health checks, per the documented extension ideas?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "DescribeDBInstances"
+        },
+        {
+          "letter": "B",
+          "text": "ListBuckets"
+        },
+        {
+          "letter": "C",
+          "text": "DescribeLoadBalancers"
+        },
+        {
+          "letter": "D",
+          "text": "GetQueueAttributes"
+        }
+      ],
+      "correctAnswer": "A",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "DescribeDBInstances is the action named in the session's extension roadmap for adding RDS health to the skill.",
+        "why": "ListBuckets is an S3 action, DescribeLoadBalancers is an ELB action, and GetQueueAttributes is an SQS action — none relate to RDS."
+      }
+    },
+    {
+      "id": 25,
+      "question": "Which AWS API would extend the skill to report Application Load Balancer target health?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "DescribeInstances"
+        },
+        {
+          "letter": "B",
+          "text": "DescribeTargetHealth"
+        },
+        {
+          "letter": "C",
+          "text": "DescribeListeners"
+        },
+        {
+          "letter": "D",
+          "text": "DescribeVpcs"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "DescribeTargetHealth is named explicitly as the ALB extension idea for reporting target group health.",
+        "why": "DescribeInstances is an EC2 call; DescribeListeners reports ALB listener config, not target health; DescribeVpcs is unrelated to ALB health."
+      }
+    },
+    {
+      "id": 26,
+      "question": "What is the purpose of the AWS_SESSION_TOKEN environment variable when it is provided?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It replaces the access key entirely"
+        },
+        {
+          "letter": "B",
+          "text": "It is required for temporary credentials from an assumed IAM role"
+        },
+        {
+          "letter": "C",
+          "text": "It sets the AWS region"
+        },
+        {
+          "letter": "D",
+          "text": "It encrypts the WhatsApp message"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "AWS_SESSION_TOKEN is documented as needed specifically when using temporary credentials obtained from an assumed role via STS.",
+        "why": "It does not replace the access key, it's used alongside it; it has nothing to do with setting the region; it plays no role in encrypting chat messages."
+      }
+    },
+    {
+      "id": 27,
+      "question": "If the agent needed to push proactive alerts instead of waiting for a user query, which AWS service would be the natural trigger source, per the roadmap discussion?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "AWS Config Rules only"
+        },
+        {
+          "letter": "B",
+          "text": "Amazon SNS"
+        },
+        {
+          "letter": "C",
+          "text": "AWS Trusted Advisor"
+        },
+        {
+          "letter": "D",
+          "text": "Amazon Macie"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "An SNS-triggered push to WhatsApp is the documented v2 idea for proactive alerting in this skill's roadmap.",
+        "why": "Config Rules, Trusted Advisor, and Macie are all real AWS services but none was the one named for this specific proactive-alert extension."
+      }
+    },
+    {
+      "id": 28,
+      "question": "Why is using DescribeInstances/DescribeServices preferable to the AWS Health API for this specific use case?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The Health API is more expensive"
+        },
+        {
+          "letter": "B",
+          "text": "The Health API only reports account/service-level status, not per-resource detail for a specific instance or service"
+        },
+        {
+          "letter": "C",
+          "text": "The Health API cannot be called via the SDK"
+        },
+        {
+          "letter": "D",
+          "text": "Describe calls are faster"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "The Health API lacks the per-resource granularity this skill needs, since it reports broader account- or service-level operational issues rather than the status of one specific instance or service.",
+        "why": "Cost isn't the deciding factor here; the Health API can be called via the SDK; speed isn't the documented reason for the choice."
+      }
+    },
+    {
+      "id": 29,
+      "question": "What architectural property makes the agent structurally incapable of mutating infrastructure, independent of how the LLM behaves?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The script has a hardcoded confirmation prompt"
+        },
+        {
+          "letter": "B",
+          "text": "The underlying IAM policy contains no mutating actions"
+        },
+        {
+          "letter": "C",
+          "text": "AWS blocks all automated API calls by default"
+        },
+        {
+          "letter": "D",
+          "text": "The script runs in a read-only Docker container"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "The IAM policy itself is the enforcement boundary — since it contains no Create/Modify/Delete actions, the agent cannot mutate infrastructure regardless of what the LLM decides to do.",
+        "why": "There is no hardcoded confirmation prompt described; AWS does not block all automated calls by default; the script isn't documented as running in a Docker container at all."
+      }
+    },
+    {
+      "id": 30,
+      "question": "In a multi-region extension (AWS_REGIONS=ap-south-1,us-east-1), what change would the script require at minimum?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "None — the SDK clients automatically detect all regions"
+        },
+        {
+          "letter": "B",
+          "text": "Instantiate one client per region and aggregate results"
+        },
+        {
+          "letter": "C",
+          "text": "Switch from AWS SDK v3 back to v2"
+        },
+        {
+          "letter": "D",
+          "text": "Replace EC2 calls with CloudFront calls"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "AWS SDK clients are region-scoped, so a multi-region extension requires creating one client instance per region and combining the results into a single report.",
+        "why": "SDK clients do not auto-detect multiple regions; there's no need to downgrade to SDK v2; CloudFront is unrelated to EC2/ECS health reporting."
+      }
+    },
+    {
+      "id": 31,
+      "question": "Why does the script print output in a structured, emoji-coded format rather than raw JSON?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "JSON cannot be parsed by OpenClaw"
+        },
+        {
+          "letter": "B",
+          "text": "The output is meant to be relayed directly to chat as-is, optimized for human chat readability"
+        },
+        {
+          "letter": "C",
+          "text": "Emoji output is required by the AWS SDK"
+        },
+        {
+          "letter": "D",
+          "text": "It reduces CloudWatch costs"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "SKILL.md instructs the agent to present the script's output as-is since it's already formatted for chat readability, removing any need for the agent to reformat raw JSON.",
+        "why": "OpenClaw can parse JSON fine; the AWS SDK has no emoji requirement; output formatting has no bearing on CloudWatch cost."
+      }
+    },
+    {
+      "id": 32,
+      "question": "What's the most defensible reason to keep the agent and its skill scripts running locally rather than as a hosted cloud service?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Local execution is always cheaper"
+        },
+        {
+          "letter": "B",
+          "text": "It avoids the need for an inbound public endpoint and keeps credentials on infrastructure the operator directly controls"
+        },
+        {
+          "letter": "C",
+          "text": "AWS SDK v3 cannot run in the cloud"
+        },
+        {
+          "letter": "D",
+          "text": "WhatsApp blocks cloud-hosted bots"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Running locally avoids exposing an inbound public endpoint and keeps the AWS credentials confined to infrastructure the operator directly controls, reducing the attack surface compared to a hosted service.",
+        "why": "Local execution isn't inherently cheaper in all cases; AWS SDK v3 runs fine in the cloud; WhatsApp doesn't categorically block cloud-hosted bots."
+      }
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Computing - AWS Presentation</title>
+<meta name="description" content="Introduction to Computing — AWS presentation deck.">
+<meta name="keywords" content="computing basics, hardware, software, cpu, memory, storage, networking, operating system, AWS, cloud">
+<link rel="stylesheet" href="../../../css/styles.css">
+<link rel="stylesheet" href="../../../css/notes/slides.css">
+<script src="../../../js/shared/site-config.js"></script>
+</head>
+<body data-subject="aws" data-mode="presentation" data-no-nav="true">
+
+<div id="pageLoader" class="page-loader">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Loading...</p>
+</div>
+
+<div id="slideProgress" class="slide-progress" role="progressbar" aria-label="Slide progress"></div>
+
+<header class="slide-chrome slide-chrome-top">
+  <button type="button" id="tocToggle" class="slide-chrome-btn" aria-label="Table of contents">&#9776;</button>
+  <span id="slideCounter" class="slide-counter">1 / 20</span>
+  <div class="slide-chrome-right">
+    <button type="button" id="notesToggle" class="slide-chrome-btn" aria-label="Toggle speaker notes">&#128221;</button>
+    <button type="button" id="fullscreenToggle" class="slide-chrome-btn" aria-label="Fullscreen">&#9974;</button>
+  </div>
+</header>
+
+<nav id="slideToc" class="slide-toc" hidden data-entries='[{"index": 3, "title": "Living in a Digital World"}, {"index": 7, "title": "Speaking the Language of Computing"}]'></nav>
+
+<aside id="notesPanel" class="notes-panel" hidden>
+  <div class="notes-panel-header">
+    <span>Speaker Notes</span>
+    <button type="button" id="notesPanelClose" class="notes-panel-close" aria-label="Close speaker notes">&times;</button>
+  </div>
+  <div id="notesPanelContent" class="notes-panel-content"></div>
+</aside>
+
+<main id="deck" class="slide-deck">
+<section class="slide" data-type="title" data-index="1">
+  <div class="slide-body">
+<h1>Introduction to Computing</h1>
+  </div>
+</section>
+<section class="slide" data-type="objectives" data-index="2">
+  <div class="slide-body">
+<h2>What You&#x27;ll Learn</h2>
+<ul><li>Why technology matters in everyday life</li><li>The core vocabulary used to talk about computers</li><li>How hardware and software divide up the work</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="section-divider" data-index="3">
+  <div class="slide-body">
+<h2>Living in a Digital World</h2>
+  </div>
+</section>
+<section class="slide" data-type="engage" data-index="4">
+  <div class="slide-body">
+<div class="engage-card" data-kind="think">
+<span class="engage-label">Think About It</span>
+<p class="engage-question">Think back to the last thing you did online — shopping, streaming, messaging a friend. What device did you use, and what app or service made it possible?</p>
+</div>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="5">
+  <div class="slide-body">
+<h2>Technology Touches Almost Everything</h2>
+<ul><li>Learning and research</li><li>Shopping and banking</li><li>Home security</li><li>Staying in touch with people</li><li>Entertainment</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="6">
+  <div class="slide-body">
+<h2>Three Building Blocks</h2>
+<ul><li>Applications — the software you actually interact with</li><li>Computers — the physical or virtual machines that run applications</li><li>Networks — the connections that let computers and apps talk to each other</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="section-divider" data-index="7">
+  <div class="slide-body">
+<h2>Speaking the Language of Computing</h2>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="8">
+  <div class="slide-body">
+<h2>What Is an Application?</h2>
+<ul><li>A program: a set of instructions a computer carries out to do a task</li><li>Written in a programming language, then compiled or run as code</li><li>&quot;Software&quot; is just another word for a computer program</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="9">
+  <div class="slide-body">
+<h2>Where Applications Live</h2>
+<ul><li>Web app — runs on a server, opened through a browser</li><li>Mobile app — installed on and run from a phone or tablet</li><li>Desktop app — installed on and run from a laptop or PC</li><li>IoT app — runs on a connected device like a smart thermostat or watch</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="diagram" data-index="10">
+  <div class="slide-body">
+<h2>Two Halves of Every Computer</h2>
+<div class="visual-placeholder" data-image-index="1" aria-hidden="true">Image goes here — see diagram-prompts.md #1</div>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="11">
+  <div class="slide-body">
+<h2>The Motherboard Ties It Together</h2>
+<ul><li>A circuit board that every other hardware part plugs into</li><li>Connects the CPU, memory, storage, network card, and ports</li><li>Sometimes called the system board</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="12">
+  <div class="slide-body">
+<h2>The CPU Does the Thinking</h2>
+<ul><li>Carries out the instructions applications and the OS send it</li><li>Handles logic, arithmetic, and input/output operations</li><li>Multiple cores let it work on more than one thing at a time</li><li>Also called the processor</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>Think of the CPU as the part of the computer that actually executes work, one instruction at a time. Every button click, calculation, or file save eventually becomes a small instruction the CPU carries out.</p>
+<p>A core is essentially one independent execution unit. A CPU with four cores can genuinely work on four separate instruction streams at once, which is why more cores usually means a computer can stay responsive even while running several demanding programs together.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="13">
+  <div class="slide-body">
+<h2>Memory Is Short-Term Workspace</h2>
+<ul><li>Holds the instructions and data the CPU is actively using</li><li>Volatile — its contents disappear when the power goes off</li><li>Sized in megabytes or gigabytes; more memory usually means smoother performance</li><li>Also called RAM</li></ul>
+  </div>
+  <div class="slide-notes-content" hidden><p>Memory works like a desk the CPU keeps its current work spread out on — fast to reach, but wiped clean the moment the computer loses power. That&#x27;s the key difference from a storage drive, which is more like a filing cabinet: slower to search through, but nothing disappears when you close the drawer.</p>
+<p>This is also why closing unused programs frees up memory: each open program is taking up desk space, even if you&#x27;re not actively looking at it.</p></div>
+</section>
+<section class="slide" data-type="concept" data-index="14">
+  <div class="slide-body">
+<h2>Storage Drives Keep Things Permanently</h2>
+<ul><li>Hold files, installed programs, and documents long-term</li><li>Two common types: spinning hard disk drives (HDD) and flash-based solid state drives (SSD)</li><li>Data survives a power-off, unlike memory</li><li>Speed is measured in MB/s or IOPS</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="diagram" data-index="15">
+  <div class="slide-body">
+<h2>How Devices Reach Each Other</h2>
+<div class="visual-placeholder" data-image-index="1" aria-hidden="true">Image goes here — see diagram-prompts.md #1</div>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="16">
+  <div class="slide-body">
+<h2>The Network Interface Card</h2>
+<ul><li>The hardware that lets a computer join a network</li><li>Can be wired (Ethernet) or wireless (Wi-Fi)</li><li>Throughput measured in gigabits per second (Gbps)</li><li>Also called a network adapter</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="17">
+  <div class="slide-body">
+<h2>The Operating System Runs the Show</h2>
+<ul><li>Coordinates how applications share the CPU, memory, storage, and network</li><li>Gives you a way to interact with the machine — command line or graphical interface</li><li>Examples: Windows, macOS, Linux distributions, iOS, Android</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="engage" data-index="18">
+  <div class="slide-body">
+<div class="engage-card" data-kind="poll">
+<span class="engage-label">Quick Poll</span>
+<p class="engage-question">Which of these is volatile — meaning its contents are lost when the power goes off?</p>
+<ul class="engage-options">
+<li class="engage-option" data-option="A"><button type="button" class="engage-option-btn">A) Solid state drive</button></li>
+<li class="engage-option" data-option="B"><button type="button" class="engage-option-btn">B) Hard disk drive</button></li>
+<li class="engage-option" data-option="C"><button type="button" class="engage-option-btn">C) Memory (RAM)</button></li>
+</ul>
+<button type="button" class="engage-reveal-btn" data-reveal-toggle>Reveal</button>
+<div class="engage-reveal" hidden>C — Memory (RAM) is volatile and temporary. Both drive types (A and B) are persistent storage; their data survives a restart.</div>
+</div>
+  </div>
+</section>
+<section class="slide" data-type="recap" data-index="19">
+  <div class="slide-body">
+<h2>Recap: Speaking the Language of Computing</h2>
+<ul><li>Applications are programs; they run as web, mobile, desktop, or IoT software</li><li>Hardware (motherboard, CPU, memory, storage, network card) does the physical work</li><li>Software (OS + applications) tells the hardware what to do</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="summary" data-index="20">
+  <div class="slide-body">
+<h2>Summary</h2>
+<ul><li>Technology now underpins education, commerce, security, communication, and entertainment</li><li>Every digital experience rests on three building blocks: applications, computers, and networks</li><li>A computer splits its work between hardware (the physical parts) and software (the instructions those parts run)</li><li>The CPU processes, memory holds active work temporarily, storage keeps data permanently, and the network interface card connects it all to the outside world</li></ul>
+  </div>
+</section>
+</main>
+
+<footer class="slide-chrome slide-chrome-bottom">
+  <button type="button" id="prevSlide" class="slide-nav-btn" aria-label="Previous slide">&#8592;</button>
+  <button type="button" id="nextSlide" class="slide-nav-btn" aria-label="Next slide">&#8594;</button>
+</footer>
+
+<div id="footerRoot" data-subject="aws"></div>
+
+<script src="../../../js/notes/slides.js" async="false"></script>
+</body>
+</html>

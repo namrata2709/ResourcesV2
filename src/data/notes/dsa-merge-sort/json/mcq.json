@@ -1,0 +1,844 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the time complexity of Merge Sort in the worst case?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n²)"
+        },
+        {
+          "letter": "B",
+          "text": "O(n log n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(n)"
+        },
+        {
+          "letter": "D",
+          "text": "O(log n)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Merge Sort always runs in O(n log n) regardless of input order because the array is always split at the midpoint, producing a balanced recursion tree of log n levels with O(n) work per level.",
+        "why": "O(n²) is Quick Sort's worst case with bad pivot selection, not Merge Sort. O(n) is impossible for comparison-based sorting by the information-theoretic lower bound. O(log n) would mean sublinear time, which can't sort all elements."
+      }
+    },
+    {
+      "id": 2,
+      "question": "How much auxiliary space does the standard array-based Merge Sort require?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(1)"
+        },
+        {
+          "letter": "B",
+          "text": "O(log n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(n)"
+        },
+        {
+          "letter": "D",
+          "text": "O(n log n)"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "The merge step copies elements into a temporary auxiliary array of size O(n). This is the dominant space cost; the recursion stack adds only O(log n) additional space.",
+        "why": "O(1) would require in-place merging, which is much more complex. O(log n) is only the recursion stack, not the merge buffer. O(n log n) would mean allocating fresh arrays at every level (a naïve textbook implementation does this, but it's not standard)."
+      }
+    },
+    {
+      "id": 3,
+      "question": "What is the base case of Merge Sort?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Array length equals 0"
+        },
+        {
+          "letter": "B",
+          "text": "Array length equals 2"
+        },
+        {
+          "letter": "C",
+          "text": "Array length is 0 or 1"
+        },
+        {
+          "letter": "D",
+          "text": "Array is already sorted"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "An array of length 0 or 1 is trivially sorted and requires no further splitting. Returning at this point prevents infinite recursion.",
+        "why": "Length 0 alone misses the single-element case. Length 2 is not a base case — two-element arrays still need to be split and merged. \"Already sorted\" requires checking all elements, which defeats the purpose of a base case."
+      }
+    },
+    {
+      "id": 4,
+      "question": "What comparison operator ensures Merge Sort is stable?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "< when picking from the left"
+        },
+        {
+          "letter": "B",
+          "text": "<= when picking from the left"
+        },
+        {
+          "letter": "C",
+          "text": "> when picking from the right"
+        },
+        {
+          "letter": "D",
+          "text": ">= when picking from the left"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Using <= means equal elements from the left subarray are placed before equal elements from the right subarray, preserving their original relative order — which is the definition of stability.",
+        "why": "Using < would pick the right element when left equals right, reversing the original order of equal elements and making the sort unstable. The condition on the right pointer doesn't determine stability — it's always the left comparison that matters."
+      }
+    },
+    {
+      "id": 5,
+      "question": "Which phase of Merge Sort does the majority of the computational work?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Splitting the array"
+        },
+        {
+          "letter": "B",
+          "text": "Comparing elements during merge"
+        },
+        {
+          "letter": "C",
+          "text": "Copying the auxiliary array back"
+        },
+        {
+          "letter": "D",
+          "text": "Allocating recursive call stack frames"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "The merge step performs all the comparisons and is where the O(n) work per level occurs. Splitting is O(1) per call (just computing a midpoint). Copying back is part of the merge and counted within it.",
+        "why": "Splitting is O(1) per call — no comparisons needed. Stack frame allocation is negligible. Copying back is part of the merge operation, but the comparisons themselves are the work that determines the time complexity."
+      }
+    },
+    {
+      "id": 6,
+      "question": "What is the recurrence relation for Merge Sort?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "T(n) = T(n-1) + O(n)"
+        },
+        {
+          "letter": "B",
+          "text": "T(n) = 2T(n/2) + O(n)"
+        },
+        {
+          "letter": "C",
+          "text": "T(n) = T(n/2) + O(n)"
+        },
+        {
+          "letter": "D",
+          "text": "T(n) = 2T(n/2) + O(1)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Two recursive calls on halves of size n/2 gives 2T(n/2). The merge step costs O(n) to combine the two halves. Together: T(n) = 2T(n/2) + O(n), which by the Master Theorem gives T(n) = O(n log n).",
+        "why": "T(n) = T(n-1) + O(n) is the recurrence for Selection Sort. T(n) = T(n/2) + O(n) has only one recursive call, like Binary Search. T(n) = 2T(n/2) + O(1) would give O(n) if merge were free, but merge is O(n) not O(1)."
+      }
+    },
+    {
+      "id": 7,
+      "question": "How many levels does the Merge Sort recursion tree have for an array of size n?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "n"
+        },
+        {
+          "letter": "B",
+          "text": "n/2"
+        },
+        {
+          "letter": "C",
+          "text": "log₂ n"
+        },
+        {
+          "letter": "D",
+          "text": "√n"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Each level halves the problem size. Starting from n, it takes log₂ n halvings to reach arrays of size 1. The recursion tree therefore has log₂ n + 1 levels (including the leaves).",
+        "why": "n levels would mean linear depth — like insertion sort's recursion. n/2 levels would mean only halving once. √n levels would mean sublinear depth inconsistent with binary splitting."
+      }
+    },
+    {
+      "id": 8,
+      "question": "What sorting algorithm is preferred for sorting a singly linked list?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Quick Sort"
+        },
+        {
+          "letter": "B",
+          "text": "Heap Sort"
+        },
+        {
+          "letter": "C",
+          "text": "Merge Sort"
+        },
+        {
+          "letter": "D",
+          "text": "Counting Sort"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Merge Sort suits linked lists because it only requires sequential access (no random indexing) and the merge step can be implemented using pointer rewiring with O(1) extra space. The midpoint is found using slow-fast pointers.",
+        "why": "Quick Sort requires random access for efficient pivot selection and partitioning. Heap Sort requires building a heap which needs index-based access. Counting Sort is non-comparative and requires knowing the value range."
+      }
+    },
+    {
+      "id": 9,
+      "question": "What does the bottom-up Merge Sort eliminate compared to top-down?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The need for an auxiliary array"
+        },
+        {
+          "letter": "B",
+          "text": "The O(n log n) time complexity"
+        },
+        {
+          "letter": "C",
+          "text": "The recursion stack"
+        },
+        {
+          "letter": "D",
+          "text": "The merge step"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "basic",
+      "explanation": {
+        "correct": "Bottom-up Merge Sort is iterative — it processes runs of increasing size in nested loops, never making recursive calls. This eliminates the O(log n) recursion stack overhead, which is useful in memory-constrained environments.",
+        "why": "Both versions require an O(n) auxiliary array for merging. Both run in O(n log n). The merge step is present in both — it's the core operation."
+      }
+    },
+    {
+      "id": 10,
+      "question": "On a sorted array of n elements, Merge Sort performs approximately how many comparisons?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n)"
+        },
+        {
+          "letter": "B",
+          "text": "(n/2) log n"
+        },
+        {
+          "letter": "C",
+          "text": "n log n"
+        },
+        {
+          "letter": "D",
+          "text": "n²/4"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "On sorted input, each merge of two subarrays of total length k makes k/2 comparisons (the left elements are always smaller). Over log n levels totalling n elements per level, this is (n/2) × log n comparisons.",
+        "why": "O(n) is Insertion Sort's best case on sorted input — Merge Sort does not achieve linear comparisons. n log n is the worst case, not the best. n²/4 would imply quadratic comparisons, which Merge Sort never reaches."
+      }
+    },
+    {
+      "id": 11,
+      "question": "Which algorithm is used by Python's built-in list.sort()?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Quick Sort"
+        },
+        {
+          "letter": "B",
+          "text": "Merge Sort"
+        },
+        {
+          "letter": "C",
+          "text": "Timsort"
+        },
+        {
+          "letter": "D",
+          "text": "Heap Sort"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Python uses Timsort, a hybrid algorithm derived from Merge Sort and Insertion Sort. It detects natural runs in the input and merges them, achieving O(n) on nearly sorted data and O(n log n) in the worst case.",
+        "why": "Quick Sort is used in some languages (C's qsort) but not Python's list.sort(). Standard Merge Sort doesn't exploit natural runs. Heap Sort has poor cache performance and is not used in CPython's sort."
+      }
+    },
+    {
+      "id": 12,
+      "question": "What is the total extra memory allocated by a naïve Python Merge Sort that creates new lists on every merge call?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n)"
+        },
+        {
+          "letter": "B",
+          "text": "O(n log n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(n²)"
+        },
+        {
+          "letter": "D",
+          "text": "O(log n)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "At each of the log n levels, the total size of all temporary lists allocated equals n. Over log n levels, the total allocation is O(n log n). This is a practical concern — allocating many small objects stresses the garbage collector.",
+        "why": "O(n) is the minimum auxiliary space but ignores the cumulative allocations across all levels. O(n²) would mean quadratic allocation, which only happens if merge is O(n²). O(log n) would mean sublinear allocation, ignoring the O(n) per level."
+      }
+    },
+    {
+      "id": 13,
+      "question": "When merging two sorted arrays in the merge step, what is the time complexity?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n log n)"
+        },
+        {
+          "letter": "B",
+          "text": "O(n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(n²)"
+        },
+        {
+          "letter": "D",
+          "text": "O(log n)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Each element from both subarrays is visited exactly once — one pointer advance per element placed in the output. If the total number of elements across both subarrays is k, the merge costs O(k).",
+        "why": "O(n log n) would mean the merge itself is as expensive as the whole sort. O(n²) would mean comparing every pair, like bubble sort. O(log n) would be faster than reading all the elements, which is impossible."
+      }
+    },
+    {
+      "id": 14,
+      "question": "What happens to Merge Sort's space complexity when sorting a linked list?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It stays O(n) for node copies"
+        },
+        {
+          "letter": "B",
+          "text": "It becomes O(1) auxiliary"
+        },
+        {
+          "letter": "C",
+          "text": "It becomes O(log n) total"
+        },
+        {
+          "letter": "D",
+          "text": "It becomes O(n log n)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Merging linked lists requires only pointer reassignment — no temporary array is needed. The only space cost is the O(log n) recursion stack. This makes linked list Merge Sort near in-place, a major practical advantage.",
+        "why": "O(n) auxiliary only applies to array-based Merge Sort where a buffer is needed. Saying O(1) total ignores the recursion stack. O(n log n) would mean allocating proportional to all merge operations."
+      }
+    },
+    {
+      "id": 15,
+      "question": "How does counting inversions using Merge Sort work?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Count swaps instead of comparisons"
+        },
+        {
+          "letter": "B",
+          "text": "Add (mid - i + 1) whenever a right element is picked over remaining left elements"
+        },
+        {
+          "letter": "C",
+          "text": "Count the number of comparisons where left > right"
+        },
+        {
+          "letter": "D",
+          "text": "Run Merge Sort twice and subtract"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Whenever a right element is chosen over left[i], all elements left[i..mid] are greater than right[j], forming inversions. Adding (mid - i + 1) at that point counts all of them in O(1) per event, keeping the total O(n log n).",
+        "why": "Counting swaps conflates Bubble Sort's inversion counting approach with Merge Sort's. Simply counting comparisons where left > right would double-count some inversions. Running Merge Sort twice yields no useful comparison."
+      }
+    },
+    {
+      "id": 16,
+      "question": "In the K-way merge (external sort phase 2), what data structure is used?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Hash table"
+        },
+        {
+          "letter": "B",
+          "text": "Min-heap"
+        },
+        {
+          "letter": "C",
+          "text": "Binary Search Tree"
+        },
+        {
+          "letter": "D",
+          "text": "Stack"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "A min-heap of size K maintains one current element from each of the K sorted runs. Extracting the minimum and inserting the next element from the same run each cost O(log K), giving O(N log K) total for merging N elements from K runs.",
+        "why": "A hash table provides O(1) lookup but cannot efficiently find the minimum. A BST could work but with higher constant factors. A stack is LIFO and cannot merge sorted runs."
+      }
+    },
+    {
+      "id": 17,
+      "question": "What is the Merge Sort recurrence's solution according to the Master Theorem?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Θ(n)"
+        },
+        {
+          "letter": "B",
+          "text": "Θ(n log n)"
+        },
+        {
+          "letter": "C",
+          "text": "Θ(n²)"
+        },
+        {
+          "letter": "D",
+          "text": "Θ(n log² n)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "For T(n) = 2T(n/2) + O(n): a=2, b=2, f(n)=n. Since log_b(a) = 1 and f(n) = n = Θ(n^1), this is Case 2 of the Master Theorem, giving T(n) = Θ(n log n).",
+        "why": "Θ(n) would require the merge to be O(1), which it isn't. Θ(n²) corresponds to a recurrence like T(n) = 2T(n/2) + O(n²). Θ(n log² n) corresponds to in-place merge sort where the merge itself is O(n log n)."
+      }
+    },
+    {
+      "id": 18,
+      "question": "Why is Quick Sort generally faster than Merge Sort in practice despite the same O(n log n) complexity?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Quick Sort makes fewer comparisons"
+        },
+        {
+          "letter": "B",
+          "text": "Quick Sort has better cache locality"
+        },
+        {
+          "letter": "C",
+          "text": "Quick Sort uses less memory"
+        },
+        {
+          "letter": "D",
+          "text": "Quick Sort's recursion depth is smaller"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Quick Sort operates in-place, accessing memory sequentially within each partition. Modern CPUs' caches prefetch sequential accesses efficiently. Merge Sort's auxiliary array accesses two separate memory regions, causing more cache misses and greater memory bandwidth usage.",
+        "why": "Quick Sort makes roughly 1.39n log n comparisons on average vs Merge Sort's n log n — Quick Sort actually makes more comparisons. Quick Sort uses O(log n) stack space vs Merge Sort's O(n) auxiliary, but the cache effect dominates. Recursion depth is similar (log n levels in both)."
+      }
+    },
+    {
+      "id": 19,
+      "question": "What is the minimum number of comparisons Merge Sort makes in the worst case for n=4?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "4"
+        },
+        {
+          "letter": "B",
+          "text": "5"
+        },
+        {
+          "letter": "C",
+          "text": "6"
+        },
+        {
+          "letter": "D",
+          "text": "8"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "For n=4: first merge two pairs — each pair needs 1 comparison (worst case: equal or cross), giving 2 comparisons for 2 merges. The final merge of two 2-element arrays takes at most 3 comparisons (worst case interleaving). Total: 2 + 3 = 5 comparisons.",
+        "why": "4 comparisons are insufficient to sort 4 elements (you need at least 5 to distinguish all 4! = 24 permutations with a depth-5 decision tree). 6 comparisons would overcounting. 8 would be the naive n² comparison count."
+      }
+    },
+    {
+      "id": 20,
+      "question": "What subtle bug occurs if you write `if left[i] < right[j]` instead of `if left[i] <= right[j]` in the merge step?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Stack overflow on equal elements"
+        },
+        {
+          "letter": "B",
+          "text": "The sort produces incorrect output"
+        },
+        {
+          "letter": "C",
+          "text": "The sort becomes unstable but still correct"
+        },
+        {
+          "letter": "D",
+          "text": "Off-by-one error in array bounds"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Using < instead of <= causes equal right elements to be placed before equal left elements, reversing the relative order of equals from the input. The sort is still correct (produces a sorted output) but is no longer stable.",
+        "why": "Stack overflow cannot result from a comparison operator choice. The output is sorted correctly — stability is a separate property from correctness. No array bounds are affected by the comparison operator."
+      }
+    },
+    {
+      "id": 21,
+      "question": "How does external Merge Sort handle a file that is 1000× larger than RAM?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It uses virtual memory to sort the whole file at once"
+        },
+        {
+          "letter": "B",
+          "text": "It creates sorted runs then K-way merges them"
+        },
+        {
+          "letter": "C",
+          "text": "It recursively applies in-memory sort until done"
+        },
+        {
+          "letter": "D",
+          "text": "It requires multiple passes equal to the file size"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "Phase 1 reads chunks fitting in RAM, sorts them, and writes sorted runs to disk. Phase 2 uses a K-element min-heap to K-way merge all runs in a single streaming pass. Total I/O is 2× the file size (one read + one write per phase). The number of disk passes is 2, not proportional to the file size.",
+        "why": "Virtual memory would cause excessive page faults, making sorting impractically slow. Recursive in-memory sort ignores the RAM constraint. Multiple passes equal to file size would be O(n) disk passes — catastrophically slow for TB files."
+      }
+    },
+    {
+      "id": 22,
+      "question": "What is the time complexity of merging K sorted arrays each of length n using a min-heap?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(Kn)"
+        },
+        {
+          "letter": "B",
+          "text": "O(Kn log K)"
+        },
+        {
+          "letter": "C",
+          "text": "O(Kn log n)"
+        },
+        {
+          "letter": "D",
+          "text": "O(n² log K)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Total elements across all arrays: N = Kn. Each element is extracted once from the heap (O(log K) per extraction). Total: O(Kn log K). This is more efficient than pairwise merging, which would be O(Kn log K) as well but with worse constant factors.",
+        "why": "O(Kn) without log would mean heap operations are O(1), which requires a perfect hash, not comparison. O(Kn log n) would make each operation O(log n) instead of O(log K) — confusion between heap size K and array size n."
+      }
+    },
+    {
+      "id": 23,
+      "question": "What is the space complexity of Merge Sort when applied to a linked list (excluding input)?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n)"
+        },
+        {
+          "letter": "B",
+          "text": "O(n log n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(log n)"
+        },
+        {
+          "letter": "D",
+          "text": "O(1)"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Merging linked lists uses pointer rewiring — no auxiliary array needed. The O(log n) space comes entirely from the recursion stack (log n frames). No additional memory proportional to element count is required.",
+        "why": "O(n) is for array-based Merge Sort's auxiliary buffer. O(n log n) would mean all merge operations collectively allocate proportional to total elements across all levels. O(1) ignores the recursion stack entirely."
+      }
+    },
+    {
+      "id": 24,
+      "question": "Parallel Merge Sort with p processors achieves what time complexity for the overall sort?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n/p)"
+        },
+        {
+          "letter": "B",
+          "text": "O(n log n / p)"
+        },
+        {
+          "letter": "C",
+          "text": "O((n log n) / p + n)"
+        },
+        {
+          "letter": "D",
+          "text": "O(n log p)"
+        }
+      ],
+      "correctAnswer": "C",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "The divide phase parallelises perfectly: O(n log n / p) for sorting n/p elements on each of p processors. The sequential merge bottleneck at each level adds O(n) per level for log p levels. Total: O((n log n) / p + n log p) ≈ O((n log n) / p + n) for moderate p.",
+        "why": "O(n/p) ignores the log n factor. O(n log n / p) ignores the sequential merge overhead at each level. O(n log p) would only account for combining phases, not the actual sort work."
+      }
+    },
+    {
+      "id": 25,
+      "question": "What is the total number of element moves (copies) in Merge Sort for an array of n elements?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "O(n)"
+        },
+        {
+          "letter": "B",
+          "text": "O(n log n)"
+        },
+        {
+          "letter": "C",
+          "text": "O(n²)"
+        },
+        {
+          "letter": "D",
+          "text": "O(n log² n)"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "At each of the log n levels, every element is copied once to the auxiliary array and once back — O(n) copies per level. Over log n levels, the total is O(n log n) moves. This is why Merge Sort has more memory traffic than Quick Sort.",
+        "why": "O(n) would mean amortised constant copies per element, ignoring the log n levels. O(n²) is impossible — that would mean each element is moved n times. O(n log² n) corresponds to in-place merge algorithms, not standard Merge Sort."
+      }
+    },
+    {
+      "id": 26,
+      "question": "What optimisation does Timsort apply to Merge Sort for nearly-sorted data?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It switches to Heap Sort when detecting nearly-sorted input"
+        },
+        {
+          "letter": "B",
+          "text": "It detects natural ascending runs and merges only what is necessary"
+        },
+        {
+          "letter": "C",
+          "text": "It uses block-based merging to improve cache performance"
+        },
+        {
+          "letter": "D",
+          "text": "It avoids the merge step entirely on sorted subarrays"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "Timsort scans the input for naturally occurring sorted runs. If a run is shorter than minrun (typically 32-64), it's extended using Insertion Sort. Only then are runs merged using a modified Merge Sort strategy that maintains a stack of pending merges and applies merge order rules (galloping mode, run balance). On fully sorted input, one run covers the entire array — O(n) total.",
+        "why": "Timsort doesn't switch to Heap Sort. Block merging is a separate optimisation for in-place merging. Timsort cannot avoid merging entirely — it needs to merge runs to produce a single sorted output."
+      }
+    },
+    {
+      "id": 27,
+      "question": "In competitive programming, what is the advantage of the bottom-up iterative Merge Sort over the recursive version?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It runs faster asymptotically"
+        },
+        {
+          "letter": "B",
+          "text": "It avoids recursion stack overflow for large n"
+        },
+        {
+          "letter": "C",
+          "text": "It requires less auxiliary memory"
+        },
+        {
+          "letter": "D",
+          "text": "It handles duplicate elements better"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "The recursive version uses O(log n) stack frames. For very large arrays (n = 10^7+), deep recursion can overflow the default stack size in some online judges. The iterative bottom-up version avoids this by using a loop with doubling run sizes. Both have identical O(n log n) time and O(n) auxiliary space.",
+        "why": "Both versions are O(n log n) — no asymptotic difference. Both require the same O(n) auxiliary array. Neither has an advantage for duplicates."
+      }
+    },
+    {
+      "id": 28,
+      "question": "What modification to Merge Sort allows it to sort by multiple keys (e.g., sort by last name, then first name)?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Run two separate Merge Sorts in sequence"
+        },
+        {
+          "letter": "B",
+          "text": "Pass a custom comparator that compares keys lexicographically"
+        },
+        {
+          "letter": "C",
+          "text": "Use a multi-key auxiliary array"
+        },
+        {
+          "letter": "D",
+          "text": "Split keys into separate arrays and sort independently"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "advanced",
+      "explanation": {
+        "correct": "A custom comparator function defines the comparison logic. For multi-key sorting, compare the primary key first; if equal, compare the secondary key. Since Merge Sort is stable, you can alternatively sort by the secondary key first, then stably sort by the primary key — a technique called radix-style multi-key sorting.",
+        "why": "Running two separate sorts only works if the second sort is stable (which Merge Sort is). The custom comparator approach is more general and always correct. A multi-key auxiliary array is unnecessary — the comparator handles logic without structural changes."
+      }
+    },
+    {
+      "id": 29,
+      "question": "Which of the following correctly describes why the merge step cannot be performed in O(1) space while maintaining O(n) time?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The algorithm needs two pointers, which require O(1) space each"
+        },
+        {
+          "letter": "B",
+          "text": "To produce a sorted output without overwriting elements that haven't been compared yet, a buffer is needed to hold at least one of the subarrays"
+        },
+        {
+          "letter": "C",
+          "text": "O(1) space merge is possible and used in the standard implementation"
+        },
+        {
+          "letter": "D",
+          "text": "The comparison itself requires extra memory per element"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "During a merge of arr[low..mid] and arr[mid+1..high], writing the merged result directly into arr would overwrite elements from one of the subarrays before they've been compared. The auxiliary buffer holds a copy of one (or both) subarrays so the original positions can be freely overwritten with sorted results. Without it, an element could be destroyed before being placed correctly.",
+        "why": "Pointer storage is O(1) and isn't the constraint here. The standard implementation explicitly requires O(n) auxiliary space — it is not O(1). The comparison itself does not require per-element memory."
+      }
+    },
+    {
+      "id": 30,
+      "question": "Given an array of n distinct elements, what is the maximum number of comparisons Merge Sort can make during a single merge of two subarrays of size n/2 each?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "n/2"
+        },
+        {
+          "letter": "B",
+          "text": "n - 1"
+        },
+        {
+          "letter": "C",
+          "text": "n"
+        },
+        {
+          "letter": "D",
+          "text": "n log n"
+        }
+      ],
+      "correctAnswer": "B",
+      "difficulty": "intermediate",
+      "explanation": {
+        "correct": "When merging two subarrays each of size n/2, the worst case is that the subarrays interleave perfectly — every comparison picks from alternating sides, exhausting both at the same time. In this case you make n/2 + n/2 - 1 = n - 1 comparisons. You stop one comparison before n because the last element of one subarray is simply appended without a comparison after the other is exhausted.",
+        "why": "n/2 is the best case (all left elements are smaller, so only n/2 comparisons pick each left element before the right is never needed). n comparisons would require one extra comparison after exhaustion, which doesn't happen. n log n is the total complexity across all levels, not one merge."
+      }
+    }
+  ]
+}

@@ -32,6 +32,41 @@ OUTPUT: 1200x600px PNG
 
 ---
 
+## IMAGE 1 of 6 — inline-01-trace-example
+Filename: inline-01-trace-example.png
+
+Create a DSA visualization diagram.
+
+CONCEPT: Step-by-step comparison trace showing how linear search eliminates elements one by one until the target is found.
+SHOW:
+- Array [3, 7, 1, 9, 4, 6, 2, 8] with index labels 0–7 below each cell
+- Cells at indices 0–3 (values 3, 7, 1, 9) greyed out with small ✗ marks indicating failed comparisons
+- Cell at index 4 (value 4) highlighted bright green with a ✓ checkmark
+- An orange pointer arrow labelled "i" sitting below index 4
+- Target badge "target = 4" in the top-right corner
+- Comparison annotations: "3≠4", "7≠4", "1≠4", "9≠4", "4==4 ✓" shown above or below each cell
+
+COLOR RULES (fixed across every topic):
+- Background: dark navy #0f1117
+- Array cells default: #1e2130, monospace font
+- Active/current: #7c3aed background, white text, purple glow
+- Eliminated: #111827 background, #374151 text -- must be visibly darker than active
+- Found/result: #065f46 background, #4ade80 border and glow
+- Low pointer: blue #38bdf8 triangle + label
+- High pointer: red #f87171 triangle + label
+- Mid pointer: purple #a855f7 triangle + label
+- Decision text: amber #fbbf24
+- Step label: white #e2e8f0
+- Status bar: #1e293b background
+
+STYLE: Modern dark UI, subtle 3D depth on cells, neon glow on highlighted
+elements, clean monospace values, professional DSA tool aesthetic.
+No clutter. Every element must teach the concept.
+
+OUTPUT: 1200x600px PNG
+
+---
+
 ## IMAGE 2 of 6 — step-01-initial
 Filename: step-01-initial.png
 

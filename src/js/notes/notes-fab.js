@@ -1,13 +1,26 @@
 /**
- * notes-fab.js — FAB menus + jump-to-top button
- * Depends on (all resolved at click-time):
- *   window.cycleExamMode        → notes-exam.js
- *   window.openPrintModal       → notes-print.js
- *   window.exportExamHighlights → notes-exam.js
- *   window.showNotification     → notes-reader.js
- * File: js/notes-fab.js
+ * =============================================================================
+ * File: notes-fab.js
+ * Path: js/notes/notes-fab.js
+ * Project: Learning Dashboard
+ *
+ * Description:
+ * Floating action menus for note pages — bottom-left Settings menu (exam
+ * mode, theme, Lite Mode), top-right Tools menu (search, print, bookmarks,
+ * export highlights on complete-notes pages, study timer toggle), shared
+ * overlay backdrop, and the jump-to-top button (appears after 500px scroll).
+ *
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-07-05
+ *
+ * Dependencies (all resolved at click-time, not load-time):
+ * - window.cycleExamMode, window.exportExamHighlights (notes-exam.js)
+ * - window.openPrintModal (notes-print.js)
+ * - window.showNotification (notes-reader.js)
+ * - window.toggleLiteMode, window.getLiteMode (notes-page-core.js)
+ * =============================================================================
  */
-
 (function () {
     'use strict';
 
@@ -50,6 +63,8 @@
             'comfort': 'Comfort'
         };
 
+        const currentLiteMode = window.getLiteMode ? window.getLiteMode() : false;
+
         menuPanel.innerHTML = `
             <h4>Settings</h4>
             <div class="floating-menu-item" id="menuExamMode">
@@ -61,6 +76,11 @@
                 <span class="floating-menu-item-icon">🌙</span>
                 <span class="floating-menu-item-text">Theme</span>
                 <span class="floating-menu-item-shortcut">${themeLabels[currentTheme]}</span>
+            </div>
+            <div class="floating-menu-item" id="menuLiteMode">
+                <span class="floating-menu-item-icon">🪶</span>
+                <span class="floating-menu-item-text">Lite Mode</span>
+                <span class="floating-menu-item-shortcut">${currentLiteMode ? 'On' : 'Off'}</span>
             </div>
         `;
 
@@ -95,6 +115,16 @@
                 setTimeout(updateMenuStates, 100);
             }
             closeAllMenus();
+        });
+
+        // Lite Mode click — toggleLiteMode() reloads the page immediately
+        // (unlike exam mode/theme, it changes which scripts load, so there's
+        // nothing to update in place), so no updateMenuStates call after.
+        document.getElementById('menuLiteMode').addEventListener('click', function () {
+            closeAllMenus();
+            if (window.toggleLiteMode) {
+                window.toggleLiteMode();
+            }
         });
 
         function updateMenuStates() {

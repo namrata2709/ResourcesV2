@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Linux - AWS Presentation</title>
+<meta name="description" content="Introduction to Linux — AWS presentation deck.">
+<meta name="keywords" content="linux, kernel, distributions, shell, bash, man pages, ssh, ec2, aws restart, AWS, cloud">
+<link rel="stylesheet" href="../../../css/styles.css">
+<link rel="stylesheet" href="../../../css/notes/slides.css">
+<script src="../../../js/shared/site-config.js"></script>
+</head>
+<body data-subject="aws" data-mode="presentation" data-no-nav="true">
+
+<div id="pageLoader" class="page-loader">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Loading...</p>
+</div>
+
+<div id="slideProgress" class="slide-progress" role="progressbar" aria-label="Slide progress"></div>
+
+<header class="slide-chrome slide-chrome-top">
+  <button type="button" id="tocToggle" class="slide-chrome-btn" aria-label="Table of contents">&#9776;</button>
+  <span id="slideCounter" class="slide-counter">1 / 47</span>
+  <div class="slide-chrome-right">
+    <button type="button" id="notesToggle" class="slide-chrome-btn" aria-label="Toggle speaker notes">&#128221;</button>
+    <button type="button" id="fullscreenToggle" class="slide-chrome-btn" aria-label="Fullscreen">&#9974;</button>
+  </div>
+</header>
+
+<nav id="slideToc" class="slide-toc" hidden data-entries='[{"index": 3, "title": "Understanding Linux"}, {"index": 12, "title": "Inside a Linux System"}, {"index": 21, "title": "Talking to Linux"}, {"index": 27, "title": "Finding Your Way: Built-in Help"}, {"index": 33, "title": "Choosing a Distribution"}, {"index": 40, "title": "Connecting to a Remote Linux Server"}]'></nav>
+
+<aside id="notesPanel" class="notes-panel" hidden>
+  <div class="notes-panel-header">
+    <span>Speaker Notes</span>
+    <button type="button" id="notesPanelClose" class="notes-panel-close" aria-label="Close speaker notes">&times;</button>
+  </div>
+  <div id="notesPanelContent" class="notes-panel-content"></div>
+</aside>
+
+<main id="deck" class="slide-deck">
+<section class="slide" data-type="title" data-index="1">
+  <div class="slide-body">
+<h1>Introduction to Linux</h1>
+<p>Linux Fundamentals</p>
+  </div>
+</section>
+<section class="slide" data-type="objectives" data-index="2">
+  <div class="slide-body">
+<h2>What You&#x27;ll Learn</h2>
+<ul><li>Explain what Linux is and why its openness matters</li><li>Identify the core pieces that make up a working Linux system</li><li>Tell the command line and graphical interfaces apart, and when each is used</li><li>Pull up built-in help for any Linux command without leaving the terminal</li><li>Recognize the major Linux distributions and trace where they come from</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="section-divider" data-index="3">
+  <div class="slide-body">
+<h2>Understanding Linux</h2>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="4">
+  <div class="slide-body">
+<h2>Hardware vs. Software</h2>
+<ul><li>Hardware is a computer&#x27;s physical parts: CPU, memory, storage, network card</li><li>Software is the programs installed on top of that hardware</li><li>An operating system is a special category of software</li><li>It sits between the user and the hardware, managing both</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="5">
+  <div class="slide-body">
+<h2>Defining Linux</h2>
+<ul><li>Linux is an operating system, not a single fixed product</li><li>It&#x27;s free to use, and its source code is published for anyone to read</li><li>Because the code is open, anyone can inspect, modify, or extend it</li><li>That openness is exactly why so many different &quot;flavors&quot; of Linux exist</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="6">
+  <div class="slide-body">
+<h2>What Makes Linux, Linux</h2>
+<ul><li>Open source, released under the GNU General Public License (GPL)</li><li>Multi-user and multi-tasking — many people, many programs, running at once</li><li>Built with networking support from the ground up</li><li>Ships with a large set of built-in system tools and utilities</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="7">
+  <div class="slide-body">
+<h2>Where Linux Came From</h2>
+<ul><li>Created in 1991 by Linus Torvalds, then a student at the University of Helsinki</li><li>Modeled on Unix, an operating system dating back to the late 1960s</li><li>Modular — pieces can be added or swapped out as needed</li><li>Known for stability, rarely needing a restart to keep running</li><li>Flexible enough to run as either a desktop OS or a server OS</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="8">
+  <div class="slide-body">
+<h2>What&#x27;s a Distribution?</h2>
+<ul><li>A &quot;distro&quot; is Linux packaged up and ready to install</li><li>Because Linux is open source, anyone can build and tailor their own</li><li>Distros are typically downloaded and installed from an image file</li><li>Examples: Amazon Linux 2, Red Hat Enterprise Linux (RHEL), Debian, Ubuntu</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="diagram" data-index="9">
+  <div class="slide-body">
+<h2>How Does an Operating System Fit Between You and the Hardware?</h2>
+<div class="visual-placeholder" data-image-index="1" aria-hidden="true">Image goes here — see diagram-prompts.md #1</div>
+  </div>
+</section>
+<section class="slide" data-type="engage" data-index="10">
+  <div class="slide-body">
+<div class="engage-card" data-kind="poll">
+<span class="engage-label">Quick Poll</span>
+<p class="engage-question">Quick check
+Which of these is NOT true about Linux?</p>
+<ul class="engage-options">
+<li class="engage-option" data-option="A"><button type="button" class="engage-option-btn">A) It is open source</button></li>
+<li class="engage-option" data-option="B"><button type="button" class="engage-option-btn">B) Only one person can use it at a time</button></li>
+<li class="engage-option" data-option="C"><button type="button" class="engage-option-btn">C) It supports multi-tasking</button></li>
+</ul>
+<button type="button" class="engage-reveal-btn" data-reveal-toggle>Reveal</button>
+<div class="engage-reveal" hidden>B — Linux supports multiple users and multiple tasks running at the same time.</div>
+</div>
+  </div>
+</section>
+<section class="slide" data-type="recap" data-index="11">
+  <div class="slide-body">
+<h2>Recap: Understanding Linux</h2>
+<ul><li>Linux is a free, open-source operating system inspired by Unix</li><li>It supports many simultaneous users and many simultaneous tasks</li><li>A distribution bundles the Linux kernel with extra tools for a specific purpose</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="section-divider" data-index="12">
+  <div class="slide-body">
+<h2>Inside a Linux System</h2>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="13">
+  <div class="slide-body">
+<h2>The Kernel: Linux&#x27;s Control Center</h2>
+<ul><li>The kernel is the core program at the heart of every Linux system</li><li>It decides which running program gets CPU time, and when</li><li>It hands out memory to the operating system and to applications</li><li>It manages access to hardware — disks, network cards, and other devices</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="diagram" data-index="14">
+  <div class="slide-body">
+<h2>What Does the Kernel Actually Manage?</h2>
+<div class="visual-placeholder" data-image-index="1" aria-hidden="true">Image goes here — see diagram-prompts.md #1</div>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="15">
+  <div class="slide-body">
+<h2>Daemons: Programs Working in the Background</h2>
+<ul><li>A daemon runs continuously without a user directly controlling it</li><li>It typically exists to serve other programs or the system as a whole</li><li>Process names traditionally end in &quot;d&quot; — a convention, not a hard rule</li><li>Examples: syslogd captures and stores system messages; sshd handles secure remote connections</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="16">
+  <div class="slide-body">
+<h2>Applications: What Users Actually Touch</h2>
+<ul><li>An application is software built to help with one type of task or activity</li><li>Word processors, web browsers, email clients, media players — all applications</li><li>They sit on top of the kernel and daemons, drawing on the resources those layers provide</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="17">
+  <div class="slide-body">
+<h2>Data Files and How They&#x27;re Named</h2>
+<ul><li>A data file holds content a program reads or writes — text, music, images</li><li>Files can be grouped into directories to keep things organized</li><li>A full file reference follows this pattern: [directoryName]fileName[.extension]</li><li>Example: /pictures/dog.gif — directory &quot;pictures&quot;, file &quot;dog&quot;, extension &quot;.gif&quot;</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="18">
+  <div class="slide-body">
+<h2>Configuration Files</h2>
+<ul><li>These files store the settings a program reads when it starts up</li><li>Example: /etc/group lists which users are allowed on the system</li><li>Some configuration files run a set of commands automatically at startup</li><li>Common extensions: .cnf, .conf, .cfg, .cf, .ini</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="engage" data-index="19">
+  <div class="slide-body">
+<div class="engage-card" data-kind="think">
+<span class="engage-label">Think About It</span>
+<p class="engage-question">If a program keeps forgetting your preferences after every restart, would you check a data file or a configuration file first — and why?</p>
+</div>
+  </div>
+</section>
+<section class="slide" data-type="recap" data-index="20">
+  <div class="slide-body">
+<h2>Recap: Inside a Linux System</h2>
+<ul><li>The kernel is the core that manages memory, processes, and hardware access</li><li>Daemons run quietly in the background providing system services</li><li>Applications, data files, and configuration files round out a working system</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="section-divider" data-index="21">
+  <div class="slide-body">
+<h2>Talking to Linux</h2>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="22">
+  <div class="slide-body">
+<h2>Two Ways to Interface with Linux</h2>
+<ul><li>Command line interface (CLI): type commands, get results — lighter on resources, scriptable</li><li>Graphical user interface (GUI): point-and-click, visually similar across Linux, Windows, and macOS</li><li>Most Linux servers run CLI-only; most desktop workstations lean on the GUI</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="23">
+  <div class="slide-body">
+<h2>The Shell: Your Command Interpreter</h2>
+<ul><li>The shell is what reads and executes the commands you type</li><li>It translates your input into an action the kernel then carries out</li><li>Different distributions can support different shell options</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="24">
+  <div class="slide-body">
+<h2>Shell Types You Might Encounter</h2>
+<ul><li>sh — the original Bourne shell, the Unix ancestor of the others</li><li>bash — the Bourne-again shell, and the default on most Linux distributions</li><li>ksh — the KornShell, common on other Unix systems</li><li>This course focuses on bash exclusively, since it&#x27;s the Linux default</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="engage" data-index="25">
+  <div class="slide-body">
+<div class="engage-card" data-kind="poll">
+<span class="engage-label">Quick Poll</span>
+<p class="engage-question">Quick check
+True or false: bash is the default shell on most Linux distributions.</p>
+<ul class="engage-options">
+<li class="engage-option" data-option="A"><button type="button" class="engage-option-btn">A) True</button></li>
+<li class="engage-option" data-option="B"><button type="button" class="engage-option-btn">B) False</button></li>
+</ul>
+<button type="button" class="engage-reveal-btn" data-reveal-toggle>Reveal</button>
+<div class="engage-reveal" hidden>A — True. Bash (the Bourne-again shell) is the default shell for most Linux distributions.</div>
+</div>
+  </div>
+</section>
+<section class="slide" data-type="recap" data-index="26">
+  <div class="slide-body">
+<h2>Recap: Talking to Linux</h2>
+<ul><li>CLI and GUI are two different doors into the same system</li><li>The shell is what interprets the commands you type</li><li>Bash is the shell you&#x27;ll use for the rest of this course</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="section-divider" data-index="27">
+  <div class="slide-body">
+<h2>Finding Your Way: Built-in Help</h2>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="28">
+  <div class="slide-body">
+<h2>Manual Pages: Linux&#x27;s Built-in Help</h2>
+<ul><li>Man pages are Linux&#x27;s own documentation — no internet connection needed</li><li>Every command has a page covering its purpose, syntax, and options</li><li>You access them with the man command</li><li>&quot;Did you check the man pages?&quot; is the classic first reply to any Linux question</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="29">
+  <div class="slide-body">
+<h2>Reading a Man Page</h2>
+<ul><li>Name — what the command is and what it does, in brief</li><li>Synopsis — the exact syntax to use</li><li>Description — a fuller explanation of behavior</li><li>Options — what each flag or switch changes</li><li>Syntax: man &lt;commandName&gt;, e.g. man man</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="30">
+  <div class="slide-body">
+<h2>Navigating Inside a Man Page</h2>
+<ul><li>Up/Down arrow — scroll one line at a time</li><li>Page Up/Page Down — scroll a full page</li><li>Space bar — also scrolls down a page</li><li>Forward slash plus text (/searchString) — search within the page</li><li>q — quit back to the command line</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="engage" data-index="31">
+  <div class="slide-body">
+<div class="engage-card" data-kind="predict">
+<span class="engage-label">Predict</span>
+<p class="engage-question">Before we continue... if you forgot the exact syntax for the cp command, what would you type to find out?</p>
+<button type="button" class="engage-reveal-btn" data-reveal-toggle>Reveal</button>
+<div class="engage-reveal" hidden>man cp — this opens the manual page showing cp&#x27;s syntax, description, and options.</div>
+</div>
+  </div>
+</section>
+<section class="slide" data-type="recap" data-index="32">
+  <div class="slide-body">
+<h2>Recap: Built-in Help</h2>
+<ul><li>Man pages are always available, offline, on any Linux system</li><li>The man command surfaces a command&#x27;s name, syntax, description, and options</li><li>A handful of keys let you scroll and search without leaving the terminal</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="section-divider" data-index="33">
+  <div class="slide-body">
+<h2>Choosing a Distribution</h2>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="34">
+  <div class="slide-body">
+<h2>Where Major Distributions Come From</h2>
+<ul><li>Fedora — sponsored mainly by Red Hat (an IBM company); used to develop and mature features</li><li>Fedora feeds into RHEL, which forms the basis for Amazon Linux 2 and CentOS</li><li>Debian — built strictly around open-source principles; Canonical&#x27;s Ubuntu derives from it</li><li>OpenSUSE — sponsored by the German company SUSE; basis for SUSE Enterprise Linux</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="diagram" data-index="35">
+  <div class="slide-body">
+<h2>How Are These Distributions Related?</h2>
+<div class="visual-placeholder" data-image-index="1" aria-hidden="true">Image goes here — see diagram-prompts.md #1</div>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="36">
+  <div class="slide-body">
+<h2>Amazon Linux 2</h2>
+<ul><li>AWS&#x27;s own enterprise-class Linux distribution</li><li>Purpose-built to run on AWS virtual machines (EC2)</li><li>Derived from RHEL</li><li>Applies critical security updates automatically when an instance boots</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="37">
+  <div class="slide-body">
+<h2>CentOS</h2>
+<ul><li>Short for Community Enterprise Operating System</li><li>A free, enterprise-class distribution derived from RHEL</li><li>Used as the lab environment distribution throughout this course</li><li>Discontinued by Red Hat in December 2020, replaced by CentOS Stream</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="engage" data-index="38">
+  <div class="slide-body">
+<div class="engage-card" data-kind="pause">
+<span class="engage-label">Pause &amp; Discuss</span>
+<p class="engage-question">CentOS was discontinued in favor of CentOS Stream back in 2020. Why might a training course still choose to build labs on CentOS?</p>
+</div>
+  </div>
+</section>
+<section class="slide" data-type="recap" data-index="39">
+  <div class="slide-body">
+<h2>Recap: Choosing a Distribution</h2>
+<ul><li>Nearly every major distro traces back to Fedora, Debian, or OpenSUSE</li><li>Amazon Linux 2 is AWS&#x27;s own RHEL-derived distribution, tuned for EC2</li><li>CentOS is RHEL-derived and free, though now succeeded by CentOS Stream</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="section-divider" data-index="40">
+  <div class="slide-body">
+<h2>Connecting to a Remote Linux Server</h2>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="41">
+  <div class="slide-body">
+<h2>Getting Into the Lab</h2>
+<ul><li>Labs run through Vocareum, which spins up your working AWS environment</li><li>&quot;Start Lab&quot; provisions the EC2 instance you&#x27;ll work on</li><li>The Details panel shows the instance&#x27;s IP address and a link to your private key</li><li>You generally won&#x27;t need the AWS Console for the Linux labs, but it&#x27;s worth exploring</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="diagram" data-index="42">
+  <div class="slide-body">
+<h2>What Does the Lab Connection Path Look Like?</h2>
+<div class="visual-placeholder" data-image-index="1" aria-hidden="true">Image goes here — see diagram-prompts.md #1</div>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="43">
+  <div class="slide-body">
+<h2>Private Keys: PEM and PPK</h2>
+<ul><li>Every EC2 instance in this course uses a default user: ec2-user</li><li>Connecting requires a private key, generated for you automatically</li><li>.pem is the standard key format (&quot;Privacy Enhanced Mail&quot;)</li><li>PuTTY on Windows uses .ppk instead — PuTTYgen converts between the two</li><li>Both formats are provided directly in the lab</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="concept" data-index="44">
+  <div class="slide-body">
+<h2>Connecting with SSH or PuTTY</h2>
+<ul><li>Mac or Linux: use the ssh command directly from a terminal, with the .pem key</li><li>Windows: use PuTTY, a graphical SSH client, with the .ppk key</li><li>SSH connections travel over port 22, opened by the instance&#x27;s security group</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="engage" data-index="45">
+  <div class="slide-body">
+<div class="engage-card" data-kind="scenario">
+<span class="engage-label">Scenario</span>
+<p class="engage-question">You&#x27;re on a Windows laptop and just downloaded your lab&#x27;s .pem key. What&#x27;s your next step to connect to the EC2 instance?</p>
+<button type="button" class="engage-reveal-btn" data-reveal-toggle>Reveal</button>
+<div class="engage-reveal" hidden>Convert the .pem to a .ppk with PuTTYgen (or use the .ppk already provided), open PuTTY, enter the instance&#x27;s IP as the host on port 22, and connect as ec2-user.</div>
+</div>
+  </div>
+</section>
+<section class="slide" data-type="recap" data-index="46">
+  <div class="slide-body">
+<h2>Recap: Connecting to a Remote Server</h2>
+<ul><li>Vocareum starts your lab and hands you connection details</li><li>A private key (.pem or .ppk) authenticates your connection as ec2-user</li><li>SSH — via terminal or PuTTY — is how you&#x27;ll reach every lab instance in this course</li></ul>
+  </div>
+</section>
+<section class="slide" data-type="summary" data-index="47">
+  <div class="slide-body">
+<h2>Summary</h2>
+<ul><li>Linux is a free, open-source, Unix-inspired operating system that supports multiple users and tasks at once</li><li>A distribution packages the Linux kernel together with complementary tools and applications</li><li>The kernel manages memory, processes, and hardware; daemons, applications, data files, and configuration files fill out the rest of a working system</li><li>Every distro offers a CLI, and bash is the default shell you&#x27;ll use throughout this course</li><li>The man command is your built-in reference for any command&#x27;s syntax and options</li><li>Most major distributions trace back to a Fedora, Debian, or OpenSUSE lineage</li><li>You&#x27;ll connect to your lab&#x27;s EC2 instance over SSH, authenticated with a private key</li></ul>
+  </div>
+</section>
+</main>
+
+<footer class="slide-chrome slide-chrome-bottom">
+  <button type="button" id="prevSlide" class="slide-nav-btn" aria-label="Previous slide">&#8592;</button>
+  <button type="button" id="nextSlide" class="slide-nav-btn" aria-label="Next slide">&#8594;</button>
+</footer>
+
+<div id="footerRoot" data-subject="aws"></div>
+
+<script src="../../../js/notes/slides.js" async="false"></script>
+</body>
+</html>

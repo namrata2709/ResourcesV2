@@ -9,11 +9,6 @@ const ROOT = process.cwd();
 const SRC = path.join(ROOT, "src");
 const DIST = path.join(ROOT, "dist");
 
-if (!fs.existsSync(SRC)) {
-    console.error("❌ src folder not found.");
-    process.exit(1);
-}
-
 const COPY_EXTENSIONS = new Set([
     ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico",
     ".woff", ".woff2", ".ttf", ".eot",
@@ -21,18 +16,55 @@ const COPY_EXTENSIONS = new Set([
     ".txt", ".xml"
 ]);
 
+function escapeHtml(str) {
+    return str
+        .replace(/&(?!(?:amp|lt|gt|quot|apos|#39|#x27);)/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function protectCodeBlocks(html) {
+    const blocks = [];
+
+    html = html.replace(
+        /<pre\b[^>]*>\s*<code\b[^>]*>[\s\S]*?<\/code>\s*<\/pre>/gi,
+        block => {
+            const fixed = block.replace(
+                /(<code\b[^>]*>)([\s\S]*?)(<\/code>)/i,
+                (_, open, code, close) => {
+                    return open + escapeHtml(code) + close;
+                }
+            );
+
+            const token = `___CODEBLOCK_${blocks.length}___`;
+            blocks.push(fixed);
+            return token;
+        }
+    );
+
+    return { html, blocks };
+}
+
+function restoreCodeBlocks(html, blocks) {
+    blocks.forEach((block, i) => {
+        html = html.replace(`___CODEBLOCK_${i}___`, block);
+    });
+
+    return html;
+}
+
 async function build() {
-    console.log("Cleaning dist...");
+
     fs.removeSync(DIST);
     fs.ensureDirSync(DIST);
 
     const files = await glob("**/*", {
         cwd: SRC,
-        onlyFiles: true,
-        dot: false
+        onlyFiles: true
     });
 
     for (const relative of files) {
+
         const src = path.join(SRC, relative);
         const dest = path.join(DIST, relative);
 
@@ -43,22 +75,30 @@ async function build() {
         switch (ext) {
 
             case ".html": {
-                const html = await fs.readFile(src, "utf8");
 
-                const output = await minify(html, {
-                    collapseWhitespace: true,
-                    removeComments: true,
-                    minifyCSS: true,
-                    minifyJS: true
-                });
+                let html = await fs.readFile(src, "utf8");
 
-                await fs.writeFile(dest, output);
+                const protectedBlocks = protectCodeBlocks(html);
+
+                html = restoreCodeBlocks(
+                    await minify(protectedBlocks.html, {
+                        collapseWhitespace: true,
+                        removeComments: true,
+                        minifyCSS: true,
+                        minifyJS: true
+                    }),
+                    protectedBlocks.blocks
+                );
+
+                await fs.writeFile(dest, html);
 
                 console.log("HTML ", relative);
+
                 break;
             }
 
             case ".css": {
+
                 const css = await fs.readFile(src, "utf8");
 
                 const output = new CleanCSS({
@@ -68,48 +108,45 @@ async function build() {
                 await fs.writeFile(dest, output);
 
                 console.log("CSS  ", relative);
+
                 break;
             }
 
             case ".js": {
-                console.log("Minifying JS:", relative);
 
                 const js = await fs.readFile(src, "utf8");
 
-                try {
-                    const result = await terser.minify(js, {
-                        compress: {
-                            drop_console: true
-                        },
-                        mangle: true
-                    });
+                const result = await terser.minify(js, {
+                    compress: {
+                        drop_console: true
+                    },
+                    mangle: true
+                });
 
-                    await fs.writeFile(dest, result.code);
+                await fs.writeFile(dest, result.code);
 
-                    console.log("JS   ", relative);
-                } catch (err) {
-                    console.error("\nFailed:", relative);
-                    throw err;
-                }
+                console.log("JS   ", relative);
 
                 break;
             }
 
             case ".json": {
+
                 const json = JSON.parse(await fs.readFile(src, "utf8"));
 
                 await fs.writeFile(dest, JSON.stringify(json));
 
                 console.log("JSON ", relative);
+
                 break;
             }
 
-            default: {
+            default:
+
                 if (COPY_EXTENSIONS.has(ext)) {
                     await fs.copy(src, dest);
                     console.log("COPY ", relative);
                 }
-            }
         }
     }
 

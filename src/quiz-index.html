@@ -1,14 +1,41 @@
+<!--
+==============================================================================
+File: quiz-index.html
+Path: quiz-index.html
+Project: Learning Dashboard
+
+Description:
+Quiz listing page. Shows all available quizzes with search, topic filter,
+and sort. Clicking a card navigates to quiz.html?quiz=<file>. Fully driven
+by js/quiz/quiz-index.js from data/index/quiz-index.json.
+
+Author: Namrata Mulwani
+Created: —
+Last Updated: 2026-06-30
+
+Dependencies:
+- css/styles.css
+- css/quiz/quiz-index.css
+- js/shared/site-config.js
+- js/quiz/quiz-index.js
+- data/index/quiz-index.json (fetched at runtime)
+==============================================================================
+-->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="Browse AWS quiz answer keys covering EC2, S3, VPC, IAM, and more. Interactive quiz answers with detailed explanations for certification preparation.">
-    <meta name="keywords" content="AWS quizzes, AWS quiz answers, AWS certification practice, Cloud Practitioner questions, Solutions Architect practice, AWS MCQ answers">
+    <meta name="description"
+        content="Browse AWS quiz answer keys covering EC2, S3, VPC, IAM, and more. Interactive quiz answers with detailed explanations for certification preparation.">
+    <meta name="keywords"
+        content="AWS quizzes, AWS quiz answers, AWS certification practice, Cloud Practitioner questions, Solutions Architect practice, AWS MCQ answers">
 
     <meta property="og:title" content="Quizzes - Learning Dashboard">
-    <meta property="og:description" content="Interactive quiz answer guides for AWS services with detailed explanations.">
+    <meta property="og:description"
+        content="Interactive quiz answer guides for AWS services with detailed explanations.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://namrata2709.github.io/Resources/quiz-index.html">
     <meta property="og:image" content="https://namrata2709.github.io/Resources/images/quiz-preview.png">
@@ -19,14 +46,11 @@
 
     <link rel="canonical" href="https://namrata2709.github.io/Resources/quiz-index.html">
 
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
-
     <title>Quizzes - Learning Dashboard</title>
 
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/quiz/quiz-index.css">
+    <script src="js/shared/site-config.js"></script>
 
     <script type="application/ld+json">
     {
@@ -48,21 +72,26 @@
     }
     </script>
 </head>
-<body
-    data-subject="aws"
-    data-page-title="📝 Quizzes"
->
+
+<body>
+    <noscript>
+        <style>#pageLoader { display: none; }</style>
+        <div class="noscript">
+            <h2>JavaScript Required</h2>
+            <p>This website relies on JavaScript for navigation and interactive learning features.</p>
+            <p>Please enable JavaScript.</p>
+        </div>
+    </noscript>
     <div id="pageLoader" class="page-loader">
         <div class="loader-spinner"></div>
         <p class="loader-text">Loading quizzes...</p>
     </div>
 
     <div class="page-container">
-        <!-- .page-header injected here by page-header.js -->
 
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="🔍 Search quizzes..."
-                   oninput="filterQuizzes()" aria-label="Search quizzes">
+            <input type="text" id="searchInput" placeholder="🔍 Search quizzes..." oninput="filterQuizzes()"
+                aria-label="Search quizzes">
         </div>
 
         <div class="filter-controls">
@@ -90,14 +119,7 @@
 
     <div id="footerRoot"></div>
 
-    <script src="js/shared/shared-meta.js"></script>
-    <script src="js/shared/theme.js"></script>
-    <script src="js/shared/breadcrumb.js"></script>
-    <script src="js/shared/page-header.js"></script>
-    <script src="js/shared/footer.js"></script>
-    <script src="js/shared/analytics.js"></script>
-    <script src="js/shared/page-loader.js"></script>
-
     <script src="js/quiz/quiz-index.js" defer></script>
 </body>
+
 </html>

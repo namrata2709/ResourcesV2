@@ -1,0 +1,92 @@
+{
+  "categories": [
+    {
+      "title": "📚 Concepts Mastered",
+      "items": [
+        {
+          "id": "c1",
+          "text": "Explain what OpenClaw is and how it differs from a standard chatbot"
+        },
+        {
+          "id": "c2",
+          "text": "Describe the role of the Gateway, agents, skills, and tools in OpenClaw's architecture"
+        },
+        {
+          "id": "c3",
+          "text": "Distinguish between an autonomous agent, a chatbot, and a harness like Claude Code"
+        },
+        {
+          "id": "c4",
+          "text": "Identify the AWS compute options for running OpenClaw (Lightsail, EC2, EKS, Bedrock AgentCore)"
+        },
+        {
+          "id": "c5",
+          "text": "Explain the pool, silo, and bridge multi-tenancy models and when each applies"
+        }
+      ]
+    },
+    {
+      "title": "🛠️ Skills Acquired",
+      "items": [
+        {
+          "id": "c6",
+          "text": "Launch OpenClaw using an AWS Lightsail blueprint"
+        },
+        {
+          "id": "c7",
+          "text": "Connect to an EC2 instance using AWS Session Manager instead of SSH keys"
+        },
+        {
+          "id": "c8",
+          "text": "Configure a SOUL.md persona file and a SKILL.md capability definition for a custom agent"
+        },
+        {
+          "id": "c9",
+          "text": "Apply Amazon Bedrock Guardrails to filter sensitive data in agent traffic"
+        }
+      ]
+    },
+    {
+      "title": "🎓 Exam Ready",
+      "items": [
+        {
+          "id": "c10",
+          "text": "Distinguish EC2/Lightsail/EKS always-on billing from Bedrock AgentCore's consumption-based, cold-start model"
+        },
+        {
+          "id": "c11",
+          "text": "Recall why Session Manager avoids opening inbound port 22"
+        },
+        {
+          "id": "c12",
+          "text": "Identify the security risk of a single OpenClaw Gateway shared by multiple users"
+        },
+        {
+          "id": "c13",
+          "text": "Recognize the seven layers of AI agent attack surface and one control for each"
+        }
+      ]
+    },
+    {
+      "title": "💼 Hands-On Done",
+      "items": [
+        {
+          "id": "c14",
+          "text": "Completed Project 1: Deploy OpenClaw on Amazon Lightsail Using the Official Blueprint"
+        },
+        {
+          "id": "c15",
+          "text": "Verified the Gateway access token was generated successfully"
+        },
+        {
+          "id": "c16",
+          "text": "Connected and tested a messaging channel against the deployed agent"
+        },
+        {
+          "id": "c17",
+          "text": "Cleaned up all resources (deleted the Lightsail instance) to avoid ongoing charges"
+        }
+      ]
+    }
+  ]
+}

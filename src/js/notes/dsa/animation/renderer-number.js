@@ -1,19 +1,24 @@
 /**
- * renderer-number.js — Renders equation/value stepping visualizations.
- * Covers 16 topics: Sieve concepts, GCD, Modular Arithmetic, CRT,
- * Miller-Rabin, Simulated Annealing, Rate Limiter, Lock-Free CAS.
- * Simplest renderer — no spatial layout, just text + values that change.
+ * =============================================================================
+ * File: renderer-number.js
+ * Path: js/notes/dsa/animation/renderer-number.js
+ * Project: Learning Dashboard
  *
- * Step schema:
- * {
- *   equation: "gcd(48, 18)",        // current expression, plain text
- *   values: { a: 48, b: 18 },       // named values shown as cards
- *   highlight: "a",                  // optional — which value key to highlight
- *   label: "",
- *   decision: ""
- * }
+ * Description:
+ * Equation/value-stepping visualization renderer — covers 16 topics
+ * (Sieve concepts, GCD, Modular Arithmetic, CRT, Miller-Rabin, Simulated
+ * Annealing, Rate Limiter, Lock-Free CAS). Simplest renderer — no spatial
+ * layout, just an equation string plus named value cards. Defines
+ * buildVisual(input)/renderStep(step,idx) as globals, consumed by
+ * animation-core.js.
  *
- * Exposes: buildVisual(input), renderStep(step, idx)
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - js/notes/dsa/animation-core.js (must load first)
+ * =============================================================================
  */
 
 function buildVisual(input) {

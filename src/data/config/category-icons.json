@@ -1,0 +1,209 @@
+{
+  "default": {
+    "icon": "📂",
+    "keywords": []
+  },
+
+  "General": {
+    "icon": "📂",
+    "keywords": ["general", "overview", "misc", "miscellaneous"]
+  },
+  "Fundamentals": {
+    "icon": "📚",
+    "keywords": ["fundamentals", "basics", "introduction", "intro", "core concepts"]
+  },
+
+  "Compute": {
+    "icon": "⚙️",
+    "keywords": ["ec2", "compute", "lambda", "lightsail", "elastic beanstalk", "auto scaling", "batch"]
+  },
+  "Storage": {
+    "icon": "💾",
+    "keywords": ["s3", "ebs", "efs", "storage gateway", "glacier", "storage"]
+  },
+  "Database": {
+    "icon": "🗄️",
+    "keywords": ["rds", "dynamodb", "aurora", "redshift", "database", "elasticache", "documentdb", "neptune"]
+  },
+  "Networking": {
+    "icon": "🌐",
+    "keywords": ["vpc", "route 53", "networking", "subnet", "direct connect", "vpn", "elb", "load balancer", "cloudfront"]
+  },
+  "Security": {
+    "icon": "🔒",
+    "keywords": ["security", "waf", "shield", "kms", "guardduty", "inspector", "macie", "secrets manager", "acm"]
+  },
+  "Monitoring": {
+    "icon": "📊",
+    "keywords": ["cloudwatch", "monitoring", "x-ray", "logs", "metrics", "alarms"]
+  },
+  "Management": {
+    "icon": "🛠️",
+    "keywords": ["cloudformation", "management", "systems manager", "config", "control tower", "organizations"]
+  },
+  "Analytics": {
+    "icon": "📈",
+    "keywords": ["athena", "analytics", "kinesis", "emr", "quicksight", "glue", "data pipeline"]
+  },
+  "Machine Learning": {
+    "icon": "🤖",
+    "keywords": ["sagemaker", "machine learning", "ml", "rekognition", "comprehend", "bedrock", "ai agents", "autonomous agents", "openclaw"]
+  },
+  "Containers": {
+    "icon": "📦",
+    "keywords": ["ecs", "eks", "fargate", "docker", "containers", "kubernetes"]
+  },
+  "Serverless": {
+    "icon": "⚡",
+    "keywords": ["serverless", "lambda", "step functions", "api gateway", "sam"]
+  },
+  "Messaging": {
+    "icon": "✉️",
+    "keywords": ["sqs", "sns", "messaging", "eventbridge", "mq"]
+  },
+  "Identity": {
+    "icon": "🪪",
+    "keywords": ["iam", "identity", "cognito", "sso", "directory service"]
+  },
+  "Cost Management": {
+    "icon": "💰",
+    "keywords": ["cost explorer", "cost management", "budgets", "savings plans", "trusted advisor"]
+  },
+  "Billing": {
+    "icon": "🧾",
+    "keywords": ["billing", "invoice", "pricing"]
+  },
+  "DevOps": {
+    "icon": "🔁",
+    "keywords": ["devops", "codepipeline", "codebuild", "codedeploy", "ci/cd", "cicd"]
+  },
+  "Migration": {
+    "icon": "🚚",
+    "keywords": ["migration", "dms", "snowball", "application migration service", "datasync"]
+  },
+  "Automation": {
+    "icon": "🤖",
+    "keywords": ["automation", "eventbridge", "step functions", "systems manager automation", "opsworks"]
+  },
+  "Integration": {
+    "icon": "🔗",
+    "keywords": ["integration", "api gateway", "appsync", "eventbridge", "step functions"]
+  },
+  "Governance": {
+    "icon": "📋",
+    "keywords": ["governance", "organizations", "control tower", "config", "compliance"]
+  },
+  "Content Delivery": {
+    "icon": "📡",
+    "keywords": ["cloudfront", "content delivery", "cdn", "global accelerator"]
+  },
+  "Developer Tools": {
+    "icon": "🧰",
+    "keywords": ["developer tools", "cloud9", "codestar", "codecommit", "sdk", "cli"]
+  },
+  "Media Services": {
+    "icon": "🎬",
+    "keywords": ["media services", "elastic transcoder", "medialive", "mediaconvert"]
+  },
+  "Machine Images": {
+    "icon": "🖥️",
+    "keywords": ["ami", "machine images", "image builder"]
+  },
+  "End User Computing": {
+    "icon": "🖱️",
+    "keywords": ["workspaces", "appstream", "end user computing", "worklink"]
+  },
+
+  "Arrays": {
+    "icon": "🔢",
+    "keywords": ["array", "arrays", "subarray"]
+  },
+  "Strings": {
+    "icon": "🔤",
+    "keywords": ["string", "strings", "substring", "palindrome"]
+  },
+  "Linked List": {
+    "icon": "🔗",
+    "keywords": ["linked list", "singly linked", "doubly linked"]
+  },
+  "Trees": {
+    "icon": "🌳",
+    "keywords": ["tree", "trees", "binary tree", "bst", "binary search tree", "avl"]
+  },
+  "Graphs": {
+    "icon": "🕸️",
+    "keywords": ["graph", "graphs", "dfs", "bfs", "dijkstra", "topological sort"]
+  },
+  "Sorting": {
+    "icon": "↕️",
+    "keywords": ["sort", "sorting", "merge sort", "quick sort", "bubble sort", "insertion sort"]
+  },
+  "Searching": {
+    "icon": "🔍",
+    "keywords": ["search", "searching", "binary search", "linear search"]
+  },
+  "Dynamic Programming": {
+    "icon": "🧮",
+    "keywords": ["dynamic programming", "dp", "memoization", "tabulation"]
+  },
+  "Recursion": {
+    "icon": "🔁",
+    "keywords": ["recursion", "recursive"]
+  },
+  "Stack": {
+    "icon": "📚",
+    "keywords": ["stack", "stacks"]
+  },
+  "Queue": {
+    "icon": "🚶",
+    "keywords": ["queue", "queues", "deque", "circular queue"]
+  },
+  "Heap": {
+    "icon": "🏔️",
+    "keywords": ["heap", "priority queue", "min heap", "max heap"]
+  },
+  "Hashing": {
+    "icon": "#️⃣",
+    "keywords": ["hash", "hashing", "hash map", "hash table", "hashmap"]
+  },
+  "Greedy": {
+    "icon": "🎯",
+    "keywords": ["greedy", "greedy algorithm"]
+  },
+  "Backtracking": {
+    "icon": "🧩",
+    "keywords": ["backtracking", "backtrack"]
+  },
+  "Bit Manipulation": {
+    "icon": "🧷",
+    "keywords": ["bit manipulation", "bitwise", "bit"]
+  },
+  "Math": {
+    "icon": "➗",
+    "keywords": ["math", "mathematics", "number theory"]
+  },
+  "Two Pointers": {
+    "icon": "👉",
+    "keywords": ["two pointers", "two pointer"]
+  },
+  "Sliding Window": {
+    "icon": "🪟",
+    "keywords": ["sliding window"]
+  },
+  "Divide and Conquer": {
+    "icon": "✂️",
+    "keywords": ["divide and conquer"]
+  },
+  "Matrix": {
+    "icon": "🔲",
+    "keywords": ["matrix", "matrices", "2d array", "grid"]
+  },
+  "Trie": {
+    "icon": "🌲",
+    "keywords": ["trie", "prefix tree"]
+  },
+  "Sets": {
+    "icon": "🧺",
+    "keywords": ["set", "sets"]
+  }
+}

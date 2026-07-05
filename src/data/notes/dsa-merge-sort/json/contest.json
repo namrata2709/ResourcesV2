@@ -1,0 +1,44 @@
+{
+  "problems": [
+    {
+      "id": 1,
+      "title": "Inversions (CSES)",
+      "platform": "CSES",
+      "url": "https://cses.fi/problemset/task/1193",
+      "diff": "intermediate",
+      "pattern": "Count the number of inversions in a permutation — classic Merge Sort modification"
+    },
+    {
+      "id": 2,
+      "title": "Counting Inversions",
+      "platform": "Codeforces",
+      "url": "https://codeforces.com/edu/course/2/lesson/6/4/practice/contest/285069/problem/A",
+      "diff": "intermediate",
+      "pattern": "Merge Sort modification to count pairs (i, j) where i < j and a[i] > a[j]"
+    },
+    {
+      "id": 3,
+      "title": "Merge k Sorted Lists",
+      "platform": "LeetCode",
+      "url": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "diff": "hard",
+      "pattern": "K-way merge using a min-heap — extends the two-way merge step to K simultaneous sorted sequences"
+    },
+    {
+      "id": 4,
+      "title": "Smallest Range Covering Elements from K Lists",
+      "platform": "LeetCode",
+      "url": "https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/",
+      "diff": "hard",
+      "pattern": "K-way merge with a sliding window — combine K-way merge with range optimisation"
+    },
+    {
+      "id": 5,
+      "title": "Global Inversions and Local Inversions",
+      "platform": "LeetCode",
+      "url": "https://leetcode.com/problems/global-inversions-and-local-inversions/",
+      "diff": "hard",
+      "pattern": "Count global inversions using Merge Sort, compare with local inversion count (adjacent pairs)"
+    }
+  ]
+}

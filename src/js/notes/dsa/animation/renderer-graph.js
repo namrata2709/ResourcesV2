@@ -1,21 +1,23 @@
 /**
- * renderer-graph.js — Renders graph visualizations using SVG.
- * Covers 35 topics: BFS, DFS, Dijkstra, MST, SCC, Flow, Bipartite Matching.
- * Uses circular layout (nodes evenly spaced on a circle) — predictable,
- * no overlap, no simulation needed. Good enough for ≤10 node inputs.
+ * =============================================================================
+ * File: renderer-graph.js
+ * Path: js/notes/dsa/animation/renderer-graph.js
+ * Project: Learning Dashboard
  *
- * Step schema:
- * {
- *   visitedNodes: [id, ...],
- *   activeNode: id | null,
- *   activeEdge: {from, to} | null,
- *   selectedEdges: [{from,to}, ...],   // MST/matching — green edges
- *   distances: { nodeId: value },       // Dijkstra etc — shown under node
- *   label: "",
- *   decision: ""
- * }
+ * Description:
+ * SVG graph visualization renderer — covers 35 topics (BFS, DFS,
+ * Dijkstra, MST, SCC, Flow, Bipartite Matching). Uses a fixed circular
+ * layout (nodes evenly spaced on a circle, no simulation) — good for
+ * ≤10-node inputs. Defines buildVisual(input)/renderStep(step,idx) as
+ * globals, consumed by animation-core.js.
  *
- * Exposes: buildVisual(input), renderStep(step, idx)
+ * Author: Namrata Mulwani
+ * Created: —
+ * Last Updated: 2026-06-30
+ *
+ * Dependencies:
+ * - js/notes/dsa/animation-core.js (must load first)
+ * =============================================================================
  */
 
 let _graphNodes = {};  // id -> {x, y}
