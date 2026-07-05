@@ -35,7 +35,7 @@ already-generated note:
 | 3-4 key learnings | `Overall Summary` section + top-level theory subtopic headings |
 | Tone / depth | `audience` frontmatter (`beginner` → plain-language hook, `exam` → certification-angle hook, etc.) |
 | Hashtag seed terms | `keywords` + `tags` frontmatter |
-| Link | note's page URL — `https://namrata2709.github.io/Resources/data/notes/[type-prefix]-[slug]/notes.html` |
+| Link | note's page URL — `https://namrata2709.github.io/ResourcesV2/data/notes/[type-prefix]-[slug]/notes.html` |
 
 Do not invent facts, numbers, or claims that aren't in the note. If the note
 doesn't support a strong stat-driven variation (see below), skip that

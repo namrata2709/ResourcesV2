@@ -46,7 +46,7 @@ def test_backfill_adds_missing_without_wiping_existing(sitemap_env, monkeypatch)
     # Seed with an entry that a scan of disk would NOT recreate (e.g. a
     # manually-added page, or one added by a script this test doesn't run)
     sitemap_utils.write_sitemap([
-        {"loc": "https://namrata2709.github.io/Resources/labs.html",
+        {"loc": "https://namrata2709.github.io/ResourcesV2/labs.html",
          "lastmod": "2020-01-01", "changefreq": "yearly", "priority": "0.3"}
     ])
 
@@ -58,7 +58,7 @@ def test_backfill_adds_missing_without_wiping_existing(sitemap_env, monkeypatch)
 
     urls = sitemap_utils.load_sitemap()
     locs = {u["loc"] for u in urls}
-    assert "https://namrata2709.github.io/Resources/labs.html" in locs, \
+    assert "https://namrata2709.github.io/ResourcesV2/labs.html" in locs, \
         "backfill mode must not wipe an entry it didn't itself generate"
     assert any("vpc-basics" in loc for loc in locs)
 
@@ -71,7 +71,7 @@ def test_rebuild_drops_entries_not_derivable_from_disk(sitemap_env, monkeypatch)
     gs, notes_dir, quiz_dir, sitemap_utils = sitemap_env
 
     sitemap_utils.write_sitemap([
-        {"loc": "https://namrata2709.github.io/Resources/labs.html",
+        {"loc": "https://namrata2709.github.io/ResourcesV2/labs.html",
          "lastmod": "2020-01-01", "changefreq": "yearly", "priority": "0.3"}
     ])
 
@@ -79,7 +79,7 @@ def test_rebuild_drops_entries_not_derivable_from_disk(sitemap_env, monkeypatch)
 
     urls = sitemap_utils.load_sitemap()
     locs = {u["loc"] for u in urls}
-    assert "https://namrata2709.github.io/Resources/labs.html" not in locs, \
+    assert "https://namrata2709.github.io/ResourcesV2/labs.html" not in locs, \
         "--rebuild should only contain what disk scan produces"
 
 

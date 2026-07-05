@@ -41,7 +41,7 @@ already-generated note:
 | Chapter/timestamp candidates | `##`-level theory subtopic headings, in order |
 | Tag list seed | `keywords` + `tags` frontmatter |
 | Difficulty framing | `audience` frontmatter (`beginner` → "no prior experience needed," `exam` → certification framing, etc.) |
-| Companion link | note's page URL — `https://namrata2709.github.io/Resources/data/notes/[type-prefix]-[slug]/notes.html` |
+| Companion link | note's page URL — `https://namrata2709.github.io/ResourcesV2/data/notes/[type-prefix]-[slug]/notes.html` |
 
 Do not invent facts, numbers, or claims that aren't in the note. Timestamp
 labels are derived from actual section headings in the note, not guessed

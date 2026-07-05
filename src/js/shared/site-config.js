@@ -30,7 +30,7 @@
      window.SiteConfig = {
         basePath: window.location.hostname === 'localhost'
             ? '/'
-            : 'https://namrata2709.github.io/Resources/',
+            : 'https://namrata2709.github.io/ResourcesV2/',
         sharedPath: function (file) { return this.basePath + 'js/shared/' + file; },
         notesPath: function (file) { return this.basePath + 'js/notes/' + file; },
         dsaPath: function (file) { return this.basePath + 'js/notes/dsa/' + file; },

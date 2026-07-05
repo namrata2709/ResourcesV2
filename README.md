@@ -2,7 +2,7 @@
 
 A free, self-paced study hub with structured notes, quizzes, and hands-on labs.
 
-🔗 **Live site:** https://namrata2709.github.io/Resources/
+🔗 **Live site:** https://namrata2709.github.io/ResourcesV2/
 
 ## What's here
 

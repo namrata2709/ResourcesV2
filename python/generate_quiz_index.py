@@ -36,7 +36,7 @@ from utils.sitemap import add_url, remove_url, load_sitemap, write_sitemap
 
 ROOT     = "../src/data/quiz"
 OUTPUT   = "../src/data/index/quiz-index.json"
-BASE_URL = "https://namrata2709.github.io/Resources"
+BASE_URL = "https://namrata2709.github.io/ResourcesV2"
 
 
 def main():

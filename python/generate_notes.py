@@ -66,7 +66,7 @@ TYPE_CONFIG = {
         # not data/notes/dsa/dsa-[slug]/.
         "path_segment":  "data/notes/",
         "path_depth":    "../../../",              # data/notes/dsa-[slug]/notes.html -> project root (css/js are 3 levels up, siblings of data/)
-        "base_url":      "https://namrata2709.github.io/Resources/data/notes/",
+        "base_url":      "https://namrata2709.github.io/ResourcesV2/data/notes/",
         "subject":       "dsa",
         "has_animation": True,
         "folder_prefix": "dsa",
@@ -76,14 +76,14 @@ TYPE_CONFIG = {
         "extra_css":     None,                     # no extra css for aws
         "path_segment":  "data/notes/",
         "path_depth":    "../../../",              # data/notes/aws-[slug]/notes.html -> project root
-        "base_url":      "https://namrata2709.github.io/Resources/data/notes/",
+        "base_url":      "https://namrata2709.github.io/ResourcesV2/data/notes/",
         "subject":       "aws",
         "has_animation": False,
         "folder_prefix": "aws",
     },
 }
 
-SITE_BASE = "https://namrata2709.github.io/Resources/"
+SITE_BASE = "https://namrata2709.github.io/ResourcesV2/"
 
 # Sections that exist in DSA only
 DSA_ONLY_SECTIONS = {"visual-mcq", "contest"}

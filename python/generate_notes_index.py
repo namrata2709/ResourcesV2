@@ -94,7 +94,7 @@ OUTPUT = "../src/data/index/notes-index.json"
 
 IMAGE_EXT     = (".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg")
 CONTENT_TYPES = ("notes", "lab", "slides")
-BASE_URL      = "https://namrata2709.github.io/Resources/"
+BASE_URL      = "https://namrata2709.github.io/ResourcesV2/"
 
 # ── Text helpers ───────────────────────────────────────────────────────────────
 
