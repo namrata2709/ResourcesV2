@@ -884,7 +884,7 @@ d: intermediate
 [hands-on]
 [project]
 title: Project 1: [Descriptive name — what you build]
-objective: [One sentence — what the learner will deploy/configure/test]
+objective: [One sentence — what the learner will deploy/configure/tests]
 time: 30-45 min
 cost: Free tier eligible
 prereqs: AWS account | [Service] basics | IAM admin access
