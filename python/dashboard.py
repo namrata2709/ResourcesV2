@@ -124,6 +124,20 @@ def cmd_sitemap(args):
     return run_script("generate_sitemap.py", ["--rebuild"] if args.rebuild else [])
 
 
+def cmd_audit(args):
+    """
+    Cross-repo validation report (audit_content.py) — missing images,
+    broken links, duplicate topics/slugs/ids, invalid JSON/categories/
+    tags/dates, unused files/images, build statistics. Runs AFTER
+    generation, never blocks or modifies it — reports.py always exits 0
+    for warnings; only errors get flagged, they don't stop anything here
+    either (per the spec: "build should complete successfully even when
+    warnings exist, but should clearly distinguish between warnings and
+    errors").
+    """
+    return run_script("audit_content.py", ["--quiet"] if args.quiet else [])
+
+
 def cmd_all(args):
     steps = (("notes", cmd_notes), ("quiz", cmd_quiz), ("sitemap", cmd_sitemap))
     for name, fn in steps:
@@ -136,7 +150,13 @@ def cmd_all(args):
             print(f"\n❌ Stopped — '{name}' step failed (exit code {rc}). "
                   f"Fix it before the remaining steps run.")
             return rc
-    print("\n✅ all: notes, quiz, and sitemap all completed successfully.")
+    print("\n── audit " + "─" * 42)
+    # Audit runs even if this is reached with args that don't have --quiet
+    # set (e.g. called from "all") — default to verbose findings output.
+    if not hasattr(args, "quiet"):
+        args.quiet = False
+    cmd_audit(args)   # never gates the build — errors are reported, not fatal here
+    print("\n✅ all: notes, quiz, sitemap, and audit all completed.")
     return 0
 
 
@@ -239,6 +259,16 @@ def main():
         p.add_argument("--rebuild", action="store_true",
                         help="Full rebuild from scratch instead of incremental.")
         p.set_defaults(func=fn)
+
+    p_audit = sub.add_parser(
+        "audit",
+        help="Cross-repo validation report — missing images, broken links, "
+             "duplicates, invalid JSON/categories/dates, unused files. "
+             "Writes reports/build-report.{html,md,json}."
+    )
+    p_audit.add_argument("--quiet", action="store_true",
+                          help="Suppress per-finding console output, just show the summary.")
+    p_audit.set_defaults(func=cmd_audit)
 
     p_serve = sub.add_parser("serve", help="Serve src/ (default) or dist/ locally.")
     p_serve.add_argument("--dist", action="store_true", help="Serve dist/ instead of src/.")

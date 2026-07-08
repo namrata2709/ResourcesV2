@@ -60,6 +60,7 @@
     let selectedTags = new Set();
     let selectedSession = '';
     let showFavoritesOnly = false;
+    let selectedStatus = ''; // '', 'completed', 'in-progress', 'not-started' — Quick Filters row
 
     // ── Search (FlexSearch index, built once per subject load — see
     // buildSearchIndex(). Never rebuilt on keystroke.) ─────────────────────
@@ -104,6 +105,48 @@
             return parsed && parsed.v === 1 ? parsed : null;
         } catch (e) {
             return null;
+        }
+    }
+
+    // ── "Recently Updated" ──────────────────────────────────────────────────────
+    // notes-index.json now provides `lastModified` — a real per-note update
+    // timestamp, not the `date` (creation date) fallback this used to rely
+    // on. Old field-name guesses (`updatedDate`/`updated`) kept as fallbacks
+    // in case a future build ever renames the field again; `date` is the
+    // last resort only for any note missing `lastModified` entirely.
+    function getUpdatedDate(note) {
+        return note.lastModified || note.updatedDate || note.updated || note.date;
+    }
+
+    // ── Reading time ─────────────────────────────────────────────────────────
+    // notes-index.json now provides `readTimeMinutes` per note. The static
+    // 15-minute fallback only kicks in for a note missing that field
+    // entirely (shouldn't happen going forward, but cheap insurance).
+    const DEFAULT_READING_TIME_MIN = 15;
+    function getReadingMinutes(note) {
+        return note.readTimeMinutes || note.readingTimeMinutes || DEFAULT_READING_TIME_MIN;
+    }
+    function getReadingTimeLabel(note) {
+        return `${getReadingMinutes(note)} min read`;
+    }
+
+    // ── Status (Completed / In Progress / Not Started) ─────────────────────────
+    // Derived from the same scroll-based readingProgress used for the
+    // Completion sort — no separate tracking needed. 95%+ counts as
+    // "Completed" (matches how notes-reader.js already treats >=95% as
+    // effectively done, e.g. it won't show a resume banner past that point).
+    function getNoteStatus(note) {
+        const percent = getReadingProgress(note)?.percent ?? 0;
+        if (percent === 0) return 'not-started';
+        if (percent >= 95) return 'completed';
+        return 'in-progress';
+    }
+
+    function getStatusMeta(status) {
+        switch (status) {
+            case 'completed': return { icon: '✅', label: 'Completed', className: 'status-completed' };
+            case 'in-progress': return { icon: '🔵', label: 'In Progress', className: 'status-in-progress' };
+            default: return { icon: '⭕', label: 'Not Started', className: 'status-not-started' };
         }
     }
 
@@ -181,6 +224,7 @@
         applySubjectMeta();
         loadFavorites();
         await loadCategoryIcons();
+        updateViewModeButtons();
         loadNotes();
         setupModalClickOutside();
         attachSearchBarListeners();
@@ -574,6 +618,7 @@
                 selectedTags: Array.from(selectedTags),
                 selectedSession,
                 showFavoritesOnly,
+                selectedStatus,
                 sort: document.getElementById('sortSelect')?.value || 'date-desc'
             };
             localStorage.setItem(storageKey(), JSON.stringify(state));
@@ -610,8 +655,12 @@
         showFavoritesOnly = !!saved.showFavoritesOnly;
         updateFavoritesFilterButton();
 
+        const VALID_STATUSES = new Set(['completed', 'in-progress', 'not-started']);
+        selectedStatus = VALID_STATUSES.has(saved.selectedStatus) ? saved.selectedStatus : '';
+
         const sortEl = document.getElementById('sortSelect');
         if (sortEl && saved.sort) sortEl.value = saved.sort;
+        updateQuickFiltersUI();
     }
 
     // ── Mobile filter sheet ──────────────────────────────────────────────────
@@ -636,6 +685,7 @@
         selectedTags = new Set();
         selectedSession = '';
         showFavoritesOnly = false;
+        selectedStatus = '';
 
         const searchEl = document.getElementById('searchInput');
         if (searchEl) searchEl.value = '';
@@ -652,6 +702,7 @@
         renderSingleChip('sessionChips', '', '', 'selectSessionChip');
 
         updateFavoritesFilterButton();
+        updateQuickFiltersUI();
 
         filterNotes();
     }
@@ -844,6 +895,7 @@
             const matchTag = selectedTags.size === 0 || (note.tags || []).some(t => selectedTags.has(t));
             const matchType = !selectedType || (note.files || []).some(f => f.type === selectedType);
             const matchFavorite = !showFavoritesOnly || favoriteFolders.has(note.folder);
+            const matchStatus = !selectedStatus || getNoteStatus(note) === selectedStatus;
             let matchSession = true;
             if (selectedSession === '__generic__') {
                 matchSession = !note.session;
@@ -851,13 +903,14 @@
                 matchSession = note.session === selectedSession;
             }
 
-            return matchSearch && matchCategory && matchTag && matchType && matchFavorite && matchSession;
+            return matchSearch && matchCategory && matchTag && matchType && matchFavorite && matchSession && matchStatus;
         });
 
         sortNotes();
     }
 
     function sortNotes() {
+        currentPage = 1; // any filter/sort change invalidates whatever page you were on
         const val = document.getElementById('sortSelect')?.value || 'date-desc';
 
         // Fresh shuffle only on a genuine switch INTO random mode (not on
@@ -886,6 +939,15 @@
                 case 'date-asc': return new Date(a.date) - new Date(b.date);
                 case 'title-asc': return a.title.localeCompare(b.title);
                 case 'title-desc': return b.title.localeCompare(a.title);
+
+                // "Recently Updated" — see getUpdatedDate() above re: date fallback.
+                case 'updated-desc': return new Date(getUpdatedDate(b)) - new Date(getUpdatedDate(a));
+                case 'updated-asc': return new Date(getUpdatedDate(a)) - new Date(getUpdatedDate(b));
+
+                // Reading time — real per-note values via readTimeMinutes
+                // in notes-index.json (see getReadingMinutes() above).
+                case 'readingtime-asc': return getReadingMinutes(a) - getReadingMinutes(b);
+                case 'readingtime-desc': return getReadingMinutes(b) - getReadingMinutes(a);
 
                 // Least Complete → Completed. Notes never opened have no
                 // readingProgress entry at all, so they default to 0% —
@@ -925,6 +987,42 @@
 
         renderNotes();
         saveFilterState();
+        updateQuickFiltersUI();
+    }
+
+    // ── Quick Filters row ────────────────────────────────────────────────────
+
+    function applyQuickSort(value) {
+        const sortEl = document.getElementById('sortSelect');
+        if (sortEl) sortEl.value = value;
+        sortNotes();
+    }
+
+    function toggleStatusFilter(status) {
+        selectedStatus = selectedStatus === status ? '' : status;
+        filterNotes();
+    }
+
+    function clearQuickFilters() {
+        selectedStatus = '';
+        const sortEl = document.getElementById('sortSelect');
+        if (sortEl) sortEl.value = 'date-desc';
+        filterNotes();
+    }
+
+    function updateQuickFiltersUI() {
+        const bar = document.getElementById('quickFiltersBar');
+        if (!bar) return;
+
+        const currentSort = document.getElementById('sortSelect')?.value || '';
+        const quickSortMap = { updated: 'updated-desc', viewed: 'viewed-desc', readingtime: 'readingtime-asc' };
+
+        bar.querySelectorAll('.quick-filter-btn[data-quick]').forEach(btn => {
+            btn.classList.toggle('active', quickSortMap[btn.dataset.quick] === currentSort);
+        });
+        bar.querySelectorAll('.quick-filter-btn[data-status]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.status === selectedStatus);
+        });
     }
 
     // ── Favorites (localStorage — same pattern as filter state) ───────────────
@@ -1039,15 +1137,33 @@
 
     function renderNotes() {
         const container = document.getElementById('notesContainer');
+        updateNotesCountLabel();
+
+        container.classList.toggle('view-grid', viewMode === 'grid');
+        container.classList.toggle('view-list', viewMode === 'list');
+        container.classList.toggle('view-compact', viewMode === 'compact');
 
         if (filteredData.length === 0) {
             container.innerHTML = currentSearchQuery
                 ? `<div class="loading">No notes found for "${escHTML(currentSearchQuery)}".</div>`
                 : '<div class="loading">No notes found.</div>';
+            renderPagination();
             return;
         }
 
-        container.innerHTML = filteredData.map(note => `
+        const pageData = getPageData();
+        const renderCard = viewMode === 'list' ? renderListCard
+            : viewMode === 'compact' ? renderCompactCard
+                : renderGridCard;
+
+        container.innerHTML = pageData.map(renderCard).join('');
+
+        highlightSearchMatches();
+        renderPagination();
+    }
+
+    function renderGridCard(note) {
+        return `
             <div class="note-folder"
                  role="button"
                  tabindex="0"
@@ -1057,35 +1173,236 @@
                 <div class="folder-icon">${getCategoryIcon(note.category)}</div>
                 <div class="folder-content">
                     <h3>${escHTML(note.title)} ${getTypeBadgesHTML(note)}</h3>
+                    ${getChipsHTML(note)}
                     <div class="note-meta">
-                        <span>${escHTML(note.category || 'General')}</span>
-                        ${note.session ? `<span class="session-badge">🗓️ ${escHTML(note.session)}</span>` : ''}
-                        <span>📅 ${formatDate(note.date)}</span>
-                        ${getProgressBadgeHTML(note)}
+                        <span>📅 ${formatDate(getUpdatedDate(note))}</span>
+                        <span>⏱️ ${getReadingTimeLabel(note)}</span>
+                        ${getViewedAgoHTML(note)}
                     </div>
-                    <div class="card-quick-actions">
-                        <button type="button" class="qa-btn" title="Open" aria-label="Open ${escAttr(note.title)}"
-                            onclick='event.stopPropagation(); openFolder(${jsonAttr(note)})'
-                            onkeydown="event.stopPropagation()">↗️</button>
-                        <button type="button" class="qa-btn qa-favorite${isFavorite(note.folder) ? ' active' : ''}"
-                            title="${isFavorite(note.folder) ? 'Remove from Favorites' : 'Add to Favorites'}"
-                            aria-label="${isFavorite(note.folder) ? 'Remove from Favorites' : 'Add to Favorites'}"
-                            aria-pressed="${isFavorite(note.folder)}"
-                            onclick="event.stopPropagation(); toggleFavorite('${escAttr(note.folder)}', this)"
-                            onkeydown="event.stopPropagation()">${isFavorite(note.folder) ? '♥' : '♡'}</button>
-                        <button type="button" class="qa-btn" title="Copy Link" aria-label="Copy link to ${escAttr(note.title)}"
-                            onclick='event.stopPropagation(); copyNoteLink(${jsonAttr(note)}, this)'
-                            onkeydown="event.stopPropagation()">🔗</button>
-                        ${note.hasImages && note.images && note.images.length > 0 ? `
-                        <button type="button" class="qa-btn" title="Gallery" aria-label="Open image gallery for ${escAttr(note.title)}"
-                            onclick="event.stopPropagation(); openGallery('${escAttr(note.folder)}')"
-                            onkeydown="event.stopPropagation()">🖼️</button>` : ''}
-                    </div>
+                    ${getStatusAndProgressHTML(note)}
+                    ${getQuickActionsHTML(note)}
                 </div>
             </div>
-        `).join('');
+        `;
+    }
 
-        highlightSearchMatches();
+    // List view: one full-width row per note — same information as the grid
+    // card, laid out horizontally so more notes fit on screen without
+    // scrolling as far.
+    function renderListCard(note) {
+        return `
+            <div class="note-folder note-folder--list"
+                 role="button"
+                 tabindex="0"
+                 onclick='openFolder(${jsonAttr(note)})'
+                 onkeydown='if(event.key==="Enter"||event.key===" ")openFolder(${jsonAttr(note)})'
+                 aria-label="Open ${escAttr(note.title)}">
+                <div class="folder-icon list-icon">${getCategoryIcon(note.category)}</div>
+                <div class="list-main">
+                    <h3>${escHTML(note.title)} ${getTypeBadgesHTML(note)}</h3>
+                    ${getChipsHTML(note)}
+                </div>
+                <div class="list-meta">
+                    <span>📅 ${formatDate(getUpdatedDate(note))}</span>
+                    <span>⏱️ ${getReadingTimeLabel(note)}</span>
+                    ${getViewedAgoHTML(note)}
+                </div>
+                <div class="list-progress">
+                    ${getStatusAndProgressHTML(note)}
+                </div>
+                ${getQuickActionsHTML(note)}
+            </div>
+        `;
+    }
+
+    // Compact view: most detail intentionally removed — icon, title, one
+    // colored category chip, and a status dot. No meta line, no progress
+    // bar, no quick-actions row (the whole row still opens the note on
+    // click; only Favorite stays as an explicit control since it's a
+    // toggle, not a navigation).
+    function renderCompactCard(note) {
+        const status = getNoteStatus(note);
+        const meta = getStatusMeta(status);
+
+        return `
+            <div class="note-folder note-folder--compact"
+                 role="button"
+                 tabindex="0"
+                 onclick='openFolder(${jsonAttr(note)})'
+                 onkeydown='if(event.key==="Enter"||event.key===" ")openFolder(${jsonAttr(note)})'
+                 aria-label="Open ${escAttr(note.title)}">
+                <span class="folder-icon compact-icon">${getCategoryIcon(note.category)}</span>
+                <span class="compact-title">${escHTML(note.title)}</span>
+                ${note.category ? `<span class="category-chip compact-chip">${escHTML(note.category)}</span>` : ''}
+                <span class="note-status compact-status ${meta.className}" title="${meta.label}">${meta.icon}</span>
+                <button type="button" class="qa-btn qa-favorite compact-fav${isFavorite(note.folder) ? ' active' : ''}"
+                    title="${isFavorite(note.folder) ? 'Remove from Favorites' : 'Add to Favorites'}"
+                    aria-label="${isFavorite(note.folder) ? 'Remove from Favorites' : 'Add to Favorites'}"
+                    aria-pressed="${isFavorite(note.folder)}"
+                    onclick="event.stopPropagation(); toggleFavorite('${escAttr(note.folder)}', this)"
+                    onkeydown="event.stopPropagation()">${isFavorite(note.folder) ? '♥' : '♡'}</button>
+            </div>
+        `;
+    }
+
+    function getQuickActionsHTML(note) {
+        return `
+            <div class="card-quick-actions">
+                <button type="button" class="qa-btn" title="Open" aria-label="Open ${escAttr(note.title)}"
+                    onclick='event.stopPropagation(); openFolder(${jsonAttr(note)})'
+                    onkeydown="event.stopPropagation()">↗️</button>
+                <button type="button" class="qa-btn qa-favorite${isFavorite(note.folder) ? ' active' : ''}"
+                    title="${isFavorite(note.folder) ? 'Remove from Favorites' : 'Add to Favorites'}"
+                    aria-label="${isFavorite(note.folder) ? 'Remove from Favorites' : 'Add to Favorites'}"
+                    aria-pressed="${isFavorite(note.folder)}"
+                    onclick="event.stopPropagation(); toggleFavorite('${escAttr(note.folder)}', this)"
+                    onkeydown="event.stopPropagation()">${isFavorite(note.folder) ? '♥' : '♡'}</button>
+                <button type="button" class="qa-btn" title="Copy Link" aria-label="Copy link to ${escAttr(note.title)}"
+                    onclick='event.stopPropagation(); copyNoteLink(${jsonAttr(note)}, this)'
+                    onkeydown="event.stopPropagation()">🔗</button>
+                ${note.hasImages && note.images && note.images.length > 0 ? `
+                <button type="button" class="qa-btn" title="Gallery" aria-label="Open image gallery for ${escAttr(note.title)}"
+                    onclick="event.stopPropagation(); openGallery('${escAttr(note.folder)}')"
+                    onkeydown="event.stopPropagation()">🖼️</button>` : ''}
+            </div>
+        `;
+    }
+
+    function updateNotesCountLabel() {
+        const label = document.getElementById('notesCountLabel');
+        if (!label) return;
+        const count = filteredData.length;
+        if (count === 0) {
+            label.textContent = '0 notes found';
+            return;
+        }
+        const start = (currentPage - 1) * PAGE_SIZE + 1;
+        const end = Math.min(currentPage * PAGE_SIZE, count);
+        label.textContent = count > PAGE_SIZE
+            ? `${count} note${count === 1 ? '' : 's'} found — showing ${start}–${end}`
+            : `${count} note${count === 1 ? '' : 's'} found`;
+    }
+
+    // Category shown as one colored chip, tags as neutral chips alongside it
+    // (session badge, if any, stays separate — same as before).
+    // Exactly two pills, never more: category (colored) and session (if this
+    // note has one). Tags deliberately excluded — a note can carry a dozen+
+    // tags (see notes-index.json), and rendering them all here turned into
+    // an unreadable run-on wall of text. Tags are still fully searchable/
+    // filterable via the Tags dropdown; they just don't clutter the card.
+    function getChipsHTML(note) {
+        let html = '<div class="note-chip-row">';
+        if (note.category) {
+            html += `<span class="category-chip">${escHTML(note.category)}</span>`;
+        }
+        if (note.session) {
+            html += `<span class="session-badge">🗓️ ${escHTML(note.session)}</span>`;
+        }
+        html += '</div>';
+        return html;
+    }
+
+    function getViewedAgoHTML(note) {
+        const progress = getReadingProgress(note);
+        if (!progress) return '';
+        return `<span>👁️ Viewed ${formatRelativeTime(progress.timestamp)}</span>`;
+    }
+
+    function getStatusAndProgressHTML(note) {
+        const status = getNoteStatus(note);
+        const meta = getStatusMeta(status);
+        const percent = getReadingProgress(note)?.percent ?? 0;
+
+        return `
+            <div class="note-status ${meta.className}">${meta.icon} ${meta.label}</div>
+            <div class="note-progress-row">
+                <div class="note-progress-track" role="progressbar" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100" aria-label="Reading progress">
+                    <div class="note-progress-fill ${meta.className}" style="width:${percent}%"></div>
+                </div>
+                <span class="note-progress-percent">${percent}%</span>
+            </div>
+        `;
+    }
+
+    // ── View mode (Grid / List / Compact) ───────────────────────────────────
+
+    const VIEW_MODE_KEY = 'notesViewMode';
+    let viewMode = 'grid';
+    try {
+        const savedView = localStorage.getItem(VIEW_MODE_KEY);
+        if (savedView === 'grid' || savedView === 'list' || savedView === 'compact') viewMode = savedView;
+    } catch (e) { /* localStorage unavailable — default to grid */ }
+
+    function setViewMode(mode) {
+        if (mode !== 'grid' && mode !== 'list' && mode !== 'compact') return;
+        viewMode = mode;
+        try { localStorage.setItem(VIEW_MODE_KEY, mode); } catch (e) { /* ignore */ }
+        updateViewModeButtons();
+        renderNotes();
+    }
+
+    function updateViewModeButtons() {
+        document.querySelectorAll('.view-mode-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.view === viewMode);
+        });
+    }
+
+    // ── Pagination ───────────────────────────────────────────────────────────
+
+    const PAGE_SIZE = 20;
+    let currentPage = 1;
+
+    function getTotalPages() {
+        return Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
+    }
+
+    function getPageData() {
+        const totalPages = getTotalPages();
+        if (currentPage > totalPages) currentPage = totalPages; // e.g. a filter shrank the result set
+        const start = (currentPage - 1) * PAGE_SIZE;
+        return filteredData.slice(start, start + PAGE_SIZE);
+    }
+
+    // Only called from pagination controls — deliberately does NOT go
+    // through filterNotes()/sortNotes(), which both reset currentPage to 1;
+    // calling those here would make paging forward impossible.
+    function goToPage(page) {
+        const totalPages = getTotalPages();
+        currentPage = Math.min(Math.max(1, page), totalPages);
+        renderNotes();
+        document.getElementById('notesContainer')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderPagination() {
+        const el = document.getElementById('paginationBar');
+        if (!el) return;
+
+        const totalPages = getTotalPages();
+        if (totalPages <= 1) {
+            el.innerHTML = '';
+            return;
+        }
+
+        const delta = 1; // how many page numbers to show around the current one
+        const pages = [];
+        for (let p = 1; p <= totalPages; p++) {
+            if (p === 1 || p === totalPages || (p >= currentPage - delta && p <= currentPage + delta)) {
+                pages.push(p);
+            } else if (pages[pages.length - 1] !== '…') {
+                pages.push('…');
+            }
+        }
+
+        const numberButtons = pages.map(p => p === '…'
+            ? `<span class="pagination-ellipsis">…</span>`
+            : `<button type="button" class="pagination-btn${p === currentPage ? ' active' : ''}" onclick="goToPage(${p})" aria-label="Page ${p}"${p === currentPage ? ' aria-current="page"' : ''}>${p}</button>`
+        ).join('');
+
+        el.innerHTML = `
+            <button type="button" class="pagination-nav-btn" onclick="goToPage(${currentPage - 1})" aria-label="Previous page" ${currentPage === 1 ? 'disabled' : ''}>‹</button>
+            ${numberButtons}
+            <button type="button" class="pagination-nav-btn" onclick="goToPage(${currentPage + 1})" aria-label="Next page" ${currentPage === totalPages ? 'disabled' : ''}>›</button>
+        `;
     }
 
     // ── Highlight matched search terms in rendered cards (mark.js) ─────────────
@@ -1237,16 +1554,6 @@
         }).join('')}</div>`;
     }
 
-    // Only rendered when this note has actually been opened before (i.e.
-    // getReadingProgress found a matching readingProgress-<pageId> entry) —
-    // silent/omitted otherwise, so untouched notes' cards don't get a
-    // misleading "0%" badge cluttering every tile.
-    function getProgressBadgeHTML(note) {
-        const progress = getReadingProgress(note);
-        if (!progress) return '';
-        return `<span class="progress-badge" title="Last viewed ${formatRelativeTime(progress.timestamp)}">📖 ${progress.percent}% · ${formatRelativeTime(progress.timestamp)}</span>`;
-    }
-
     function getCategoryIcon(category) {
         if (category && categoryIconMap[category]) return categoryIconMap[category].icon;
         return categoryIconMap.default?.icon
@@ -1285,7 +1592,12 @@
 
     window.filterNotes = filterNotes;
     window.sortNotes = sortNotes;
+    window.goToPage = goToPage;
+    window.setViewMode = setViewMode;
     window.reshuffleRandom = reshuffleRandom;
+    window.applyQuickSort = applyQuickSort;
+    window.toggleStatusFilter = toggleStatusFilter;
+    window.clearQuickFilters = clearQuickFilters;
     window.openFolder = openFolder;
     window.closeModal = closeModal;
     window.filterByTag = filterByTag;

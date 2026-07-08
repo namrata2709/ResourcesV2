@@ -20,6 +20,342 @@ Last Updated: 2026-07-04
 ==============================================================================
 */
 
+/* ── Quick Filters bar ───────────────────────────────────────────────────── */
+
+/* Card container matching .filter-controls' look (white bg, border, rounded
+   corners) — previously the Quick Filters row had no container of its own
+   and just floated as bare pills below the dropdown filters box. */
+.quick-filters-section {
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 16px 0;
+}
+
+.quick-filters-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary, #222);
+    margin-bottom: 10px;
+}
+
+.quick-filters-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.quick-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #ddd);
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #444);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    box-sizing: border-box;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.quick-filter-btn:hover {
+    border-color: var(--primary, #ff9900);
+}
+
+.quick-filter-btn.active {
+    background: var(--primary, #ff9900);
+    border-color: var(--primary, #ff9900);
+    color: #fff;
+}
+
+.quick-filter-btn:focus {
+    outline: none;
+}
+
+.quick-filter-btn:focus-visible {
+    outline: 2px solid var(--primary, #ff9900);
+    outline-offset: 2px;
+}
+
+.quick-filter-btn.clear-quick-btn {
+    color: var(--text-muted, #888);
+}
+
+.quick-filter-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* ── Notes toolbar: count label + view-mode toggle ──────────────────────── */
+
+.notes-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.notes-count-label {
+    font-size: 13px;
+    color: var(--text-muted, #888);
+}
+
+.view-mode-toggle {
+    display: inline-flex;
+    gap: 6px;
+}
+
+.view-mode-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #ddd);
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #444);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.view-mode-btn:hover {
+    border-color: var(--primary, #ff9900);
+}
+
+.view-mode-btn.active {
+    background: var(--bg-hover, rgba(255, 153, 0, 0.1));
+    border-color: var(--primary, #ff9900);
+    color: var(--primary, #ff9900);
+}
+
+/* ── View modes: List / Compact layouts ─────────────────────────────────── */
+/* .notes-grid (default, Grid mode) keeps its grid layout from styles.css.
+   These two modifier classes override it to a single-column stack of
+   full-width rows — toggled onto #notesContainer by renderNotes() in
+   notes-index.js based on the current viewMode. */
+
+.notes-grid.view-list,
+.notes-grid.view-compact {
+    display: flex;
+    flex-direction: column;
+}
+
+.notes-grid.view-list {
+    gap: 10px;
+}
+
+.notes-grid.view-compact {
+    gap: 6px;
+}
+
+.note-folder--list {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.note-folder--list .list-icon {
+    flex: 0 0 auto;
+    font-size: 1.8rem;
+}
+
+.note-folder--list .list-main {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.note-folder--list .list-main h3 {
+    margin: 0 0 4px;
+}
+
+.note-folder--list .list-meta {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13px;
+    color: var(--text-muted, #888);
+    white-space: nowrap;
+}
+
+.note-folder--list .list-progress {
+    flex: 0 0 160px;
+}
+
+.note-folder--list .card-quick-actions {
+    flex: 0 0 auto;
+    margin-top: 0;
+}
+
+.note-folder--compact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+}
+
+.note-folder--compact .compact-icon {
+    flex: 0 0 auto;
+    font-size: 1.2rem;
+}
+
+.note-folder--compact .compact-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.note-folder--compact .compact-chip {
+    flex: 0 0 auto;
+}
+
+.note-folder--compact .compact-status {
+    flex: 0 0 auto;
+    font-size: 14px;
+}
+
+.note-folder--compact .compact-fav {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+}
+
+/* ── Pagination ──────────────────────────────────────────────────────────── */
+
+.pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 20px;
+}
+
+.pagination-btn,
+.pagination-nav-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #ddd);
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #444);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.pagination-btn:hover,
+.pagination-nav-btn:hover:not(:disabled) {
+    border-color: var(--primary, #ff9900);
+}
+
+.pagination-btn.active {
+    background: var(--primary, #ff9900);
+    border-color: var(--primary, #ff9900);
+    color: #fff;
+}
+
+.pagination-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.pagination-ellipsis {
+    padding: 0 4px;
+    color: var(--text-muted, #888);
+}
+
+/* ── Category / tag chip row on note cards ──────────────────────────────── */
+
+.note-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0;
+}
+
+.category-chip {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--primary-bg, rgba(255, 153, 0, 0.15));
+    color: var(--primary, #ff9900);
+    white-space: nowrap;
+}
+
+/* Note: .note-tag-chip was retired — tags are no longer rendered on note
+   cards (see getChipsHTML in notes-index.js); a dozen+ tags per note made
+   for an unreadable run-on wall of text. Tags remain fully searchable/
+   filterable via the Tags dropdown. */
+
+/* ── Status pill + progress bar on note cards ───────────────────────────── */
+
+.note-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.note-status.status-completed { color: var(--success, #2f855a); }
+.note-status.status-in-progress { color: var(--info, #2b6cb0); }
+.note-status.status-not-started { color: var(--text-muted, #888); }
+
+.note-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.note-progress-track {
+    flex: 1 1 auto;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--border-color, #e2e2e2);
+    overflow: hidden;
+}
+
+.note-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--text-muted, #999);
+    transition: width 0.3s ease;
+}
+
+.note-progress-fill.status-completed { background: var(--success, #2f855a); }
+.note-progress-fill.status-in-progress { background: var(--info, #2b6cb0); }
+.note-progress-fill.status-not-started { background: var(--border-color, #ccc); }
+
+.note-progress-percent {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted, #888);
+    min-width: 32px;
+    text-align: right;
+}
+
 /* ── Search suggestions dropdown ────────────────────────────────────────── */
 
 .search-input-wrapper {
@@ -101,50 +437,9 @@ Last Updated: 2026-07-04
 /* A real <button>, not a native checkbox — native checkboxes on this site
    render as an unstyled solid box on some browser/OS combos and can end
    up non-interactive, so this avoids that entirely and matches the same
-   outline-vs-filled language as .note-favorite-btn / the card hearts. */
-
-.favorites-filter-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color, #ddd);
-    background: var(--bg-card, #fff);
-    color: var(--text-secondary, #444);
-    font: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.4;
-    box-sizing: border-box;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-.favorites-filter-btn:hover {
-    border-color: var(--primary, #ff9900);
-}
-
-.favorites-filter-btn.active {
-    background: var(--primary, #ff9900);
-    border-color: var(--primary, #ff9900);
-    color: #fff;
-}
-
-.favorites-filter-btn:focus {
-    outline: none;
-}
-
-.favorites-filter-btn:focus-visible {
-    outline: 2px solid var(--primary, #ff9900);
-    outline-offset: 2px;
-}
-
-.favorites-filter-icon {
-    font-size: 16px;
-    line-height: 1;
-}
+   outline-vs-filled language as .note-favorite-btn / the card hearts.
+   Now shares its exact styling with .quick-filter-btn (see above) since
+   the Favorites toggle moved into the Quick Filters bar. */
 
 /* ── Tag chips (shown in folder modal) ─────────────────────────────────── */
 
@@ -493,5 +788,49 @@ body.filter-sheet-locked {
         border-color: var(--primary, #ff9900);
         color: #fff;
         font-weight: 600;
+    }
+
+    /* ── Quick Filters: compact icon-top/label-below tiles on mobile ────────
+       The default .quick-filter-btn (icon + label side-by-side, full label
+       text) wraps into several bulky full-width-ish rows on narrow screens.
+       On mobile this switches to small square tiles in a horizontally
+       scrolling strip instead — icon on top, short label below, matching
+       compact reference designs (e.g. app quick-action bars). */
+
+    .quick-filters-section {
+        padding: 12px 14px;
+    }
+
+    .quick-filters-bar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .quick-filters-bar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .quick-filter-btn {
+        flex: 0 0 auto;
+        flex-direction: column;
+        justify-content: center;
+        width: 68px;
+        min-width: 68px;
+        padding: 8px 4px 6px;
+        gap: 4px;
+        border-radius: 12px;
+        font-size: 11px;
+        line-height: 1.2;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .quick-filter-icon {
+        font-size: 20px;
     }
 }

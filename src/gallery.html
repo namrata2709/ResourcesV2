@@ -7,12 +7,17 @@ Project: Learning Dashboard
 Description:
 Universal image gallery page. Reads ?folder=<topic|all> from URL;
 gallery.js loads notes-index.json to resolve image paths and renders
-either a single folder's images or all images site-wide. Grid/list view,
-search filtering, lightbox, keyboard nav, and per-image download.
+either a single folder's images or all images site-wide. Search, filters
+(Subject/Category/Tags), Quick Filters (Favorites/Recently Added/Recently
+Viewed/Screenshots/Images), sort (Recently Added/Title/File Size/
+Resolution/Random), Grid/Masonry/List view (persisted), and an enhanced
+lightbox: zoom, pan, fullscreen, metadata panel, related-note link,
+swipe/pinch/double-tap on mobile, keyboard shortcuts, and a mobile bottom
+action toolbar.
 
 Author: Namrata Mulwani
 Created: —
-Last Updated: 2026-07-03
+Last Updated: 2026-07-05
 
 Dependencies:
 - css/styles.css
@@ -55,8 +60,6 @@ Dependencies:
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://namrata2709.github.io/ResourcesV2/gallery.html">
-
-
 
     <!-- Theme -->
     <meta name="theme-color" content="#1a1a2e">
@@ -116,8 +119,8 @@ Dependencies:
         <span class="theme-icon"></span>
     </button>
 
-    <!-- Breadcrumb Navigation -->
-
+    <!-- Screen-reader-only live region for lightbox navigation announcements -->
+    <div id="galleryAriaLive" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <div class="gallery-container">
 
@@ -141,14 +144,85 @@ Dependencies:
             </div>
         </div>
 
-        <div class="controls">
-            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search images..."
+        <!-- Search -->
+        <div class="search-bar">
+            <input type="text" class="search-box" id="searchBox"
+                placeholder="🔍 Search by title, filename, note, category, or tag..."
                 oninput="filterImages()" aria-label="Search images">
-            <div class="view-toggle">
-                <button class="view-btn active" onclick="setView('grid', this)" title="Grid View"
-                    aria-label="Grid view">⊞</button>
-                <button class="view-btn" onclick="setView('list', this)" title="List View"
-                    aria-label="List view">☰</button>
+        </div>
+
+        <!-- Filters: Subject / Category / Tags / Sort -->
+        <div class="filter-controls" id="filterControls">
+            <div class="filter-group">
+                <label for="subjectFilter">Subject:</label>
+                <select id="subjectFilter" onchange="filterImages()">
+                    <option value="">All Subjects</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="categoryFilter">Category:</label>
+                <select id="categoryFilter" onchange="filterImages()">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="tagFilter">Tags:</label>
+                <select id="tagFilter" onchange="addTagChip(this.value, this)">
+                    <option value="">Add tag…</option>
+                </select>
+                <div id="tagChips" class="chip-row"></div>
+            </div>
+
+            <div class="filter-group">
+                <label for="sortSelect">Sort by:</label>
+                <select id="sortSelect" onchange="applySort(this.value)">
+                    <option value="added-desc">Recently Added ↓</option>
+                    <option value="added-asc">Recently Added ↑</option>
+                    <option value="title-asc">Title (A-Z)</option>
+                    <option value="title-desc">Title (Z-A)</option>
+                    <option value="filesize-desc">File Size ↓</option>
+                    <option value="filesize-asc">File Size ↑</option>
+                    <option value="resolution-desc">Resolution ↓</option>
+                    <option value="resolution-asc">Resolution ↑</option>
+                    <option value="random">🎲 Random — Surprise Me</option>
+                </select>
+                <button type="button" id="shuffleAgainBtn" class="shuffle-again-btn" onclick="reshuffleRandom()" hidden>🔀 Shuffle Again</button>
+            </div>
+        </div>
+
+        <!-- Quick Filters -->
+        <div class="quick-filters-section">
+            <label class="quick-filters-label">Quick filters</label>
+            <div class="quick-filters-bar" id="quickFiltersBar">
+                <button type="button" id="favoritesOnlyToggle" class="quick-filter-btn" aria-pressed="false" onclick="toggleFavoritesFilter()">
+                    <span class="quick-filter-icon">♡</span> Favorites
+                </button>
+                <button type="button" class="quick-filter-btn" data-quick="added" onclick="applyQuickSort('added-desc')">
+                    <span class="quick-filter-icon">🕐</span> Recently Added
+                </button>
+                <button type="button" class="quick-filter-btn" data-quick="viewed" onclick="applyQuickSort('viewed-desc')">
+                    <span class="quick-filter-icon">👁️</span> Recently Viewed
+                </button>
+                <button type="button" class="quick-filter-btn" data-type="screenshot" onclick="toggleTypeFilter('screenshot')">
+                    <span class="quick-filter-icon">📸</span> Screenshots
+                </button>
+                <button type="button" class="quick-filter-btn" data-type="image" onclick="toggleTypeFilter('image')">
+                    <span class="quick-filter-icon">🖼️</span> Images
+                </button>
+                <button type="button" class="quick-filter-btn clear-quick-btn" onclick="clearQuickFilters()">
+                    <span class="quick-filter-icon">↺</span> Clear all
+                </button>
+            </div>
+        </div>
+
+        <div class="notes-toolbar">
+            <div id="galleryCountLabel" class="notes-count-label"></div>
+            <div class="view-mode-toggle" role="group" aria-label="View mode">
+                <button type="button" class="view-mode-btn" data-view="grid" onclick="setView('grid')" aria-label="Grid view">⊞ Grid</button>
+                <button type="button" class="view-mode-btn" data-view="masonry" onclick="setView('masonry')" aria-label="Masonry view">▦ Masonry</button>
+                <button type="button" class="view-mode-btn" data-view="list" onclick="setView('list')" aria-label="List view">☰ List</button>
             </div>
         </div>
 
@@ -164,7 +238,7 @@ Dependencies:
         <div class="empty-state hidden" id="emptyState">
             <div class="empty-state-icon">🔍</div>
             <h3>No images found</h3>
-            <p>Try adjusting your search or check back later</p>
+            <p>Try adjusting your search or filters</p>
         </div>
 
         <!-- Error State -->
@@ -178,21 +252,62 @@ Dependencies:
     <!-- Lightbox Modal -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
         <div class="lightbox-content" onclick="event.stopPropagation()">
-            <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close lightbox">✕</button>
-            <button class="lightbox-nav lightbox-prev" onclick="navigateImage(-1)"
-                aria-label="Previous image">‹</button>
-            <button class="lightbox-nav lightbox-next" onclick="navigateImage(1)" aria-label="Next image">›</button>
-            <img class="lightbox-image" id="lightboxImage" src="" alt="">
-            <div class="lightbox-info">
-                <div class="lightbox-name" id="lightboxName"></div>
-                <div class="lightbox-counter" id="lightboxCounter"></div>
-                <button class="download-btn" onclick="downloadImage()">⬇ Download</button>
+            <div class="lightbox-topbar">
+                <div class="lightbox-topbar-group">
+                    <button class="lightbox-icon-btn" id="zoomOutBtn" onclick="zoomOut()" aria-label="Zoom out" title="Zoom out (-)">−</button>
+                    <span class="lightbox-zoom-level" id="zoomLevelLabel">100%</span>
+                    <button class="lightbox-icon-btn" id="zoomInBtn" onclick="zoomIn()" aria-label="Zoom in" title="Zoom in (+)">+</button>
+                    <button class="lightbox-icon-btn" onclick="resetZoom()" aria-label="Reset zoom" title="Reset zoom (0)">⟲</button>
+                </div>
+                <div class="lightbox-topbar-group">
+                    <button class="lightbox-icon-btn" id="favoriteBtn" onclick="toggleCurrentImageFavorite()" aria-label="Add to favorites" title="Favorite (f)">♡</button>
+                    <button class="lightbox-icon-btn" onclick="toggleMetadataPanel()" aria-label="Toggle image info" title="Info (i)">ⓘ</button>
+                    <button class="lightbox-icon-btn" onclick="toggleFullscreen()" aria-label="Toggle fullscreen" title="Fullscreen (Enter)">⛶</button>
+                    <button class="lightbox-icon-btn lightbox-close" onclick="closeLightbox()" aria-label="Close lightbox" title="Close (Esc)">✕</button>
+                </div>
             </div>
+
+            <button class="lightbox-nav lightbox-prev" onclick="navigateImage(-1)" aria-label="Previous image">‹</button>
+            <button class="lightbox-nav lightbox-next" onclick="navigateImage(1)" aria-label="Next image">›</button>
+
+            <div class="lightbox-image-viewport" id="lightboxViewport">
+                <img class="lightbox-image" id="lightboxImage" src="" alt="">
+            </div>
+
+            <div class="lightbox-info">
+                <div class="lightbox-info-main">
+                    <div class="lightbox-name" id="lightboxName"></div>
+                    <div class="lightbox-counter" id="lightboxCounter"></div>
+                </div>
+                <div class="lightbox-info-actions">
+                    <button class="download-btn" onclick="downloadImage()">⬇ Download</button>
+                    <a class="related-note-btn" id="relatedNoteBtn" href="#" aria-label="Open related note">📄 Open Note</a>
+                </div>
+            </div>
+
+            <!-- Expandable metadata panel: Category / Last Updated / Resolution /
+                 File Size / Related Note / Tags — everything the project's
+                 pipeline actually generates (or the client can measure), no
+                 fabricated fields. -->
+            <div class="lightbox-metadata-panel" id="lightboxMetadataPanel">
+                <button class="metadata-panel-close" onclick="toggleMetadataPanel()" aria-label="Close info panel">✕</button>
+                <h4>Image Details</h4>
+                <dl id="lightboxMetadataList" class="metadata-list"></dl>
+            </div>
+        </div>
+
+        <!-- Mobile bottom action toolbar (hidden on desktop via CSS) -->
+        <div class="lightbox-mobile-toolbar">
+            <button class="mobile-toolbar-btn" onclick="navigateImage(-1)" aria-label="Previous image">‹</button>
+            <button class="mobile-toolbar-btn" onclick="toggleCurrentImageFavorite()" aria-label="Toggle favorite" id="mobileFavoriteBtn">♡</button>
+            <button class="mobile-toolbar-btn" onclick="toggleMetadataPanel()" aria-label="Image info">ⓘ</button>
+            <button class="mobile-toolbar-btn" onclick="downloadImage()" aria-label="Download image">⬇</button>
+            <button class="mobile-toolbar-btn" onclick="navigateImage(1)" aria-label="Next image">›</button>
         </div>
 
         <!-- Keyboard Hint -->
         <div class="keyboard-hint">
-            Use <kbd>←</kbd> <kbd>→</kbd> to navigate or <kbd>ESC</kbd> to close
+            <kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>+</kbd> <kbd>-</kbd> zoom · <kbd>f</kbd> favorite · <kbd>i</kbd> info · <kbd>Enter</kbd> fullscreen · <kbd>ESC</kbd> close
         </div>
     </div>
 

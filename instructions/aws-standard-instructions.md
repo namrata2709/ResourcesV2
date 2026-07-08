@@ -496,6 +496,8 @@ slug:                         # lowercase-hyphen, matches filename: aws-[slug].m
 topic_number:                 # session or topic number
 date:                         # YYYY-MM-DD
 date_modified:                # leave empty — defaults to date
+version:                      # optional — e.g. "1.0". Omit entirely if not versioning this note.
+status:                       # optional — Current | Outdated | Deprecated. Omit if not tracking status.
 keywords: []                  # 6-10 search keywords
 tags: []                      # 3-5 tags shown on page
 when_to_use:                  # 1-2 sentences. Specific problem signals, not generic.

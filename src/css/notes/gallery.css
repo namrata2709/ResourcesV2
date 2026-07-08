@@ -5,30 +5,39 @@ Path: css/notes/gallery.css
 Project: Learning Dashboard
 
 Description:
-Styling for images.html — the universal image gallery used by every note
-folder (?folder=<topic|all>). Grid/list view toggle, image cards, empty
-state, lightbox with keyboard nav, loading/error states.
+Styling for gallery.html — the universal image gallery used by every note
+folder (?folder=<topic|all>). Search bar, Subject/Category/Tags filters,
+Quick Filters, sort dropdown, Grid/Masonry/List view toggle, image cards
+with metadata, empty/error states, and an enhanced lightbox (zoom/pan,
+fullscreen, metadata panel, related-note link, mobile bottom toolbar,
+keyboard nav).
 
 Dependencies:
 - Uses CSS custom properties defined in notes.css (--bg-card, --accent, etc.)
 
 Sections:
 1. Gallery Container / Header / Stats
-2. Controls (search, view toggle)
-3. Gallery Grid View
-4. Image Cards
-5. Empty State
-6. Lightbox
-7. Lightbox Controls
-8. Keyboard Navigation Hint
-9. Loading / Error States
-10. Responsive
-11. Print Styles
-12. Accessibility Enhancements
+2. Search Bar
+3. Filter Controls (Subject/Category/Tags/Sort)
+4. Chip Row (tag chips)
+5. Quick Filters
+6. Notes Toolbar (count label + view-mode toggle)
+7. Gallery Grid / Masonry / List Views
+8. Image Cards + Metadata
+9. Empty State
+10. Lightbox
+11. Lightbox Topbar (zoom/favorite/info/fullscreen/close)
+12. Lightbox Metadata Panel
+13. Mobile Bottom Toolbar
+14. Keyboard Navigation Hint
+15. Loading / Error States
+16. Responsive
+17. Print Styles
+18. Accessibility Enhancements
 
 Author: Namrata Mulwani
 Created: —
-Last Updated: 2026-06-30
+Last Updated: 2026-07-05
 ==============================================================================
 */
 
@@ -42,7 +51,17 @@ Last Updated: 2026-06-30
     padding: 2rem;
 }
 
-
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
 
 /* ============================================
    GALLERY HEADER
@@ -86,20 +105,16 @@ Last Updated: 2026-06-30
 }
 
 /* ============================================
-   CONTROLS
+   SEARCH BAR
    ============================================ */
 
-.controls {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    align-items: center;
+.search-bar {
+    margin-bottom: 1rem;
 }
 
 .search-box {
-    flex: 1;
-    min-width: 250px;
+    width: 100%;
+    box-sizing: border-box;
     padding: 0.75rem 1rem;
     border: 2px solid var(--border-color);
     border-radius: 8px;
@@ -120,45 +135,214 @@ Last Updated: 2026-06-30
     color: var(--text-muted);
 }
 
-.view-toggle {
+/* ============================================
+   FILTER CONTROLS (Subject / Category / Tags / Sort)
+   ============================================ */
+
+.filter-controls {
     display: flex;
-    gap: 0.5rem;
-    background: var(--bg-secondary);
-    padding: 0.25rem;
-    border-radius: 8px;
-    border: 2px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-start;
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
 }
 
-.view-btn {
-    padding: 0.75rem 1rem;
-    background: transparent;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 160px;
+}
+
+.filter-group label {
+    font-size: 13px;
+    font-weight: 700;
     color: var(--text-primary);
+}
+
+.filter-group select {
+    padding: 8px 10px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 8px;
+    background-color: var(--bg-card, #fff);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 14px;
+}
+
+.shuffle-again-btn {
+    margin-top: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #ddd);
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #444);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    align-self: flex-start;
+}
+
+.shuffle-again-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* ── Chip row (tag chips under the Tags dropdown) ───────────────────────── */
+
+.chip-row {
     display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.chip-row:empty {
+    margin-top: 0;
+}
+
+.selected-chip {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 6px;
+    font-size: 13px;
+    padding: 4px 8px 4px 12px;
+    border-radius: 999px;
+    background: var(--accent, #ff9900);
+    color: #fff;
 }
 
-.view-btn:hover {
-    background: var(--bg-card);
+.chip-remove {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    padding: 2px;
+    opacity: 0.85;
 }
 
-.view-btn:focus {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-}
-
-.view-btn.active {
-    background: var(--accent);
-    color: white;
+.chip-remove:hover {
+    opacity: 1;
 }
 
 /* ============================================
-   GALLERY GRID VIEW
+   QUICK FILTERS
+   ============================================ */
+
+.quick-filters-section {
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+}
+
+.quick-filters-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.quick-filters-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.quick-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #ddd);
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #444);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.quick-filter-btn:hover {
+    border-color: var(--accent);
+}
+
+.quick-filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.quick-filter-btn.clear-quick-btn {
+    color: var(--text-muted);
+}
+
+.quick-filter-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* ============================================
+   NOTES TOOLBAR (count label + view-mode toggle)
+   ============================================ */
+
+.notes-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.notes-count-label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.view-mode-toggle {
+    display: inline-flex;
+    gap: 6px;
+}
+
+.view-mode-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #ddd);
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #444);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.view-mode-btn:hover {
+    border-color: var(--accent);
+}
+
+.view-mode-btn.active {
+    background: var(--bg-hover, rgba(59, 130, 246, 0.1));
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* ============================================
+   GALLERY GRID / MASONRY / LIST VIEWS
    ============================================ */
 
 .gallery {
@@ -168,12 +352,39 @@ Last Updated: 2026-06-30
     margin-bottom: 2rem;
 }
 
+/* Masonry: CSS multi-column layout — no per-image height calculation
+   needed client-side, and it degrades gracefully (just becomes ordinary
+   flowed columns) in any browser without column-fill support. */
+.gallery.masonry-view {
+    display: block;
+    column-count: 4;
+    column-gap: 1.5rem;
+}
+
+.gallery.masonry-view .image-card {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    break-inside: avoid;
+}
+
+.gallery.masonry-view .image-wrapper {
+    height: auto;
+}
+
+.gallery.masonry-view .image-wrapper img {
+    height: auto;
+    object-fit: initial;
+}
+
 .gallery.list-view {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 /* ============================================
-   IMAGE CARDS
+   IMAGE CARDS + METADATA
    ============================================ */
 
 .image-card {
@@ -213,11 +424,20 @@ Last Updated: 2026-06-30
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.4s ease, filter 0.4s ease;
 }
 
 .image-card:hover .image-wrapper img {
     transform: scale(1.05);
+}
+
+/* Progressive-load feel: a light blur + fade while the real image loads.
+   Not true progressive JPEG decoding (the pipeline doesn't generate a
+   low-res placeholder), just a lightweight substitute so images don't pop
+   in abruptly. */
+.image-wrapper img.loading-progressive {
+    filter: blur(8px);
+    opacity: 0.6;
 }
 
 .image-wrapper .image-error {
@@ -235,6 +455,44 @@ Last Updated: 2026-06-30
     font-size: 2rem;
 }
 
+.image-favorite-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.image-favorite-btn:hover {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+.image-favorite-btn.active {
+    color: #ff5c7a;
+}
+
+.type-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 999px;
+}
+
 /* List View Layout */
 .gallery.list-view .image-card {
     display: flex;
@@ -243,8 +501,8 @@ Last Updated: 2026-06-30
 }
 
 .gallery.list-view .image-wrapper {
-    height: 150px;
-    width: 200px;
+    height: 130px;
+    width: 180px;
     flex-shrink: 0;
 }
 
@@ -261,23 +519,43 @@ Last Updated: 2026-06-30
 .image-name {
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.4rem;
     font-size: 1rem;
     line-height: 1.4;
 }
 
 .image-meta {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.3rem;
 }
 
 .meta-item {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.meta-item.related-note {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.meta-item.related-note:hover {
+    text-decoration: underline;
+}
+
+.image-category-chip {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: var(--accent-bg, rgba(59, 130, 246, 0.12));
+    color: var(--accent);
+    align-self: flex-start;
 }
 
 /* ============================================
@@ -329,8 +607,9 @@ Last Updated: 2026-06-30
 
 .lightbox-content {
     position: relative;
-    max-width: 90%;
-    max-height: 90%;
+    width: 92%;
+    height: 88%;
+    max-width: 1400px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -348,71 +627,184 @@ Last Updated: 2026-06-30
     }
 }
 
+.lightbox-image-viewport {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    touch-action: none;
+}
+
 .lightbox-image {
     max-width: 100%;
-    max-height: 80vh;
+    max-height: 100%;
     object-fit: contain;
     border-radius: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    cursor: zoom-in;
+    transition: transform 0.15s ease;
+    transform-origin: center center;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.lightbox-image.zoomed {
+    cursor: grab;
+}
+
+.lightbox-image.panning {
+    cursor: grabbing;
+    transition: none;
 }
 
 .lightbox-info {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
     background: var(--bg-card);
-    padding: 1rem 2rem;
+    padding: 0.85rem 1.5rem;
     border-radius: 8px;
     margin-top: 1rem;
-    text-align: center;
     border: 2px solid var(--border-color);
-    min-width: 300px;
     box-shadow: 0 4px 12px var(--shadow);
+}
+
+.lightbox-info-main {
+    text-align: left;
 }
 
 .lightbox-name {
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
 }
 
 .lightbox-counter {
     font-size: 0.85rem;
     color: var(--text-muted);
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.lightbox-info-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.download-btn,
+.related-note-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+}
+
+.download-btn {
+    background: var(--accent);
+    color: white;
+}
+
+.download-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
+.related-note-btn {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.related-note-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.related-note-btn.hidden {
+    display: none;
 }
 
 /* ============================================
-   LIGHTBOX CONTROLS
+   LIGHTBOX TOPBAR (zoom / favorite / info / fullscreen / close)
    ============================================ */
 
-.lightbox-close {
-    position: absolute;
-    top: -60px;
-    right: 0;
-    width: 44px;
-    height: 44px;
+.lightbox-topbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.lightbox-topbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lightbox-icon-btn {
+    width: 40px;
+    height: 40px;
     background: var(--bg-card);
     border: 2px solid var(--border-color);
     border-radius: 50%;
-    font-size: 1.5rem;
+    font-size: 1.15rem;
     cursor: pointer;
     color: var(--text-primary);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.lightbox-close:hover {
-    background: var(--error);
-    color: white;
-    border-color: var(--error);
-    transform: scale(1.1);
+.lightbox-icon-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
 }
 
-.lightbox-close:focus {
+.lightbox-icon-btn:focus-visible {
     outline: 2px solid white;
     outline-offset: 2px;
+}
+
+.lightbox-icon-btn#favoriteBtn.active {
+    color: #ff5c7a;
+    border-color: #ff5c7a;
+}
+
+.lightbox-zoom-level {
+    min-width: 48px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.lightbox-close {
+    background: var(--bg-card);
+}
+
+.lightbox-close:hover {
+    background: var(--error);
+    border-color: var(--error);
+    color: white;
 }
 
 .lightbox-nav {
@@ -431,6 +823,7 @@ Last Updated: 2026-06-30
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 5;
 }
 
 .lightbox-nav:hover {
@@ -440,7 +833,7 @@ Last Updated: 2026-06-30
     transform: translateY(-50%) scale(1.1);
 }
 
-.lightbox-nav:focus {
+.lightbox-nav:focus-visible {
     outline: 2px solid white;
     outline-offset: 2px;
 }
@@ -458,36 +851,118 @@ Last Updated: 2026-06-30
 }
 
 .lightbox-prev {
-    left: 20px;
+    left: 0;
 }
 
 .lightbox-next {
-    right: 20px;
+    right: 0;
 }
 
-.download-btn {
-    margin-top: 1rem;
-    padding: 0.75rem 1.5rem;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+/* ============================================
+   LIGHTBOX METADATA PANEL
+   ============================================ */
+
+.lightbox-metadata-panel {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 300px;
+    max-height: calc(100% - 140px);
+    overflow-y: auto;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    transform: translateX(120%);
+    transition: transform 0.25s ease;
+    z-index: 6;
+}
+
+.lightbox-metadata-panel.visible {
+    transform: translateX(0);
+}
+
+.lightbox-metadata-panel h4 {
+    margin: 0 0 12px;
+    color: var(--text-primary);
     font-size: 1rem;
+}
+
+.metadata-panel-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.metadata-list {
+    margin: 0;
+    display: grid;
+    gap: 10px;
+}
+
+.metadata-list dt {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.metadata-list dd {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--text-primary);
     font-weight: 600;
-    transition: all 0.3s ease;
-    font-family: inherit;
 }
 
-.download-btn:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+.metadata-list a {
+    color: var(--accent);
+    text-decoration: none;
 }
 
-.download-btn:focus {
-    outline: 2px solid white;
-    outline-offset: 2px;
+.metadata-list a:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   MOBILE BOTTOM TOOLBAR
+   ============================================ */
+
+.lightbox-mobile-toolbar {
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-color);
+    justify-content: space-around;
+    align-items: center;
+    z-index: 2001;
+}
+
+.mobile-toolbar-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-toolbar-btn.active {
+    color: #ff5c7a;
 }
 
 /* ============================================
@@ -509,6 +984,8 @@ Last Updated: 2026-06-30
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
+    text-align: center;
+    max-width: 90%;
 }
 
 .lightbox.active .keyboard-hint {
@@ -519,17 +996,15 @@ Last Updated: 2026-06-30
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.45rem;
     font-family: monospace;
-    font-size: 0.9rem;
-    margin: 0 0.25rem;
+    font-size: 0.85rem;
+    margin: 0 0.15rem;
 }
 
 /* ============================================
    LOADING STATE
    ============================================ */
-
-
 
 .loading-spinner {
     display: inline-block;
@@ -595,6 +1070,12 @@ Last Updated: 2026-06-30
    RESPONSIVE DESIGN
    ============================================ */
 
+@media (max-width: 1024px) {
+    .gallery.masonry-view {
+        column-count: 3;
+    }
+}
+
 @media (max-width: 768px) {
     .gallery-container {
         padding: 1rem;
@@ -604,14 +1085,83 @@ Last Updated: 2026-06-30
         font-size: 1.5rem;
     }
 
+    .filter-controls {
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px 16px;
+    }
+
+    .filter-group {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .filter-group select {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .quick-filters-section {
+        padding: 12px 14px;
+    }
+
+    .quick-filters-bar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .quick-filters-bar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .quick-filter-btn {
+        flex: 0 0 auto;
+        flex-direction: column;
+        justify-content: center;
+        width: 68px;
+        min-width: 68px;
+        padding: 8px 4px 6px;
+        gap: 4px;
+        border-radius: 12px;
+        font-size: 11px;
+        line-height: 1.2;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .quick-filter-icon {
+        font-size: 20px;
+    }
+
     .gallery {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 1rem;
     }
 
+    .gallery.masonry-view {
+        column-count: 2;
+        column-gap: 1rem;
+    }
+
+    .gallery.masonry-view .image-card {
+        margin-bottom: 1rem;
+    }
+
     .gallery.list-view .image-wrapper {
         width: 120px;
         height: 100px;
+    }
+
+    .lightbox-content {
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+        box-sizing: border-box;
     }
 
     .lightbox-nav {
@@ -621,36 +1171,40 @@ Last Updated: 2026-06-30
     }
 
     .lightbox-prev {
-        left: 10px;
+        left: 4px;
     }
 
     .lightbox-next {
-        right: 10px;
+        right: 4px;
     }
 
     .lightbox-info {
-        min-width: auto;
-        width: 90%;
-    }
-
-    .lightbox-close {
-        top: 10px;
-        right: 10px;
-        width: 40px;
-        height: 40px;
-    }
-
-    .controls {
         flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 70px; /* clear the mobile bottom toolbar */
     }
 
-    .search-box {
-        min-width: 100%;
+    .lightbox-metadata-panel {
+        top: auto;
+        bottom: 70px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-height: 50%;
+        transform: translateY(120%);
     }
 
-    .view-toggle {
-        width: 100%;
-        justify-content: center;
+    .lightbox-metadata-panel.visible {
+        transform: translateY(0);
+    }
+
+    .lightbox-mobile-toolbar {
+        display: flex;
+    }
+
+    .lightbox-topbar-group:last-child .lightbox-icon-btn#favoriteBtn,
+    .lightbox-topbar-group:last-child > button[onclick="toggleMetadataPanel()"] {
+        display: none;
     }
 
     .keyboard-hint {
@@ -661,6 +1215,10 @@ Last Updated: 2026-06-30
 @media (max-width: 480px) {
     .gallery {
         grid-template-columns: 1fr;
+    }
+
+    .gallery.masonry-view {
+        column-count: 1;
     }
 
     .image-wrapper {
@@ -683,7 +1241,10 @@ Last Updated: 2026-06-30
 
 @media print {
     .back-btn,
-    .controls,
+    .search-bar,
+    .filter-controls,
+    .quick-filters-section,
+    .notes-toolbar,
     .lightbox,
     .keyboard-hint {
         display: none !important;
@@ -705,17 +1266,16 @@ Last Updated: 2026-06-30
    ACCESSIBILITY ENHANCEMENTS
    ============================================ */
 
-/* Focus styles for keyboard navigation */
 .image-card:focus-visible,
-.view-btn:focus-visible,
+.view-mode-btn:focus-visible,
+.quick-filter-btn:focus-visible,
 .search-box:focus-visible,
 .lightbox-nav:focus-visible,
-.lightbox-close:focus-visible {
+.lightbox-icon-btn:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
 
-/* Reduced motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -730,12 +1290,11 @@ Last Updated: 2026-06-30
     }
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
     .image-card,
     .lightbox-info,
-    .view-toggle {
+    .filter-controls,
+    .quick-filters-section {
         border-width: 3px;
     }
 }
-

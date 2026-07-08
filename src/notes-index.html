@@ -26,23 +26,19 @@ Dependencies:
 -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO Meta Tags -->
-    <meta name="description"
-        content="AWS and DSA training notes with session summaries, hands-on lab guides, and visual resources. Free study materials for Cloud Practitioner and Solutions Architect certifications.">
-    <meta name="keywords"
-        content="AWS notes, DSA notes, AWS study guide, AWS training materials, AWS certification notes, Cloud Practitioner notes, Solutions Architect notes, data structures notes">
+    <meta name="description" content="AWS and DSA training notes with session summaries, hands-on lab guides, and visual resources. Free study materials for Cloud Practitioner and Solutions Architect certifications.">
+    <meta name="keywords" content="AWS notes, DSA notes, AWS study guide, AWS training materials, AWS certification notes, Cloud Practitioner notes, Solutions Architect notes, data structures notes">
     <meta name="author" content="Namrata Mulwani">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph -->
     <meta property="og:title" content="Notes - Learning Dashboard">
-    <meta property="og:description"
-        content="AWS and DSA training notes with session summaries and visual resources for certification preparation.">
+    <meta property="og:description" content="AWS and DSA training notes with session summaries and visual resources for certification preparation.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://namrata2709.github.io/ResourcesV2/notes-index.html">
     <meta property="og:image" content="https://namrata2709.github.io/ResourcesV2/images/notes-preview.png">
@@ -90,7 +86,6 @@ Dependencies:
     }
     </script>
 </head>
-
 <body>
     <noscript>
         <style>#pageLoader { display: none; }</style>
@@ -111,13 +106,15 @@ Dependencies:
         <!-- Search -->
         <div class="search-bar">
             <div class="search-input-wrapper">
-                <input type="text" id="searchInput" placeholder="🔍 Search notes... (Press / to focus)"
-                    aria-label="Search notes" autocomplete="off" spellcheck="false" role="combobox"
-                    aria-expanded="false" aria-controls="searchSuggestions" aria-autocomplete="list">
+                <input type="text" id="searchInput"
+                       placeholder="🔍 Search notes... (Press / to focus)"
+                       aria-label="Search notes"
+                       autocomplete="off" spellcheck="false"
+                       role="combobox" aria-expanded="false"
+                       aria-controls="searchSuggestions" aria-autocomplete="list">
                 <div id="searchSuggestions" class="search-suggestions" role="listbox"></div>
             </div>
-            <button type="button" id="filtersToggleBtn" class="filters-toggle-btn" onclick="toggleFilterSheet()">⚙️
-                Filters</button>
+            <button type="button" id="filtersToggleBtn" class="filters-toggle-btn" onclick="toggleFilterSheet()">⚙️ Filters</button>
         </div>
 
         <div id="filterSheetOverlay" class="filter-sheet-overlay" onclick="closeFilterSheet()"></div>
@@ -126,64 +123,54 @@ Dependencies:
         <div class="filter-controls" id="filterControls">
             <div class="filter-sheet-header">
                 <span>Filters</span>
-                <button type="button" class="filter-sheet-close" onclick="closeFilterSheet()"
-                    aria-label="Close filters">✕</button>
+                <button type="button" class="filter-sheet-close" onclick="closeFilterSheet()" aria-label="Close filters">✕</button>
             </div>
             <div class="filter-sheet-body" id="filterSheetBody">
-                <!-- Session filter: injected by JS only when relevant -->
+            <!-- Session filter: injected by JS only when relevant -->
 
-                <div class="filter-group favorites-filter-group">
-                    <label>Favorites:</label>
-                    <button type="button" id="favoritesOnlyToggle" class="favorites-filter-btn" aria-pressed="false"
-                        onclick="toggleFavoritesFilter()">
-                        <span class="favorites-filter-icon">♡</span> Only Favorites
-                    </button>
-                </div>
+            <div class="filter-group">
+                <label for="categoryFilter">Category:</label>
+                <select id="categoryFilter" onchange="selectCategoryChip(this.value)">
+                    <option value="">All Categories</option>
+                </select>
+                <div id="categoryChips" class="chip-row"></div>
+            </div>
 
-                <div class="filter-group">
-                    <label for="categoryFilter">Category:</label>
-                    <select id="categoryFilter" onchange="selectCategoryChip(this.value)">
-                        <option value="">All Categories</option>
-                    </select>
-                    <div id="categoryChips" class="chip-row"></div>
-                </div>
+            <div class="filter-group">
+                <label for="typeFilter">Type:</label>
+                <select id="typeFilter" onchange="selectTypeChip(this.value)">
+                    <option value="">All Types</option>
+                </select>
+                <div id="typeChips" class="chip-row"></div>
+            </div>
 
-                <div class="filter-group">
-                    <label for="typeFilter">Type:</label>
-                    <select id="typeFilter" onchange="selectTypeChip(this.value)">
-                        <option value="">All Types</option>
-                    </select>
-                    <div id="typeChips" class="chip-row"></div>
-                </div>
+            <div class="filter-group">
+                <label for="tagFilter">Tags:</label>
+                <select id="tagFilter" onchange="addTagChip(this.value, this)">
+                    <option value="">Add tag…</option>
+                </select>
+                <div id="tagChips" class="chip-row"></div>
+            </div>
 
-                <div class="filter-group">
-                    <label for="tagFilter">Tags:</label>
-                    <select id="tagFilter" onchange="addTagChip(this.value, this)">
-                        <option value="">Add tag…</option>
-                    </select>
-                    <div id="tagChips" class="chip-row"></div>
-                </div>
-
-                <div class="filter-group">
-                    <label for="sortSelect">Sort by:</label>
-                    <select id="sortSelect" onchange="sortNotes()">
-                        <option value="date-desc">Date (Newest First)</option>
-                        <option value="date-asc">Date (Oldest First)</option>
-                        <option value="title-asc">Title (A-Z)</option>
-                        <option value="title-desc">Title (Z-A)</option>
-                        <optgroup label="✅ Completion">
-                            <option value="completion-asc">Least Complete ↓ Completed</option>
-                            <option value="completion-desc">Completed ↓ Least Complete</option>
-                        </optgroup>
-                        <optgroup label="✅ Recently Viewed">
-                            <option value="viewed-desc">Most Recent ↓ Oldest</option>
-                            <option value="viewed-asc">Oldest ↓ Most Recent</option>
-                        </optgroup>
-                        <option value="random">✅ Random — Surprise Me</option>
-                    </select>
-                    <button type="button" id="shuffleAgainBtn" class="shuffle-again-btn" onclick="reshuffleRandom()"
-                        hidden>🔀 Shuffle Again</button>
-                </div>
+            <div class="filter-group">
+                <label for="sortSelect">Sort by:</label>
+                <select id="sortSelect" onchange="sortNotes()">
+                    <option value="date-desc">Date (Newest First)</option>
+                    <option value="date-asc">Date (Oldest First)</option>
+                    <option value="title-asc">Title (A-Z)</option>
+                    <option value="title-desc">Title (Z-A)</option>
+                    <option value="updated-desc">🕐 Recently Updated ↓</option>
+                    <option value="updated-asc">🕐 Recently Updated ↑</option>
+                    <option value="readingtime-asc">⏱️ Reading Time ↑</option>
+                    <option value="readingtime-desc">⏱️ Reading Time ↓</option>
+                    <option value="completion-asc">✅ Completion ↑</option>
+                    <option value="completion-desc">✅ Completion ↓</option>
+                    <option value="viewed-desc">👁️ Recently Viewed ↓</option>
+                    <option value="viewed-asc">👁️ Recently Viewed ↑</option>
+                    <option value="random">🎲 Random — Surprise Me</option>
+                </select>
+                <button type="button" id="shuffleAgainBtn" class="shuffle-again-btn" onclick="reshuffleRandom()" hidden>🔀 Shuffle Again</button>
+            </div>
 
             </div>
             <div class="filter-sheet-actions">
@@ -193,9 +180,53 @@ Dependencies:
         </div>
 
         <!-- Notes Grid -->
+        <!-- Quick Filters — sort shortcuts (Recently Updated/Viewed/Reading Time)
+             and status filters (Completed/In Progress/Not Started), all
+             driven by js/notes/notes-index.js -->
+        <div class="quick-filters-section">
+            <label class="quick-filters-label">Quick filters</label>
+            <div class="quick-filters-bar" id="quickFiltersBar">
+            <button type="button" id="favoritesOnlyToggle" class="quick-filter-btn" aria-pressed="false" onclick="toggleFavoritesFilter()">
+                <span class="quick-filter-icon favorites-filter-icon">♡</span> Favorites
+            </button>
+            <button type="button" class="quick-filter-btn" data-quick="updated" onclick="applyQuickSort('updated-desc')">
+                <span class="quick-filter-icon">🕐</span> Recently Updated
+            </button>
+            <button type="button" class="quick-filter-btn" data-quick="viewed" onclick="applyQuickSort('viewed-desc')">
+                <span class="quick-filter-icon">👁️</span> Recently Viewed
+            </button>
+            <button type="button" class="quick-filter-btn" data-quick="readingtime" onclick="applyQuickSort('readingtime-asc')">
+                <span class="quick-filter-icon">⏱️</span> Reading Time
+            </button>
+            <button type="button" class="quick-filter-btn" data-status="completed" onclick="toggleStatusFilter('completed')">
+                <span class="quick-filter-icon">✅</span> Completed
+            </button>
+            <button type="button" class="quick-filter-btn" data-status="in-progress" onclick="toggleStatusFilter('in-progress')">
+                <span class="quick-filter-icon">🔵</span> In Progress
+            </button>
+            <button type="button" class="quick-filter-btn" data-status="not-started" onclick="toggleStatusFilter('not-started')">
+                <span class="quick-filter-icon">⭕</span> Not Started
+            </button>
+            <button type="button" class="quick-filter-btn clear-quick-btn" onclick="clearQuickFilters()">
+                <span class="quick-filter-icon">↺</span> Clear all
+            </button>
+            </div>
+        </div>
+
+        <div class="notes-toolbar">
+            <div id="notesCountLabel" class="notes-count-label"></div>
+            <div class="view-mode-toggle" role="group" aria-label="View mode">
+                <button type="button" class="view-mode-btn" data-view="grid" onclick="setViewMode('grid')" aria-label="Grid view">▦ Grid</button>
+                <button type="button" class="view-mode-btn" data-view="list" onclick="setViewMode('list')" aria-label="List view">☰ List</button>
+                <button type="button" class="view-mode-btn" data-view="compact" onclick="setViewMode('compact')" aria-label="Compact view">▤ Compact</button>
+            </div>
+        </div>
+
         <div id="notesContainer" class="notes-grid">
             <div class="loading">Loading notes...</div>
         </div>
+
+        <div id="paginationBar" class="pagination-bar"></div>
 
     </div>
 
@@ -221,5 +252,4 @@ Dependencies:
     <script src="js/notes/notes-index.js" defer></script>
 
 </body>
-
 </html>

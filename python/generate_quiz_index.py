@@ -33,10 +33,10 @@ import json
 import argparse
 from pathlib import Path
 from utils.sitemap import add_url, remove_url, load_sitemap, write_sitemap
+from utils.site_config import BASE_URL
 
 ROOT     = "../src/data/quiz"
 OUTPUT   = "../src/data/index/quiz-index.json"
-BASE_URL = "https://namrata2709.github.io/ResourcesV2"
 
 
 def main():

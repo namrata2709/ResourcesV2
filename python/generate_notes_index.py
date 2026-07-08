@@ -28,6 +28,22 @@ Default mode is INCREMENTAL, diffed against the existing notes-index.json:
 Every folder is treated as new (full recompute, full sitemap write) —
 the old unconditional behavior.
 
+Every note entry also carries two fields sourced from what
+generate_notes.py already embeds in notes.html, both added 2026-07-05:
+    readTimeMinutes  - from window.NoteReadTime (calculate_read_time(),
+                       requires beautifulsoup4). Falls back to 15 for
+                       notes built before that feature existed, or any
+                       folder without that script tag (e.g. slides-only).
+    lastModified     - from the page's JSON-LD dateModified (already
+                       falls back to datePublished internally in
+                       build_schema_ld()). Falls back further to this
+                       note's own `date` (creation date) if the JSON-LD
+                       block itself is missing entirely.
+Both are treated as "format" for diff purposes — a content-only edit
+that changes neither the file list nor the title can still change these
+two, so they're included in the change-detection below; otherwise
+they'd silently go stale on the next incremental run.
+
 Folder naming convention (new notes only — old folders are not migrated):
     <subject>-<topic-slug>                               → no session
     <subject>-<topic-slug>-session-<session-slug>        → has session
@@ -87,6 +103,8 @@ except ImportError:
     SITEMAP_AVAILABLE = False
     print("⚠️  utils.sitemap not found — skipping sitemap update")
 
+from utils.site_config import BASE_URL as _BASE_URL
+
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
 ROOT   = "../src/data/notes"
@@ -94,7 +112,7 @@ OUTPUT = "../src/data/index/notes-index.json"
 
 IMAGE_EXT     = (".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg")
 CONTENT_TYPES = ("notes", "lab", "slides")
-BASE_URL      = "https://namrata2709.github.io/ResourcesV2/"
+BASE_URL      = _BASE_URL + "/"   # this file's convention: BASE_URL ends with "/", see note_prefix below
 
 # ── Text helpers ───────────────────────────────────────────────────────────────
 
@@ -196,6 +214,60 @@ def extract_tags(content: str):
     matches = re.findall(r'<span class="tag">(.*?)</span>', content)
     tags    = [normalize_text(t) for t in matches if t.strip()]
     return list(dict.fromkeys(tags))   # deduplicate, preserve order
+
+
+READ_TIME_FALLBACK_MINUTES = 15
+
+def extract_read_time(content: str) -> int:
+    """
+    Reads window.NoteReadTime = {"word_count": N, "read_time_minutes": M};
+    injected by generate_notes.py's calculate_read_time() (added
+    2026-07-04, requires beautifulsoup4). Falls back to
+    READ_TIME_FALLBACK_MINUTES for notes built before that feature
+    existed, slides-only folders (which never get this script tag), or
+    any parse failure — never lets a missing/malformed value block
+    generation.
+    """
+    if not content:
+        return READ_TIME_FALLBACK_MINUTES
+    m = re.search(r'window\.NoteReadTime\s*=\s*(\{.*?\})\s*;', content, re.DOTALL)
+    if not m:
+        return READ_TIME_FALLBACK_MINUTES
+    try:
+        data = json.loads(m.group(1))
+        minutes = data.get("read_time_minutes")
+        return int(minutes) if minutes else READ_TIME_FALLBACK_MINUTES
+    except (json.JSONDecodeError, ValueError, TypeError):
+        return READ_TIME_FALLBACK_MINUTES
+
+
+def extract_last_modified(content: str):
+    """
+    Reads dateModified out of the page's JSON-LD block (built by
+    generate_notes.py's build_schema_ld(), which already falls back to
+    datePublished internally if a note's frontmatter has no explicit
+    date_modified — so this just needs to consume whatever's there).
+    Returns None if the JSON-LD block is missing/unparseable or the
+    field is blank — build_note() falls back further to the note's own
+    `date` (creation date) in that case.
+    """
+    if not content:
+        return None
+    m = re.search(
+        r'<script type="application/ld\+json">\s*(\{.*?\})\s*</script>',
+        content, re.DOTALL
+    )
+    if not m:
+        return None
+    try:
+        data = json.loads(m.group(1))
+        modified = data.get("dateModified", "").strip()
+        if not modified:
+            return None
+        # Normalize to YYYY-MM-DD, matching every other date field's format
+        return datetime.strptime(modified[:10], "%Y-%m-%d").strftime("%Y-%m-%d")
+    except (json.JSONDecodeError, ValueError, TypeError, AttributeError):
+        return None
 
 
 def extract_metadata_date(base_path: str):
@@ -417,17 +489,30 @@ def build_note(folder: str):
         or fallback_folder_date(base)
     )
 
+    # Read time: from generate_notes.py's injected window.NoteReadTime,
+    # falling back to READ_TIME_FALLBACK_MINUTES if absent (older notes,
+    # slides-only folders, or anything built before that feature existed).
+    read_time_minutes = extract_read_time(primary_content)
+
+    # Last modified: from the page's JSON-LD dateModified (already
+    # falls back to datePublished internally, per build_schema_ld()),
+    # falling back further to this note's own creation `date` if the
+    # JSON-LD block is missing/unparseable entirely.
+    last_modified = extract_last_modified(primary_content) or date
+
     return {
-        "title":     title,
-        "folder":    folder,
-        "subject":   subject,
-        "session":   session_label,   # None → shown as Generic in UI
-        "date":      date,
-        "category":  category,
-        "tags":      tags,
-        "hasImages": bool(images),
-        "images":    images,
-        "files":     files
+        "title":            title,
+        "folder":           folder,
+        "subject":          subject,
+        "session":          session_label,   # None → shown as Generic in UI
+        "date":             date,
+        "lastModified":     last_modified,
+        "readTimeMinutes":  read_time_minutes,
+        "category":         category,
+        "tags":             tags,
+        "hasImages":        bool(images),
+        "images":           images,
+        "files":            files
     }
 
 
@@ -568,6 +653,12 @@ def main():
         format_changed = (
             new_note["files"] != old_entry.get("files")
             or new_note["images"] != old_entry.get("images")
+            # Both derive directly from the HTML content (word count,
+            # JSON-LD dateModified) — a content edit that changes neither
+            # the file list nor the title can still change these, and
+            # they'd go silently stale if not checked here too.
+            or new_note["lastModified"] != old_entry.get("lastModified")
+            or new_note["readTimeMinutes"] != old_entry.get("readTimeMinutes")
         )
         title_changed = new_note["title"] != old_entry.get("title")
 

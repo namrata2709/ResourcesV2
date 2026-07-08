@@ -15,6 +15,7 @@ import os
 import re
 import json
 import html as html_mod
+from datetime import datetime
 
 
 # Preserve valid HTML entities after escaping.
@@ -58,6 +59,8 @@ from utils.parse_slides import is_presentation, is_video_slides_overview, build_
 
 # ─── CONFIG ────────────────────────────────────────────────────────────────────
 
+from utils.site_config import BASE_URL
+
 TYPE_CONFIG = {
     "dsa": {
         "title_suffix":  "DSA Notes",
@@ -66,7 +69,7 @@ TYPE_CONFIG = {
         # not data/notes/dsa/dsa-[slug]/.
         "path_segment":  "data/notes/",
         "path_depth":    "../../../",              # data/notes/dsa-[slug]/notes.html -> project root (css/js are 3 levels up, siblings of data/)
-        "base_url":      "https://namrata2709.github.io/ResourcesV2/data/notes/",
+        "base_url":      f"{BASE_URL}/data/notes/",
         "subject":       "dsa",
         "has_animation": True,
         "folder_prefix": "dsa",
@@ -76,14 +79,14 @@ TYPE_CONFIG = {
         "extra_css":     None,                     # no extra css for aws
         "path_segment":  "data/notes/",
         "path_depth":    "../../../",              # data/notes/aws-[slug]/notes.html -> project root
-        "base_url":      "https://namrata2709.github.io/ResourcesV2/data/notes/",
+        "base_url":      f"{BASE_URL}/data/notes/",
         "subject":       "aws",
         "has_animation": False,
         "folder_prefix": "aws",
     },
 }
 
-SITE_BASE = "https://namrata2709.github.io/ResourcesV2/"
+SITE_BASE = f"{BASE_URL}/"
 
 # Sections that exist in DSA only
 DSA_ONLY_SECTIONS = {"visual-mcq", "contest"}
@@ -535,6 +538,100 @@ def build_lecture_box(fm: dict) -> str:
     ])
 
 
+# ─── VERSION INFO BAR + READ TIME BADGE ────────────────────────────────────────
+# Added 2026-07-05. Both are new automated features, not authored in markdown —
+# previously, any note showing a "Version / Last Updated / Status" bar or a
+# visible "N min read" pill had that hand-typed/hand-edited directly into its
+# HTML, since nothing in this pipeline generated either. This makes both
+# automatic, driven by frontmatter (version/status) and the existing
+# calculate_read_time() computation respectively.
+
+def build_version_info_bar(fm: dict) -> str:
+    """
+    Renders the "Version: X | Last Updated: Y | Status: Z" bar from
+    optional frontmatter fields: version, status, date_modified (falls
+    back to date if date_modified isn't set — same fallback
+    build_schema_ld() already uses for the invisible JSON-LD dateModified,
+    kept consistent here for the visible version).
+    Returns "" if none of version/status/last-updated are set, so notes
+    without any of these fields don't get an empty bar.
+    """
+    version = str(fm.get("version", "")).strip()
+    status  = str(fm.get("status", "")).strip()
+    last_updated_raw = fm.get("date_modified") or fm.get("date", "")
+
+    if not (version or status or last_updated_raw):
+        return ""
+
+    parts = []
+    if version:
+        parts.append(f'<span><strong>Version:</strong> {safe_escape(version)}</span>')
+
+    if last_updated_raw:
+        try:
+            formatted = datetime.strptime(str(last_updated_raw)[:10], "%Y-%m-%d").strftime("%B %d, %Y")
+        except (ValueError, TypeError):
+            formatted = safe_escape(str(last_updated_raw))
+        parts.append(f'<span><strong>Last Updated:</strong> {formatted}</span>')
+
+    if status:
+        status_lower = status.lower()
+        icon = "✅" if status_lower == "current" else ("⚠️" if status_lower in ("outdated", "deprecated") else "ℹ️")
+        parts.append(f'<span><strong>Status:</strong> {icon} {safe_escape(status)}</span>')
+
+    return "\n".join([
+        '<div class="version-info-bar">',
+        f'    <p>{" ".join(parts)}</p>',
+        '</div>',
+    ])
+
+
+def build_read_time_badge(read_time: dict) -> str:
+    """
+    Renders the visible "📖 N min read" pill from the same read_time dict
+    calculate_read_time() already produces for the invisible
+    window.NoteReadTime script tag — no separate calculation, just a
+    second, visible rendering of the same value.
+    """
+    minutes = read_time.get("read_time_minutes")
+    if not minutes:
+        return ""
+    return "\n".join([
+        '<div class="read-time-badge">',
+        f'    <span>📖 {int(minutes)} min read</span>',
+        '</div>',
+    ])
+
+
+def insert_after_title_block(parsed_sections: str, injection: str) -> str:
+    """
+    Inserts `injection` right after the note's <h1> title and its
+    immediately-following date paragraph (the "📅 ..." line — both
+    authored directly in markdown, not Python-templated, so this can't
+    just be added as a fixed template string; it has to be located in the
+    already-rendered output). Falls back to right after the <h1> alone if
+    no date paragraph immediately follows it, so this still works for a
+    note that has no date line for any reason.
+    """
+    if not injection:
+        return parsed_sections
+
+    m = re.search(r'(<h1>.*?</h1>\s*<p>[^<]*📅[^<]*</p>)', parsed_sections, re.DOTALL)
+    if m:
+        end = m.end()
+        return parsed_sections[:end] + "\n" + injection + "\n" + parsed_sections[end:]
+
+    m = re.search(r'<h1>.*?</h1>', parsed_sections, re.DOTALL)
+    if m:
+        end = m.end()
+        return parsed_sections[:end] + "\n" + injection + "\n" + parsed_sections[end:]
+
+    # No <h1> found at all (shouldn't normally happen) — prepend rather
+    # than silently drop the injection.
+    return injection + "\n" + parsed_sections
+
+
+
 # ─── SECTION CONTAINER BUILDERS ────────────────────────────────────────────────
 
 def build_mcq_container() -> str:
@@ -613,7 +710,7 @@ def build_checklist_container() -> str:
 
 def build_problems_container() -> str:
     return """<details class="collapsible-section">
-<summary><h2 id="leetcode-problems">LeetCode Problems</h2></summary>
+<summary><h2 id="leetcode-problems">🧩 LeetCode Problems</h2></summary>
 <div class="section-content">
 <div id="problemsContainer" data-problems-source="json/problems.json"></div>
 </div>
@@ -622,7 +719,7 @@ def build_problems_container() -> str:
 
 def build_contest_container() -> str:
     return """<details class="collapsible-section">
-<summary><h2 id="contest-problems">Contest Problems</h2></summary>
+<summary><h2 id="contest-problems">🏆 Contest Problems</h2></summary>
 <div class="section-content">
 <div id="contestContainer" data-contest-source="json/contest.json"></div>
 </div>
@@ -631,7 +728,7 @@ def build_contest_container() -> str:
 
 def build_visual_mcq_container() -> str:
     return """<details class="collapsible-section">
-<summary><h2 id="visual-questions">Visual Questions</h2></summary>
+<summary><h2 id="visual-questions">🖼️ Visual Questions</h2></summary>
 <div class="section-content">
 <div class="quiz-header-info">
     <span id="visualMcqCounter">Question 1 of ?</span>
@@ -670,7 +767,11 @@ def build_hands_on_html_section(projects_html: str) -> str:
 
 def expand_visualisation(text: str, slug: str = '', animation_name: str = '') -> str:
     section_pattern = re.compile(
-        r'(<summary><h2(?:\s+id="[^"]*")?>Visualisation</h2></summary>\s*'
+        # [^<]*? before "Visualisation" tolerates an optional icon prefix
+        # (e.g. "🎬 Visualisation") without requiring one — this heading
+        # is authored directly in markdown, not Python-templated, so
+        # matching has to accept whatever the author actually typed.
+        r'(<summary><h2(?:\s+id="[^"]*")?>[^<]*?Visualisation</h2></summary>\s*'
         r'<div class="section-content">)(.*?)(</div>\s*</details>)',
         re.DOTALL
     )
@@ -899,7 +1000,10 @@ def expand_references(text: str) -> str:
     ul      = '<ul>\n' + '\n'.join(f'    {r}' for r in refs) + '\n</ul>'
     cleaned = re.sub(r'REFS_PLACEHOLDER\s*', "", cleaned)
     cleaned = re.sub(
-        r'(<summary><h2(?:\s+id="[^"]*")?>Links[^<]*References</h2></summary>\s*<div class="section-content">)(.*?)(</div>\s*</details>)',
+        # [^<]*? before "Links" tolerates an optional icon prefix (e.g.
+        # "🔗 Links & References") — same reasoning as the Visualisation
+        # regex above, this heading is markdown-authored, not templated.
+        r'(<summary><h2(?:\s+id="[^"]*")?>[^<]*?Links[^<]*References</h2></summary>\s*<div class="section-content">)(.*?)(</div>\s*</details>)',
         lambda m: m.group(1) + '\n' + ul + '\n' + m.group(3),
         cleaned,
         flags=re.DOTALL,
@@ -1693,6 +1797,16 @@ def build_body(fm: dict, body_md: str, cfg: dict, subject: str, is_lab: bool = F
 
     parsed_sections = parse_md_body(body_md, fm, subject, is_lab=is_lab)
     read_time = calculate_read_time(parsed_sections)          # <-- NEW
+
+    # Version info bar + visible read-time badge, positioned right after
+    # the title/date (both authored in markdown, not templated here — see
+    # insert_after_title_block()'s docstring for why this needs a regex
+    # insert rather than a fixed template slot).
+    header_extras = "\n".join(filter(None, [
+        build_version_info_bar(fm),
+        build_read_time_badge(read_time),
+    ]))
+    parsed_sections = insert_after_title_block(parsed_sections, header_extras)
 
     # AWS gets a lecture box (and lab notes always have session info); DSA doesn't use it
     extra_top = build_lecture_box(fm) if subject == "aws" else ""

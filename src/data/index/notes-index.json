@@ -1,11 +1,77 @@
 {
   "notes": [
     {
+      "title": "Introduction To Ai & Machine Learning",
+      "folder": "aws-sample1-session-sample",
+      "subject": "aws",
+      "session": "Sample",
+      "date": "2026-07-05",
+      "lastModified": "2026-05-21",
+      "readTimeMinutes": 15,
+      "category": "Serverless",
+      "tags": [
+        "AWS",
+        "AI",
+        "Machine Learning",
+        "Generative AI",
+        "Bedrock",
+        "SageMaker",
+        "PartyRock",
+        "Responsible AI",
+        "LLM",
+        "re/Start"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Lab",
+          "file": "lab.html",
+          "type": "lab",
+          "icon": "🧪"
+        }
+      ]
+    },
+    {
+      "title": "Introduction To Ai & Machine Learning",
+      "folder": "aws-sample2",
+      "subject": "aws",
+      "session": null,
+      "date": "2026-07-05",
+      "lastModified": "2026-05-21",
+      "readTimeMinutes": 15,
+      "category": "Serverless",
+      "tags": [
+        "AWS",
+        "AI",
+        "Machine Learning",
+        "Generative AI",
+        "Bedrock",
+        "SageMaker",
+        "PartyRock",
+        "Responsible AI",
+        "LLM",
+        "re/Start"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "📄"
+        }
+      ]
+    },
+    {
       "title": "Docker Migration",
       "folder": "aws-docker-migration-session-restart-module-lab",
       "subject": "aws",
       "session": "Restart Module Lab",
       "date": "2026-07-04",
+      "lastModified": "2026-07-01",
+      "readTimeMinutes": 27,
       "category": "Containers",
       "tags": [
         "Docker",
@@ -30,9 +96,11 @@
       "subject": "aws",
       "session": null,
       "date": "2026-07-02",
-      "category": "Fundamentals",
+      "lastModified": "2026-07-02",
+      "readTimeMinutes": 15,
+      "category": "General",
       "tags": [
-        "Fundamentals"
+        "General"
       ],
       "hasImages": false,
       "images": [],
@@ -51,9 +119,11 @@
       "subject": "aws",
       "session": "Foundation Canvas Slides",
       "date": "2026-07-02",
-      "category": "Fundamentals",
+      "lastModified": "2026-07-02",
+      "readTimeMinutes": 15,
+      "category": "General",
       "tags": [
-        "Fundamentals"
+        "General"
       ],
       "hasImages": false,
       "images": [],
@@ -72,9 +142,11 @@
       "subject": "aws",
       "session": "Foundation Canvas Slides",
       "date": "2026-07-02",
-      "category": "Fundamentals",
+      "lastModified": "2026-07-02",
+      "readTimeMinutes": 15,
+      "category": "General",
       "tags": [
-        "Fundamentals"
+        "General"
       ],
       "hasImages": false,
       "images": [],
@@ -93,6 +165,8 @@
       "subject": "aws",
       "session": "Aws User Group Mumbai",
       "date": "2026-07-02",
+      "lastModified": "2026-06-27",
+      "readTimeMinutes": 15,
       "category": "Machine Learning",
       "tags": [
         "AI Agents",
@@ -124,6 +198,8 @@
       "subject": "aws",
       "session": null,
       "date": "2026-07-02",
+      "lastModified": "2026-06-27",
+      "readTimeMinutes": 15,
       "category": "Machine Learning",
       "tags": [
         "OpenClaw",
@@ -149,6 +225,8 @@
       "subject": "aws",
       "session": "Aws User Group Mumbai",
       "date": "2026-07-02",
+      "lastModified": "2026-06-27",
+      "readTimeMinutes": 15,
       "category": "Machine Learning",
       "tags": [
         "OpenClaw",
@@ -174,6 +252,8 @@
       "subject": "dsa",
       "session": null,
       "date": "2026-07-02",
+      "lastModified": "2026-06-23",
+      "readTimeMinutes": 15,
       "category": "Sorting",
       "tags": [
         "sorting",
@@ -198,72 +278,14 @@
       "subject": "dsa",
       "session": null,
       "date": "2026-06-30",
+      "lastModified": "2026-06-27",
+      "readTimeMinutes": 15,
       "category": "Searching",
       "tags": [
         "searching",
         "arrays",
         "beginner",
         "brute force"
-      ],
-      "hasImages": false,
-      "images": [],
-      "files": [
-        {
-          "name": "Notes",
-          "file": "notes.html",
-          "type": "notes",
-          "icon": "📄"
-        }
-      ]
-    },
-    {
-      "title": "Introduction To Ai & Machine Learning",
-      "folder": "aws-sample1-session-sample",
-      "subject": "aws",
-      "session": "Sample",
-      "date": "2026-06-29",
-      "category": "Serverless",
-      "tags": [
-        "AWS",
-        "AI",
-        "Machine Learning",
-        "Generative AI",
-        "Bedrock",
-        "SageMaker",
-        "PartyRock",
-        "Responsible AI",
-        "LLM",
-        "re/Start"
-      ],
-      "hasImages": false,
-      "images": [],
-      "files": [
-        {
-          "name": "Lab",
-          "file": "lab.html",
-          "type": "lab",
-          "icon": "🧪"
-        }
-      ]
-    },
-    {
-      "title": "Introduction To Ai & Machine Learning",
-      "folder": "aws-sample2",
-      "subject": "aws",
-      "session": null,
-      "date": "2026-06-29",
-      "category": "Serverless",
-      "tags": [
-        "AWS",
-        "AI",
-        "Machine Learning",
-        "Generative AI",
-        "Bedrock",
-        "SageMaker",
-        "PartyRock",
-        "Responsible AI",
-        "LLM",
-        "re/Start"
       ],
       "hasImages": false,
       "images": [],
