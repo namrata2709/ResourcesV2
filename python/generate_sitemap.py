@@ -29,8 +29,7 @@ import argparse
 from pathlib import Path
 from datetime import datetime
 from utils.sitemap import add_url, load_sitemap, write_sitemap
-
-BASE_URL      = "https://namrata2709.github.io/ResourcesV2"
+from utils.site_config import BASE_URL
 NOTES_DIR     = "../src/data/notes"
 QUIZ_DIR      = "../src/data/quiz"
 CONTENT_TYPES = ("notes", "lab", "slides")

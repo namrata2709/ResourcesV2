@@ -55,4 +55,4 @@ Where third-party resources are referenced or linked:
 Contact: awslecturenotes@gmail.com
 
 **For General Questions:**
-Open an issue on the GitHub repository: https://github.com/namrata2709/Resources/issues
+Open an issue on the GitHub repository: https://github.com/namrata2709/ResourcesV2/issues

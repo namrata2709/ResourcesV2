@@ -544,6 +544,18 @@ def build_slides_html(fm: dict, body_md: str, subject: str = "aws") -> tuple:
     function is subject-specific. Defaults to "aws" only for backward
     compatibility with older call sites; generate_notes.py always passes
     the subject it already detected.
+
+    T1-2: <body> no longer sets data-no-nav="true" — that single flag was
+    the root cause behind Findings 25/26/29 (back button/breadcrumb,
+    footer, and favorites all disappearing on the deck). Removing it lets
+    site-config.js's existing `data-no-nav !== 'true'` check load
+    navigation.js like any other page. notes-favorite.js and
+    notes-accessibility.js are also now loaded directly here (via explicit
+    <script> tags) rather than through notes-page-core.js's
+    SHARED_MODULES list, since slides.html doesn't run that boot file at
+    all — see slides.js's updated header comment for the other half of
+    this fix (building/showing the breadcrumb, and hiding chrome on
+    fullscreen).
     """
     slides = parse_slides_body(body_md)
     fm["slide_count"] = len(slides)
@@ -571,7 +583,7 @@ def build_slides_html(fm: dict, body_md: str, subject: str = "aws") -> tuple:
 <link rel="stylesheet" href="{depth}css/notes/slides.css">
 <script src="{depth}js/shared/site-config.js"></script>
 </head>
-<body data-subject="{subject}" data-mode="presentation" data-no-nav="true">
+<body data-subject="{subject}" data-mode="presentation">
 
 <div id="pageLoader" class="page-loader">
     <div class="loader-spinner"></div>
@@ -610,6 +622,8 @@ def build_slides_html(fm: dict, body_md: str, subject: str = "aws") -> tuple:
 
 <div id="footerRoot" data-subject="{subject}"></div>
 
+<script src="{depth}js/notes/notes-accessibility.js"></script>
+<script src="{depth}js/notes/notes-favorite.js"></script>
 <script src="{depth}js/notes/slides.js" async="false"></script>
 </body>
 </html>
