@@ -83,7 +83,7 @@ def test_cmd_notes_stops_before_index_step_if_scan_fails(call_log):
 
 # ── cmd_all still chains notes -> quiz -> sitemap correctly ─────────────────
 
-def test_cmd_all_runs_all_three_steps_in_order(call_log):
+def test_cmd_all_runs_all_steps_in_order(call_log):
     calls, _ = call_log
     args = FakeArgs()
     dashboard.cmd_all(args)
@@ -93,6 +93,7 @@ def test_cmd_all_runs_all_three_steps_in_order(call_log):
         "generate_notes.py", "generate_notes_index.py",
         "generate_quiz_index.py",
         "generate_sitemap.py",
+        "audit_content.py",
     ]
 
 
