@@ -131,6 +131,8 @@ Separately, `utils/sitemap.py` had declared its *own*, second, unused `BASE_URL`
 2. Confirm Python's own `pytest` still installs and runs correctly via `pip`/`requirements` — this ticket removes a *misplaced* declaration, not the tool itself.
 
 ### T0-3 — Wire pytest into CI
+**Update 2026-11-14:** the *deploy* workflow's own pytest step (`deploy.yml`) had been failing on GitHub — it ran `pytest python/tests/` from the repo root, where the pipeline's relative data paths do not resolve ("subjects.json not found"), so nothing was deployed. The PR check (`coverage.yml`) was unaffected because it already ran from `python/`. Fixed under `DX-6`.
+
 **Amended 2026-09-23 (from `Track AUDIT`, `AUDIT-0`):** 🟡 resolved with a real nuance, not a clean ✅ — `.github/workflows/coverage.yml` runs the actual `python/` pytest suite for real, but with `continue-on-error: true`: it reports failures, it does not gate merges. **Decided 2026-11-06 (`D16`): the pytest step becomes blocking** (see Done-when below).
 
 **Components:** [CI]
@@ -144,6 +146,8 @@ Separately, `utils/sitemap.py` had declared its *own*, second, unused `BASE_URL`
 **Done when (added 2026-11-03):** [x] a workflow runs the real `python/` pytest suite on push/PR (`.github/workflows/coverage.yml`); [x] **decided 2026-11-06 (`D16`): make the pytest step blocking** — remove `continue-on-error: true` from the pytest step of `.github/workflows/coverage.yml` while keeping the coverage summary non-blocking; [ ] a deliberately failing test is shown to fail the check; [ ] enable branch protection requiring the check (a GitHub repository setting, not in the repo — a manual step for you). `deploy.yml` already runs `pytest python/tests/` before every deploy. Visual regression (`B-4a`) and Lighthouse (`B-4c`) stay non-blocking until after the restyle (`ticket-queue.md` Batch 6).
 
 ### NAV-1 — Persistent sidebar navigation, replacing `Breadcrumb` app-wide
+**Re-test 2026-11-14 (your local run):** the Note page has a breadcrumb **and** a Back link; the Quiz page has neither. The two pages disagree, so `Breadcrumb` removal must not leave a page without a way back — the shared Back control is **`NAV-3`**, built together with this removal.
+
 **Components:** [React] · **Status:** 🟡 **Re-checked 2026-10-31 against the 2026-10-05 upload — the chrome is built, the `Breadcrumb` removal is not.** `components/SidebarNav/SidebarNav.tsx` is mounted once in `App.tsx` and renders all three shapes (desktop sidebar, tablet icon rail, mobile bottom bar with a `More` sheet; landmarks `aria-label="Main navigation"` and `"More navigation"`). It holds two flat arrays: `PRIMARY_ITEMS` (Home `/`, AWS `/notes-index/aws`, DSA `/notes-index/dsa`, Quizzes `/quiz-index`, Calendar `/calendar`) and `SECONDARY_ITEMS` (Gallery, Search My Notes, Export, Settings, Contact). `<Breadcrumb>` is still rendered on the 6 pages named below in this upload (the 2026-09-28 snapshot, which is not in these docs, says it was retired — **verify on the next upload before closing**). Regrouping the items into Learn / Plan / Library + System & Tools is **`NAV-2`**, not this ticket. *Original status line, kept as history:* ⬜ Not started — **scope rewritten 2026-08-19, superseding the original framing entirely.**
 
 **What changed and why:** originally scoped as "add `Breadcrumb`/back-navigation to `Settings`/`Calendar`/`Quiz`/`Export`, the 4 real pages missing it." That's no longer the right fix. **`R2-1` (persistent sidebar nav) has been reopened and reversed** — the design work (real mockups, web light/dark/tablet + a mobile app bottom-tab pattern) made a real case for it, and the decision was made directly: adopt the sidebar, remove breadcrumbs and back buttons entirely. `R2-1`'s original 2026-08-13 closure ("Option A: breadcrumb-only, no sidebar," reasoned and on record in `CHANGELOG.md`) is superseded, not silently forgotten — both decisions are real and dated, this one is just newer.
@@ -217,6 +221,17 @@ Separately, `utils/sitemap.py` had declared its *own*, second, unused `BASE_URL`
 3. Click **Study Loop** (not built); confirm the Soon pill is visible beforehand and the click opens the holding page, whose Back link returns to the Dashboard.
 4. Resize to tablet width; confirm group separators and tooltips on the icon rail. Resize to mobile; confirm the bar shows 5 tabs + More and the More sheet lists Plan / Library / System & Tools.
 5. Tab through the sidebar with the keyboard; confirm group headings are announced (screen reader or accessibility tree) and focus order follows visual order.
+
+### NAV-3 — One consistent "Back" control on detail pages (Note, Quiz, Slides)
+**Components:** [React] · **Depends on:** `NAV-1` (the sidebar exists) · **Status:** ⬜ Ready; build it **with** the `Breadcrumb` removal, not after.
+**Real evidence (your local test and screenshots, 2026-11-14; code check of the 2026-10-05 upload):** the Note page shows a `Breadcrumb` ("Home / AWS / <title>") **and** a "← Back" link, and the note title appears twice at the top (once beside Back, once as the page heading). The Quiz player shows **neither** a breadcrumb nor a Back control — only the sidebar. `<Breadcrumb>` is rendered on six pages (Gallery, Quiz Index, Slides, Notes Index, Note, Search My Notes) and not on the Quiz player, so removing breadcrumbs (`NAV-1`) would leave the Note and Slides pages with a Back link only if it is kept, and the Quiz page with none.
+**Scope:** one shared component, e.g. `components/BackLink`, used by **Note, Quiz player and Slides**:
+1. Label "← Back", top-left of the page content, above the title; it holds **no title text** (the title appears once, as the heading).
+2. Behaviour: if the visitor arrived from another page inside the app, go back one step (`navigate(-1)`); if the page was opened directly (a shared link, a fresh tab), go to its parent list instead: Note → `/notes-index/<subject>`, Quiz → `/quiz-index`, Slides → the note's page or `/notes-index`.
+3. Keyboard-reachable, visible focus ring, an accessible name that says where it goes ("Back to Quizzes").
+4. The list pages (Notes Index, Quiz Index, Gallery, Search My Notes) get no Back control — they are top-level destinations in the sidebar.
+**Done when:** [ ] Note, Quiz and Slides all show the same Back control; [ ] no page shows a breadcrumb and a Back control together; [ ] opening a note directly (new tab) and pressing Back lands on its list, not on a blank tab or another site; [ ] navigating list → note → Back returns to the same scroll position and filters where the browser allows; [ ] the note title appears once at the top of the Note page; [ ] component tests cover both behaviours (history present / direct open).
+**Manual test cases:** from Notes Index open a note, press Back; open the same note URL in a new tab, press Back; repeat for a quiz and a deck; tab to the control and confirm the focus ring.
 
 ### T0-4 — Delete duplicated `.theme-toggle` + hardcoded markup
 **🗄️ LEGACY/VANILLA — frozen, historical record only, not active work.**

@@ -218,6 +218,17 @@
 | 1.2 | **`Track M` drift fixes** `M0-1`, `M0-2`, `M0-3`, `M0-4`, `M0-5` | S | Spreadsheet work, runs in parallel (Lane D) |
 | 1.3 | **`T0-3`** make the pytest step blocking (C8, `D16`) | S | Remove `continue-on-error` on that step; you enable branch protection in GitHub |
 
+**Batch 1 status, 2026-11-14** (from your local test; details in `APPLY-INSTRUCTIONS-BATCH1.md`):
+| # | Result |
+|---|---|
+| 1.1 `P0-5` Recently Viewed / 404 page | ✅ OK — closed |
+| 1.1 `P0-2` Appearance | 🔴 no visible effect — **deferred to the new look** (`UI-1`, `DASH-1`, `UI-2` now carry the check); not a blocker |
+| 1.1 `P0-9` Reduced motion, Focus mode | ⏳ need the right test (Tab key; DevTools) — steps written; a live preview is proposed in `SET-1` |
+| 1.1 `P0-8` Reading preferences | ⏳ blocked by missing note text — sample note `aws-reading-test` provided |
+| 1.1 `NAV-1` | 🟡 Note has breadcrumb **and** Back; Quiz has neither → new ticket **`NAV-3`** (Back control), built with the breadcrumb removal in Batch 4 |
+| 1.2 `Track M` `M0-1`…`M0-5` | ⬜ not started — spreadsheet work |
+| 1.3 `T0-3` | ⬜ not started — and the **deploy workflow was failing** (new `DX-6`, fixed 2026-11-14) |
+
 ### Batch 2 — Fix what is broken or unreachable (before any restyle)
 | # | Ticket | Size | Approach |
 |---|---|---|---|
@@ -239,8 +250,9 @@
 |---|---|---|---|
 | 4.1 | **`NAV-1`** finish (remove `Breadcrumb`, keep `lib/navigation.ts` for active state) | M | One page per commit |
 | 4.2 | **`NAV-2`** groups, holding page, `?type=lab` | M | Grouped model first, then holding page, then Labs param |
-| 4.3 | **`HDR-1`** header search entry, theme dropdown, user menu | M | Keep announcements and the bell's behaviour |
-| 4.4 | **`PRES-1` part B** Presentations catalogue (C4 decided: generator adds `slideCount`) | M | After 4.2 so the nav item exists |
+| 4.3 | **`NAV-3`** one Back control on Note, Quiz and Slides (with 4.1) | S | Do together with the breadcrumb removal so no page is left without a way back |
+| 4.4 | **`HDR-1`** header search entry, theme dropdown, user menu, floating-button cluster | M | Keep announcements and the bell's behaviour |
+| 4.5 | **`PRES-1` part B** Presentations catalogue (C4 decided: generator adds `slideCount`) | M | After 4.2 so the nav item exists |
 
 ### Batch 5 — Dashboard
 | # | Ticket | Size | Approach |

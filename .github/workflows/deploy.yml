@@ -59,7 +59,8 @@ jobs:
         run: pip install -r python/requirements.txt
 
       - name: Run Python test suite
-        run: pytest python/tests/
+        working-directory: python
+        run: pytest tests/
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
