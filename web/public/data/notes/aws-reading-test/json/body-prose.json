@@ -1,0 +1,267 @@
+{
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "id": null,
+      "text": [
+        {
+          "text": "Reading Preferences Test Note",
+          "mark": null
+        }
+      ],
+      "blockId": "block-0"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "id": "why-this-note-exists",
+      "text": [
+        {
+          "text": "Why this note exists",
+          "mark": null
+        }
+      ],
+      "blockId": "block-1"
+    },
+    {
+      "type": "paragraph",
+      "runs": [
+        {
+          "text": "This is a ",
+          "mark": null
+        },
+        {
+          "text": "sample note",
+          "mark": "examTerm"
+        },
+        {
+          "text": " written only for testing. It has long paragraphs, headings, a list, a table and a callout, so that every Reading Preferences setting has something obvious to change. Open Settings, change the font size, the line height, the font family and the content width, then come back to this page. The text you are reading right now should change; the rest of the app should not.",
+          "mark": null
+        }
+      ],
+      "blockId": "block-2"
+    },
+    {
+      "type": "paragraph",
+      "runs": [
+        {
+          "text": "A second paragraph makes the line height easy to see. When the line height is small the lines sit tightly together, and when it is large there is a clear gap between them. The same paragraph also helps with the content width: a narrow width makes this text wrap into a short column, and a wide width lets each line run much longer across the page. Keep adjusting until you can see each setting working on its own.",
+          "mark": null
+        }
+      ],
+      "blockId": "block-3"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        [
+          {
+            "text": "First bullet: change the ",
+            "mark": null
+          },
+          {
+            "text": "font size",
+            "mark": "examTerm"
+          },
+          {
+            "text": " and watch this line grow or shrink.",
+            "mark": null
+          }
+        ],
+        [
+          {
+            "text": "Second bullet: change the ",
+            "mark": null
+          },
+          {
+            "text": "font family",
+            "mark": "examTerm"
+          },
+          {
+            "text": " and check the shape of the letters.",
+            "mark": null
+          }
+        ],
+        [
+          {
+            "text": "Third bullet: change the ",
+            "mark": null
+          },
+          {
+            "text": "line height",
+            "mark": "examTerm"
+          },
+          {
+            "text": " and compare the gap between lines.",
+            "mark": null
+          }
+        ]
+      ],
+      "blockId": "block-4"
+    },
+    {
+      "type": "list",
+      "ordered": true,
+      "items": [
+        [
+          {
+            "text": "Step one: open the Settings page.",
+            "mark": null
+          }
+        ],
+        [
+          {
+            "text": "Step two: find Reading Preferences.",
+            "mark": null
+          }
+        ],
+        [
+          {
+            "text": "Step three: change one setting at a time and return to this note.",
+            "mark": null
+          }
+        ]
+      ],
+      "blockId": "block-5"
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Setting",
+        "What you should see"
+      ],
+      "rows": [
+        [
+          [
+            {
+              "text": "Font size",
+              "mark": null
+            }
+          ],
+          [
+            {
+              "text": "Body text gets larger or smaller",
+              "mark": null
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "text": "Line height",
+              "mark": null
+            }
+          ],
+          [
+            {
+              "text": "The gap between lines changes",
+              "mark": null
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "text": "Font family",
+              "mark": null
+            }
+          ],
+          [
+            {
+              "text": "The letter shapes change",
+              "mark": null
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "text": "Width",
+              "mark": null
+            }
+          ],
+          [
+            {
+              "text": "Lines wrap earlier or later",
+              "mark": null
+            }
+          ]
+        ]
+      ],
+      "blockId": "block-6"
+    },
+    {
+      "type": "callout",
+      "kind": "note",
+      "runs": [
+        {
+          "text": "Only the note body changes. Headings in the app chrome, the Dashboard and Settings are not supposed to change. That is intended.",
+          "mark": null
+        }
+      ],
+      "blockId": "block-7"
+    },
+    {
+      "type": "collapsible",
+      "level": 2,
+      "id": "a-collapsible-section",
+      "heading": "A collapsible section",
+      "open": true,
+      "children": [
+        {
+          "type": "paragraph",
+          "runs": [
+            {
+              "text": "This content sits inside a collapsible section that starts open. It is body text too, so it should follow the same Reading Preferences as the paragraphs above.",
+              "mark": null
+            }
+          ],
+          "blockId": "block-9"
+        },
+        {
+          "type": "heading",
+          "level": 3,
+          "id": "a-nested-subsection",
+          "text": [
+            {
+              "text": "A nested subsection",
+              "mark": null
+            }
+          ],
+          "blockId": "block-10"
+        },
+        {
+          "type": "paragraph",
+          "runs": [
+            {
+              "text": "Nested text is here to confirm that deeper levels of the note are also affected by the settings.",
+              "mark": null
+            }
+          ],
+          "blockId": "block-11"
+        }
+      ],
+      "blockId": "block-8"
+    },
+    {
+      "type": "takeaways",
+      "items": [
+        [
+          {
+            "text": "Reading Preferences only affect the body text of a note.",
+            "mark": null
+          }
+        ],
+        [
+          {
+            "text": "Change one setting at a time so you can see what each one does.",
+            "mark": null
+          }
+        ]
+      ],
+      "blockId": "block-12"
+    }
+  ]
+}
