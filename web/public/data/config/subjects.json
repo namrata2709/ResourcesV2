@@ -1,0 +1,42 @@
+{
+  "aws": {
+    "label": "AWS",
+    "icon": "☁️",
+    "description": "Cloud certification prep — notes and labs",
+    "folderPrefix": "aws",
+    "titleSuffix": "AWS Notes",
+    "extraCss": null,
+    "hasAnimation": false,
+    "features": ["reflection", "handsOn", "screenshotGuide", "lectureBox", "labs"],
+    "metaDescription": {
+      "mode": "audience",
+      "templates": {
+        "beginner": "{title} — a beginner-friendly introduction to AWS, covering core concepts, architecture, and practical use cases. Keywords: {keywords}.",
+        "intermediate": "{title} — covers AWS concepts, architecture, best practices, and exam preparation. Keywords: {keywords}. Beginner to intermediate level.",
+        "advanced": "{title} — an in-depth look covering advanced architecture, trade-offs, edge cases, and production considerations. Keywords: {keywords}.",
+        "exam": "{title} — exam-focused notes covering everything tested on the relevant AWS certification, with emphasis on exam traps and high-yield facts. Keywords: {keywords}."
+      },
+      "eduLevels": {
+        "beginner": "Beginner",
+        "intermediate": "Beginner to Intermediate",
+        "advanced": "Intermediate to Advanced",
+        "exam": "Intermediate to Advanced (Exam Preparation)"
+      }
+    }
+  },
+  "dsa": {
+    "label": "DSA",
+    "icon": "🧩",
+    "description": "Data Structures & Algorithms — notes",
+    "folderPrefix": "dsa",
+    "titleSuffix": "DSA Notes",
+    "extraCss": "dsa-notes.css",
+    "hasAnimation": true,
+    "features": ["animation", "visualMcq", "contest"],
+    "metaDescription": {
+      "mode": "fixed",
+      "template": "{title} — covers theory, implementation, complexity analysis, LeetCode problems, and interview questions. Keywords: {keywords}. Beginner to expert level.",
+      "eduLevel": "Beginner to Expert"
+    }
+  }
+}

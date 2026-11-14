@@ -1,0 +1,10 @@
+{
+  "title": "Merge Sort Checklist",
+  "items": [
+    { "id": "c1", "text": "Can explain the divide step in your own words" },
+    { "id": "c2", "text": "Can trace through the merge step on a small example by hand" },
+    { "id": "c3", "text": "Know why merge sort is O(n log n) in the worst case" },
+    { "id": "c4", "text": "Know why merge sort is a stable sort" },
+    { "id": "c5", "text": "Can name a real scenario where stability actually matters" }
+  ]
+}

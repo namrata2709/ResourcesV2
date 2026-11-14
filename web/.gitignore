@@ -1,0 +1,44 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Generated assets — built from assets-source/ by scripts/build-assets.mjs,
+# runs automatically before dev and build (see package.json). Never
+# hand-edit these; edit the source in assets-source/ and regenerate.
+public/icons/*.png
+public/illustrations/*.png
+
+# B-4a: Playwright visual regression — transient run output only.
+# e2e/**/__screenshots__/ (the real baseline PNGs) is NOT ignored —
+# those are the committed source of truth a diff compares against;
+# ignoring them would silently disable the whole feature.
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/
+
+# B-4b: JS coverage output (vitest --coverage). Generated on every CI
+# run and uploaded as an artifact there — never committed, same
+# treatment as /dist.
+/coverage/

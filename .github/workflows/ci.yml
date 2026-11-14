@@ -1,0 +1,167 @@
+name: CI
+
+# B-4a needed somewhere to actually run the new visual-regression suite
+# — no CI config existed anywhere in the project before this (T0-3's own
+# entry in sprint-tickets.md already flags this as "genuinely
+# unverifiable... no .github/workflows/*.yml was ever included in any
+# upload"). This file is new infrastructure for that reason, not an
+# edit to something that already existed.
+#
+# B-4b added the `js-coverage` job below. Python coverage is reported
+# by a separate workflow, .github/workflows/coverage.yml, not a job in
+# this file — that's B-4b's Python half, using working-directory: python
+# to run the real pipeline's pytest suite. This file's own
+# `python-tests` placeholder job (T0-3) has been removed as of this
+# change: coverage.yml already runs the real suite for real, so a
+# separate disabled stub job explaining why it *couldn't* run was no
+# longer accurate. T0-3 itself is still open in a narrower sense —
+# coverage.yml runs non-blocking (continue-on-error: true), so it
+# reports Python test failures without gating a merge on them; a real
+# blocking pytest gate is still a separate, undecided ticket.
+#
+# RELOCATED as of this change: this file used to live at
+# web/.github/workflows/ci.yml — a folder named .github nested inside
+# web/, which GitHub Actions has no special awareness of at all (it
+# only auto-discovers workflows in the real repo root's
+# .github/workflows/, i.e. ResourcesV2/.github/workflows/). Moved here
+# for real, with `working-directory: web` added as a job-level default
+# to every job below, since package.json, node_modules, etc. now sit
+# one level down from this file instead of at the checkout root that
+# this file used to (incorrectly) assume it was already inside.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-unit-tests:
+    name: Lint + Vitest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test -- --run
+
+  js-coverage:
+    name: JS coverage (Vitest, B-4b)
+    runs-on: ubuntu-latest
+    needs: lint-and-unit-tests
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run test:coverage
+      - name: Add coverage % to the job summary
+        if: always()
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            node -e "
+              const s = require('./coverage/coverage-summary.json').total;
+              const line = (label, m) => \`| \${label} | \${m.covered}/\${m.total} | \${m.pct}% |\`;
+              console.log('## JS coverage (Vitest)');
+              console.log('| Metric | Covered/Total | % |');
+              console.log('|---|---|---|');
+              console.log(line('Lines', s.lines));
+              console.log(line('Statements', s.statements));
+              console.log(line('Functions', s.functions));
+              console.log(line('Branches', s.branches));
+            " >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "coverage/coverage-summary.json not found — coverage run may have failed." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: js-coverage-report
+          path: web/coverage/
+          retention-days: 14
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    needs: lint-and-unit-tests
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  visual-regression:
+    name: Visual regression (Playwright, B-4a)
+    runs-on: ubuntu-latest
+    needs: lint-and-unit-tests
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:visual
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: web/playwright-report/
+          retention-days: 14
+
+  lighthouse:
+    name: Lighthouse audits (B-4c)
+    runs-on: ubuntu-latest
+    needs: lint-and-unit-tests
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: Run Lighthouse CI
+        run: npx @lhci/cli@0.15.x autorun --config=./lighthouserc.json
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: web/lighthouse-report/
+          retention-days: 14

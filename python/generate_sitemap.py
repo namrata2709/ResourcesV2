@@ -30,8 +30,8 @@ from pathlib import Path
 from datetime import datetime
 from utils.sitemap import add_url, load_sitemap, write_sitemap
 from utils.site_config import BASE_URL
-NOTES_DIR     = "../src/data/notes"
-QUIZ_DIR      = "../src/data/quiz"
+NOTES_DIR     = "../web/public/data/notes"
+QUIZ_DIR      = "../web/public/data/quiz"
 CONTENT_TYPES = ("notes", "lab", "slides")
 
 
@@ -56,33 +56,57 @@ def main():
         urls = add_url(urls, loc, **kw)
 
     # ── Main pages ───────────────────────────────────────────────────────
+    # T5-2 (2026-07-26): clean-path shapes (T3-6's NotesIndex/QuizIndex
+    # routes), not the old notes-index.html/quiz-index.html vanilla pages.
     main_pages = [
-        ("",                 "1.0", "weekly"),
-        ("notes-index.html", "0.9", "weekly"),
-        ("quiz-index.html",  "0.9", "weekly"),
+        ("",             "1.0", "weekly"),
+        ("notes-index",  "0.9", "weekly"),
+        ("quiz-index",   "0.9", "weekly"),
     ]
     for path, priority, changefreq in main_pages:
         touch(f"{BASE_URL}/{path}", changefreq=changefreq, priority=priority)
 
     # ── Notes — scan every valid folder's actual content files ─────────
+    # T5-3a owns /notes/:folder (notes.html + lab.html content);
+    # T5-4 owns /slides/:folder (slides.html + slides-overview.html
+    # content) — deduped to one sitemap entry per folder per route, same
+    # as generate_notes_index.py's own sitemap block (see that file for
+    # the fuller reasoning, including the still-open notes.html-vs-
+    # lab.html question T5-3a's own ticket text flags).
+    NOTES_FILE_PREFIXES = ("notes", "lab")
+    SLIDES_FILE_PREFIXES = ("slides",)
+
     notes_path = Path(NOTES_DIR)
     if notes_path.exists():
         for folder in sorted(notes_path.iterdir()):
             if not folder.is_dir() or folder.name.startswith('.'):
                 continue
+            has_notes_file = False
+            has_slides_file = False
+            latest_mtime = None
             for fname in sorted(os.listdir(folder)):
                 if not fname.lower().endswith(".html"):
                     continue
                 if not any(fname.lower().startswith(t) for t in CONTENT_TYPES):
                     continue
                 fpath = folder / fname
-                lastmod = datetime.fromtimestamp(fpath.stat().st_mtime).strftime('%Y-%m-%d')
-                touch(
-                    f"{BASE_URL}/data/notes/{folder.name}/{fname}",
-                    changefreq="monthly", priority="0.7", lastmod=lastmod,
-                )
+                mtime = fpath.stat().st_mtime
+                latest_mtime = mtime if latest_mtime is None else max(latest_mtime, mtime)
+                if fname.lower().startswith(NOTES_FILE_PREFIXES):
+                    has_notes_file = True
+                if fname.lower().startswith(SLIDES_FILE_PREFIXES):
+                    has_slides_file = True
+
+            if latest_mtime is None:
+                continue
+            lastmod = datetime.fromtimestamp(latest_mtime).strftime('%Y-%m-%d')
+            if has_notes_file:
+                touch(f"{BASE_URL}/notes/{folder.name}", changefreq="monthly", priority="0.7", lastmod=lastmod)
+            if has_slides_file:
+                touch(f"{BASE_URL}/slides/{folder.name}", changefreq="monthly", priority="0.7", lastmod=lastmod)
 
     # ── Quizzes ──────────────────────────────────────────────────────────
+    # T5-1 owns /quiz/:quizId, replacing quiz.html?quiz=<stem>.
     quiz_path = Path(QUIZ_DIR)
     if quiz_path.exists():
         for f in sorted(quiz_path.glob("*.json")):
@@ -92,7 +116,7 @@ def main():
                 continue
             if not data.get("title") or not data.get("topic"):
                 continue
-            touch(f"{BASE_URL}/quiz.html?quiz={f.stem}", changefreq="monthly", priority="0.7")
+            touch(f"{BASE_URL}/quiz/{f.stem}", changefreq="monthly", priority="0.7")
 
     write_sitemap(urls)
 

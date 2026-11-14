@@ -15,6 +15,7 @@ import os
 import re
 import json
 import html as html_mod
+import itertools
 from datetime import datetime
 
 
@@ -54,45 +55,116 @@ from utils.parse_hands_on   import parse_hands_on
 from utils.parse_reflection import parse_reflection, build_reflection_html
 from utils.parse_screenshot_guide import parse_screenshot_guide
 import utils.animate as animate
-from utils.parse_slides import is_presentation, is_video_slides_overview, build_slides_html, write_diagram_prompts
+from utils.parse_slides import is_presentation, is_video_slides_overview, build_slides_html, write_diagram_prompts, write_slides_json
 
 
 # ─── CONFIG ────────────────────────────────────────────────────────────────────
 
 from utils.site_config import BASE_URL
 
-TYPE_CONFIG = {
-    "dsa": {
-        "title_suffix":  "DSA Notes",
-        "extra_css":     "dsa-notes.css",          # loaded in addition to shared css
-        # No nested subject folder — notes.html lives at data/notes/dsa-[slug]/,
-        # not data/notes/dsa/dsa-[slug]/.
-        "path_segment":  "data/notes/",
-        "path_depth":    "../../../",              # data/notes/dsa-[slug]/notes.html -> project root (css/js are 3 levels up, siblings of data/)
-        "base_url":      f"{BASE_URL}/data/notes/",
-        "subject":       "dsa",
-        "has_animation": True,
-        "folder_prefix": "dsa",
-    },
-    "aws": {
-        "title_suffix":  "AWS Notes",
-        "extra_css":     None,                     # no extra css for aws
-        "path_segment":  "data/notes/",
-        "path_depth":    "../../../",              # data/notes/aws-[slug]/notes.html -> project root
-        "base_url":      f"{BASE_URL}/data/notes/",
-        "subject":       "aws",
-        "has_animation": False,
-        "folder_prefix": "aws",
-    },
-}
+# ─── SUBJECT REGISTRY (T3-7) ────────────────────────────────────────────────
+# subjects.json is the single source of truth for per-subject config, shared
+# with the React app (NotesIndex.tsx reads the same file). Same relative-path
+# convention already used for CATEGORY_ICONS_PATH in generate_notes_index.py —
+# mirrored here deliberately, not a new scheme.
+#
+# Adding a 3rd subject: add its entry to subjects.json. No edit needed here
+# UNLESS that subject needs subject-specific *content* behavior beyond what
+# "features" gates (section order, image-prompt wording) — those still live
+# as small subject-keyed lookup tables further down this file (search
+# "SUBJECT-KEYED" below), since they're prose/ordering, not simple config.
+SUBJECTS_JSON_PATH = "../web/public/data/config/subjects.json"
+
+# Path shape below is uniform across every subject today (confirmed: both
+# "aws" and "dsa" used identical values in the old hardcoded TYPE_CONFIG) —
+# so it's applied once here rather than duplicated per-entry in the JSON.
+_PATH_SEGMENT = "data/notes/"
+_PATH_DEPTH   = "../../../"
+
+
+def _load_subjects_registry() -> dict:
+    try:
+        with open(SUBJECTS_JSON_PATH, "r", encoding="utf-8") as f:
+            registry = json.load(f)
+    except FileNotFoundError:
+        print(f"❌ subjects.json not found at {SUBJECTS_JSON_PATH} — cannot build without the subject registry.")
+        sys.exit(1)
+    except json.JSONDecodeError as e:
+        print(f"❌ subjects.json at {SUBJECTS_JSON_PATH} is not valid JSON: {e}")
+        sys.exit(1)
+
+    if not registry:
+        print(f"❌ subjects.json at {SUBJECTS_JSON_PATH} is empty — need at least one subject.")
+        sys.exit(1)
+
+    return registry
+
+
+def _validate_meta_description(subject_id: str, meta: dict) -> dict:
+    """
+    T3-7c: subjects.json is now the source of truth for build_description()/
+    build_edu_level()'s per-subject behavior too — no more hardcoded
+    cfg["subject"] == "dsa" checks. Validated (not silently defaulted)
+    for the same reason detect_subject() no longer silently defaults to
+    'dsa' (T3-7b): a subject registered without real metaDescription data
+    would otherwise fall through to AWS's audience-variable templates by
+    accident, which is wrong for a subject that isn't AWS-shaped.
+    """
+    if not meta:
+        print(f"❌ subjects.json entry '{subject_id}' is missing 'metaDescription' — cannot build without it.")
+        sys.exit(1)
+    mode = meta.get("mode")
+    if mode == "fixed":
+        if not meta.get("template") or not meta.get("eduLevel"):
+            print(f"❌ subjects.json entry '{subject_id}' has metaDescription.mode='fixed' but is missing 'template'/'eduLevel'.")
+            sys.exit(1)
+    elif mode == "audience":
+        if not meta.get("templates") or not meta.get("eduLevels"):
+            print(f"❌ subjects.json entry '{subject_id}' has metaDescription.mode='audience' but is missing 'templates'/'eduLevels'.")
+            sys.exit(1)
+        if "intermediate" not in meta["templates"] or "intermediate" not in meta["eduLevels"]:
+            print(f"❌ subjects.json entry '{subject_id}' metaDescription is missing the 'intermediate' fallback key (used when 'audience:' frontmatter is absent/unrecognized).")
+            sys.exit(1)
+    else:
+        print(f"❌ subjects.json entry '{subject_id}' has an unrecognized metaDescription.mode '{mode}' — expected 'fixed' or 'audience'.")
+        sys.exit(1)
+    return meta
+
+
+def _build_type_config() -> dict:
+    registry = _load_subjects_registry()
+    cfg = {}
+    for subject_id, entry in registry.items():
+        cfg[subject_id] = {
+            "title_suffix":  entry["titleSuffix"],
+            "extra_css":     entry.get("extraCss"),
+            "path_segment":  _PATH_SEGMENT,
+            "path_depth":    _PATH_DEPTH,
+            "base_url":      f"{BASE_URL}/{_PATH_SEGMENT}",
+            "subject":       subject_id,
+            "has_animation": entry.get("hasAnimation", False),
+            "folder_prefix": entry.get("folderPrefix", subject_id),
+            "features":      set(entry.get("features", [])),
+            "meta_description": _validate_meta_description(subject_id, entry.get("metaDescription")),
+        }
+    return cfg
+
+
+TYPE_CONFIG = _build_type_config()
 
 SITE_BASE = f"{BASE_URL}/"
 
-# Sections that exist in DSA only
-DSA_ONLY_SECTIONS = {"visual-mcq", "contest"}
-
-# Sections that exist in AWS only
-AWS_ONLY_SECTIONS = {"hands-on", "reflection"}
+# Which DATA_SECTION_HEADINGS tag requires which registry feature to be
+# present for a given subject. A tag with no entry here is common to every
+# subject and is never skipped. Replaces the old hardcoded
+# DSA_ONLY_SECTIONS/AWS_ONLY_SECTIONS sets — add a tag here (not a new set)
+# if a future subject introduces another subject-exclusive section.
+SECTION_REQUIRES_FEATURE = {
+    "visual-mcq": "visualMcq",
+    "contest":    "contest",
+    "hands-on":   "handsOn",
+    "reflection": "reflection",
+}
 
 # Ordered heading text for data-driven sections (used by strip + reorder)
 DATA_SECTION_HEADINGS = {
@@ -139,6 +211,15 @@ AWS_FIXED_SECTION_ORDER = [
 # Accomplish, and Tasks precede them instead of freely-named subtopics).
 AWS_LAB_FIXED_SECTION_ORDER = AWS_FIXED_SECTION_ORDER
 
+# SUBJECT-KEYED (T3-7b): canonical section order is prose/ordering, not a
+# simple on/off "feature" — per this file's header comment, kept as an
+# explicit per-subject table. Subjects not listed here fall through to
+# the is_lab/else branch in reorder_sections() below (today that's just
+# AWS's lab vs. non-lab split).
+FIXED_SECTION_ORDER_BY_SUBJECT = {
+    "dsa": DSA_FIXED_SECTION_ORDER,
+}
+
 
 # ─── READING TIME ──────────────────────────────────────────────────────────────
 
@@ -172,88 +253,85 @@ def write_file(path: str, content: str):
 
 
 # ─── AUDIENCE TARGETING ────────────────────────────────────────────────────────
-
-AWS_EDU_LEVEL = {
-    "beginner":     "Beginner",
-    "intermediate": "Beginner to Intermediate",
-    "advanced":     "Intermediate to Advanced",
-    "exam":         "Intermediate to Advanced (Exam Preparation)",
-}
-
-AWS_DESCRIPTION_TEMPLATE = {
-    "beginner": (
-        "{title} — a beginner-friendly introduction to AWS, covering core "
-        "concepts, architecture, and practical use cases. Keywords: {keywords}."
-    ),
-    "intermediate": (
-        "{title} — covers AWS concepts, architecture, best practices, and "
-        "exam preparation. Keywords: {keywords}. Beginner to intermediate level."
-    ),
-    "advanced": (
-        "{title} — an in-depth look covering advanced architecture, "
-        "trade-offs, edge cases, and production considerations. "
-        "Keywords: {keywords}."
-    ),
-    "exam": (
-        "{title} — exam-focused notes covering everything tested on the "
-        "relevant AWS certification, with emphasis on exam traps and "
-        "high-yield facts. Keywords: {keywords}."
-    ),
-}
+# T3-7c: AWS_EDU_LEVEL/AWS_DESCRIPTION_TEMPLATE's *values* now live in
+# subjects.json (aws.metaDescription) — the source of truth moved to the
+# registry. The two names are kept here, still populated from the same
+# registry data on import, purely so nothing else in this file (or a
+# script importing generate_notes) that referenced them by name breaks;
+# new code should read cfg["meta_description"] via the functions below,
+# not these directly.
+AWS_EDU_LEVEL           = TYPE_CONFIG["aws"]["meta_description"]["eduLevels"]
+AWS_DESCRIPTION_TEMPLATE = TYPE_CONFIG["aws"]["meta_description"]["templates"]
 
 
-def get_audience(fm: dict) -> str:
+def get_audience(fm: dict, audience_levels: dict) -> str:
     audience = (fm.get("audience") or "intermediate").strip().lower()
-    if audience not in AWS_EDU_LEVEL:
+    if audience not in audience_levels:
         print(f"⚠️  Unknown audience '{audience}' — defaulting to 'intermediate'")
         audience = "intermediate"
     return audience
 
 
-def build_aws_description(fm: dict, keywords_str: str) -> str:
-    title    = fm.get("title", "")
-    audience = get_audience(fm)
-    return AWS_DESCRIPTION_TEMPLATE[audience].format(title=title, keywords=keywords_str)
-
-
 def build_description(fm: dict, cfg: dict, keywords_str: str) -> str:
+    """
+    T3-7c: registry-driven, not a hardcoded cfg["subject"] == "dsa" check.
+    'fixed' subjects (e.g. DSA) use one audience-independent template from
+    subjects.json; 'audience' subjects (e.g. AWS) pick a template keyed by
+    the note's 'audience:' frontmatter, same as before.
+    """
     title = fm.get("title", "")
-    if cfg["subject"] == "dsa":
-        return (
-            f"{title} — covers theory, implementation, complexity analysis, "
-            f"LeetCode problems, and interview questions. "
-            f"Keywords: {keywords_str}. Beginner to expert level."
-        )
-    return build_aws_description(fm, keywords_str)
+    meta  = cfg["meta_description"]
+    if meta["mode"] == "fixed":
+        return meta["template"].format(title=title, keywords=keywords_str)
+
+    audience = get_audience(fm, meta["eduLevels"])
+    return meta["templates"][audience].format(title=title, keywords=keywords_str)
 
 
 def build_edu_level(fm: dict, cfg: dict) -> str:
-    if cfg["subject"] == "dsa":
-        return "Beginner to Expert"
-    return AWS_EDU_LEVEL[get_audience(fm)]
+    """T3-7c: registry-driven, not a hardcoded cfg["subject"] == "dsa" check."""
+    meta = cfg["meta_description"]
+    if meta["mode"] == "fixed":
+        return meta["eduLevel"]
+
+    audience = get_audience(fm, meta["eduLevels"])
+    return meta["eduLevels"][audience]
 
 
 # ─── SUBJECT DETECTION ─────────────────────────────────────────────────────────
 
 def detect_subject(md_path: str, frontmatter: dict) -> str:
     """
-    Detects subject (aws | dsa) from:
-    1. Frontmatter 'type' field (most explicit)
-    2. Filename prefix aws-*.md / dsa-*.md
-    Defaults to 'dsa' with a warning if neither matches.
+    Detects subject from:
+    1. Frontmatter 'type' field (most explicit), matched against every
+       subject registered in subjects.json — not hardcoded to aws/dsa.
+    2. Filename prefix '<subject>-*.md', matched against each registered
+       subject's folderPrefix.
+
+    T3-7b: an unrecognized subject is now a hard build failure, not a
+    silent 'dsa' default — a 3rd subject with a typo'd 'type:' or an
+    unrecognized filename prefix used to be silently misclassified as
+    DSA (wrong section order, wrong validation rules, wrong everything)
+    with only a printed warning easy to miss in a batch run.
     """
     fm_type = frontmatter.get("type", "").lower()
     if fm_type in TYPE_CONFIG:
         return fm_type
 
     basename = os.path.basename(md_path).lower()
-    if basename.startswith("aws-"):
-        return "aws"
-    if basename.startswith("dsa-"):
-        return "dsa"
+    for subject_id, cfg in TYPE_CONFIG.items():
+        prefix = f"{cfg['folder_prefix']}-"
+        if basename.startswith(prefix):
+            return subject_id
 
-    print(f"⚠️  Could not detect subject for '{basename}' — defaulting to 'dsa'")
-    return "dsa"
+    known = ", ".join(sorted(TYPE_CONFIG.keys()))
+    raise ValueError(
+        f"Could not detect subject for '{basename}' — frontmatter 'type' is "
+        f"'{fm_type or '(missing)'}' (not one of: {known}), and the filename "
+        f"doesn't start with a known prefix. Add a valid 'type:' field to the "
+        f"frontmatter, rename the file to match a registered folderPrefix in "
+        f"subjects.json, or register the new subject there first."
+    )
 
 
 def detect_lab_mode(md_path: str, frontmatter: dict) -> bool:
@@ -336,18 +414,32 @@ def parse_frontmatter(raw: str):
     return frontmatter, body
 
 
+# SUBJECT-KEYED (T3-7b): validation strictness, not a rendering "feature" —
+# doesn't belong in subjects.json's features list (that gates content
+# sections/behavior; this gates which frontmatter fields are enforced).
+# Kept as an explicit per-subject table, same convention as
+# PROMPT_FOOTER_BY_SUBJECT/DIAGRAM_LABEL_BY_SUBJECT/FIXED_SECTION_ORDER_BY_SUBJECT
+# further down this file, rather than an if/elif chain.
+REQUIRED_EXTRA_FIELDS_BY_SUBJECT = {
+    "aws": ["when_to_use"],   # shared with DSA but critical for AWS
+}
+
+# Subjects that default validated_against to the note's date when the
+# author didn't set it explicitly.
+DEFAULTS_VALIDATED_AGAINST_TO_DATE = {"aws"}
+
+
 def validate_frontmatter(fm: dict, subject: str, is_lab: bool = False):
     base_required = ["type", "title", "slug", "date", "keywords", "tags"]
-    aws_extra     = ["when_to_use"]          # shared with DSA but critical for AWS
     lab_extra     = ["session_name"]          # labs always belong to a named session
-    required = base_required + (aws_extra if subject == "aws" else [])
+    required = base_required + REQUIRED_EXTRA_FIELDS_BY_SUBJECT.get(subject, [])
     if is_lab:
         required = required + lab_extra
     for field in required:
         if field not in fm:
             print(f"⚠️  Missing frontmatter field: '{field}'")
 
-    if subject == "aws" and not fm.get("validated_against"):
+    if subject in DEFAULTS_VALIDATED_AGAINST_TO_DATE and not fm.get("validated_against"):
         fm["validated_against"] = fm.get("date")
 
 
@@ -1054,6 +1146,21 @@ CRITICAL RULES:
 - Do NOT add extra elements
 OUTPUT: PNG"""
 
+# SUBJECT-KEYED (T3-7b): image-prompt wording is prose, not a rendering
+# "feature" — per this file's header comment, these stay as explicit
+# per-subject lookup tables rather than being forced into subjects.json's
+# features list. AWS is the fallback for any subject without its own
+# entry (matches the old ternary's default branch).
+PROMPT_FOOTER_BY_SUBJECT = {
+    "dsa": DSA_PROMPT_FOOTER,
+    "aws": AWS_PROMPT_FOOTER,
+}
+
+DIAGRAM_LABEL_BY_SUBJECT = {
+    "dsa": "DSA visualization",
+    "aws": "AWS architecture",
+}
+
 
 def expand_image_prompts(text: str, output_dir: str = '.', viz_image_order: list = None,
                          subject: str = "dsa") -> str:
@@ -1069,7 +1176,7 @@ def expand_image_prompts(text: str, output_dir: str = '.', viz_image_order: list
     viz_image_order  = viz_image_order or []
     filename_to_step = {fn: i + 1 for i, (fn, _) in enumerate(viz_image_order)}
     total            = len(viz_image_order)
-    footer           = DSA_PROMPT_FOOTER if subject == "dsa" else AWS_PROMPT_FOOTER
+    footer           = PROMPT_FOOTER_BY_SUBJECT.get(subject, AWS_PROMPT_FOOTER)
 
     blocks    = [b.strip() for b in re.split(r'\n---\n', raw) if b.strip()]
     assembled = []
@@ -1092,7 +1199,7 @@ def expand_image_prompts(text: str, output_dir: str = '.', viz_image_order: list
         full_prompt = (
             f"## {step_label}\n"
             f"Filename: {filename}\n\n"
-            f"Create a {'DSA visualization' if subject == 'dsa' else 'AWS architecture'} diagram.\n\n"
+            f"Create a {DIAGRAM_LABEL_BY_SUBJECT.get(subject, 'AWS architecture')} diagram.\n\n"
             f"{body}\n"
             f"{footer}"
         )
@@ -1514,6 +1621,514 @@ def strip_data_section_wrapper(body_md: str, tag: str, heading: str) -> tuple:
     return body_md, None
 
 
+# ─── BODY-PROSE JSON EXTRACTOR (T5-2, additive, HTML pipeline untouched) ──────
+#
+# Parallel to convert_sections()/expand_*() above: reuses the same
+# block-detection regexes/patterns, but captures structured data instead
+# of building an HTML string. Runs on a COPY of body_md at the same point
+# in the pipeline where convert_sections() would normally take over (data-
+# driven sections like mcq/glossary/etc. already stripped by
+# parse_md_body, [collapsible-section] markers still raw) -- the real
+# body_md passed to convert_sections() is never touched by this, so the
+# existing HTML output is provably unaffected (covered by
+# test_generate_notes.py's byte-for-byte regression check).
+#
+# Deliberately NOT covered here (belongs to T5-3b, DSA-specific, a
+# different ticket):
+#   - <code-tabs> blocks (expand_code_tabs) -- captured opaquely below as
+#     a `code_tabs_raw` marker block so at least their presence/position
+#     is visible in the JSON, not silently dropped.
+#   - [visualisation]/[animation] DSA panels -- not reader "body prose"
+#     in the same sense; T5-3b's own DsaAnimation/TabPanel work covers
+#     these directly against the DSA pipeline's existing image-order
+#     tracking.
+#
+# "image-prompts" in the ticket's block-type list is interpreted here as
+# the reader-facing [image:file|caption] inline syntax (expand_inline_
+# images) -- the trainer-only [image-prompts]...[/image-prompts] block
+# (expand_image_prompts) is stripped from the body_md before this point
+# and never rendered to a reader, so there is nothing reader-facing for
+# it to contribute to a body-prose JSON.
+
+EXAM_TERM_RE = re.compile(r'\*\*([^*]{1,40})\*\*')
+EXAM_SENTENCE_RE = re.compile(r'==(.+?)==')
+
+
+def _extract_runs(text: str) -> list:
+    """
+    Splits inline markdown into an ordered list of {"text": ..., "mark":
+    ...} runs, mirroring convert_sections()'s inline_fmt() token order
+    but producing data instead of HTML tags. `mark` is one of: None
+    (plain text), "code", "bold", "italic", "underline", "strike",
+    "examTerm", "examSentence", or "link" (link runs also carry `url`).
+    Marks are mutually exclusive per run (no nested marks) -- matching
+    inline_fmt()'s own flat, non-nested regex chain.
+    """
+    # Tokenize by scanning for the first match among all patterns, left
+    # to right, same "first match wins, no overlap" behavior as chained
+    # re.sub calls -- but done as a single left-to-right scan so run
+    # order in the output matches source order exactly.
+    token_patterns = [
+        ("examSentence", EXAM_SENTENCE_RE),
+        ("examTerm", EXAM_TERM_RE),
+        ("code", re.compile(r'`([^`]+)`')),
+        ("kbd", re.compile(r'\[\[([^\]]+)\]\]')),
+        ("link", re.compile(r'\[([^\]]+)\]\(([^)]+)\)')),
+        ("bold", re.compile(r'!!(.+?)!!')),
+        ("underline", re.compile(r'\+\+(.+?)\+\+')),
+        ("italic", re.compile(r'(?<!:)//(.+?)//')),
+        ("strike", re.compile(r'~~(.+?)~~')),
+        ("highlight", re.compile(r'%%(.+?)%%')),
+        ("sup", re.compile(r'\^\^(.+?)\^\^')),
+        ("sub", re.compile(r',,(.+?),,')),
+        ("small", re.compile(r'\{\{--(.+?)--\}\}')),
+    ]
+
+    runs = []
+    pos = 0
+    n = len(text)
+    while pos < n:
+        best = None  # (start, end, mark, groups)
+        for mark, pat in token_patterns:
+            m = pat.search(text, pos)
+            if m and (best is None or m.start() < best[0]):
+                best = (m.start(), m.end(), mark, m.groups())
+        if best is None:
+            runs.append({"text": text[pos:], "mark": None})
+            break
+        start, end, mark, groups = best
+        if start > pos:
+            runs.append({"text": text[pos:start], "mark": None})
+        if mark == "link":
+            runs.append({"text": groups[0], "mark": "link", "url": groups[1]})
+        else:
+            runs.append({"text": groups[0], "mark": mark})
+        pos = end
+    return [r for r in runs if r["text"] != ""] or [{"text": "", "mark": None}]
+
+
+def _extract_callouts_and_stash(text: str) -> tuple:
+    """
+    Pulls [note]/[important]/[warning] blocks out as structured callout
+    blocks, replacing each with a placeholder so the surrounding
+    paragraph/list walk in _extract_blocks() doesn't also try to parse
+    their contents as plain prose. Mirrors expand_callout_boxes()'s tag
+    set exactly.
+    """
+    callouts = {}
+
+    def _stash_one(kind):
+        def repl(m):
+            key = f'\x00CALLOUT_{len(callouts)}\x00'
+            callouts[key] = {"type": "callout", "kind": kind, "runs": _extract_runs(m.group(1).strip())}
+            return f'\n{key}\n'
+        return repl
+
+    for tag in ("note", "important", "warning"):
+        text = re.sub(r'\[' + tag + r'\]\s*(.+?)\s*\[/' + tag + r'\]', _stash_one(tag), text, flags=re.DOTALL)
+    return text, callouts
+
+
+def _extract_youtube_and_stash(text: str) -> tuple:
+    blocks = {}
+
+    def repl(m):
+        fields = {}
+        for line in m.group(1).strip().splitlines():
+            line = line.strip()
+            if not line or ":" not in line:
+                continue
+            key, _, value = line.partition(":")
+            fields[key.strip()] = value.strip()
+        key = f'\x00YOUTUBE_{len(blocks)}\x00'
+        blocks[key] = {
+            "type": "youtube",
+            "title": fields.get("title", ""),
+            "channel": fields.get("channel", ""),
+            "url": fields.get("url", ""),
+            "level": fields.get("level", ""),
+            "why": fields.get("why", ""),
+        }
+        return f'\n{key}\n'
+
+    text = re.sub(r'\[youtube\]\s*(.+?)\s*\[/youtube\]', repl, text, flags=re.DOTALL)
+    return text, blocks
+
+
+def _extract_references_and_stash(text: str) -> tuple:
+    refs = []
+
+    def collect(m):
+        fields = {}
+        for line in m.group(1).strip().splitlines():
+            line = line.strip()
+            if not line or ":" not in line:
+                continue
+            key, _, value = line.partition(":")
+            fields[key.strip()] = value.strip()
+        refs.append({"text": fields.get("text", ""), "url": fields.get("url", "")})
+        return ""
+
+    text = re.sub(r'\[ref\]\s*(.+?)\s*\[/ref\]', collect, text, flags=re.DOTALL)
+    if not refs:
+        return text, None
+    key = '\x00REFERENCES\x00'
+    return text + f'\n{key}\n', {key: {"type": "references", "items": refs}}
+
+
+def _extract_takeaways_and_stash(text: str) -> tuple:
+    blocks = {}
+
+    def repl(m):
+        items = [
+            _extract_runs(line.strip()[2:].strip())
+            for line in m.group(1).strip().splitlines()
+            if line.strip().startswith("- ")
+        ]
+        key = f'\x00TAKEAWAYS_{len(blocks)}\x00'
+        blocks[key] = {"type": "takeaways", "items": items}
+        return f'\n{key}\n'
+
+    text = re.sub(r'\[takeaways\]\s*(.+?)\s*\[/takeaways\]', repl, text, flags=re.DOTALL)
+    return text, blocks
+
+
+def _extract_images_and_stash(text: str) -> tuple:
+    blocks = {}
+
+    def repl(m):
+        key = f'\x00IMAGE_{len(blocks)}\x00'
+        blocks[key] = {"type": "image", "filename": m.group(1).strip(), "caption": m.group(2).strip()}
+        return f'\n{key}\n'
+
+    text = re.sub(r'\[image:([^|\]]+)\|([^\]]+)\]', repl, text)
+    return text, blocks
+
+
+def _extract_collapsibles_and_stash(body_md: str) -> tuple:
+    """
+    Must run BEFORE the other stash-and-extract passes below. Those scan
+    the whole text with a single regex/DOTALL search, with no concept of
+    collapsible-section boundaries -- if a [ref]/[youtube]/[takeaways]/
+    [note] block lives inside a nested [collapsible-section], stashing it
+    at the outer level would leave its placeholder marker sitting inside
+    the collapsible's own raw text, which then gets recursively
+    re-parsed by a DIFFERENT _extract_blocks() call with its own empty
+    `stashed` dict -- the marker would never resolve back to real data.
+    Extracting collapsible sections first (storing their RAW, still-
+    unprocessed inner markdown) and only then running the other stash
+    passes on what's left keeps every nested block's stash-and-resolve
+    cycle scoped to the single _extract_blocks() call that will actually
+    recurse into it.
+    """
+    lines = body_md.split("\n")
+    out_lines = []
+    collapsibles = {}
+    i = 0
+    while i < len(lines):
+        stripped = lines[i].strip()
+        if stripped.startswith("[collapsible-section"):
+            is_open = stripped == "[collapsible-section o]"
+            depth = 1
+            j = i + 1
+            inner_lines = []
+            while j < len(lines) and depth > 0:
+                if lines[j].strip().startswith("[collapsible-section"):
+                    depth += 1
+                elif lines[j].strip() == "[/collapsible-section]":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                inner_lines.append(lines[j])
+                j += 1
+            key = f'\x00COLLAPSIBLE_{len(collapsibles)}\x00'
+            collapsibles[key] = {"open": is_open, "raw_inner": "\n".join(inner_lines)}
+            out_lines.append(key)
+            i = j + 1
+            continue
+        out_lines.append(lines[i])
+        i += 1
+    return "\n".join(out_lines), collapsibles
+
+
+def _extract_blocks(body_md: str, used_ids: set, block_id_counter=None) -> list:
+    """
+    Core recursive walker. Handles headings/paragraphs/lists/tables/code
+    fences directly, and [collapsible-section]/[collapsible-section o]
+    wrappers by recursing into their inner content -- same nesting
+    expand_collapsible() supports (## then ### immediately after
+    <details>, e.g. a lab's Background section).
+
+    P1-1: every block this function emits -- at every nesting level,
+    including a collapsible's own block AND each of its children --
+    gets a stable "blockId" string, e.g. "block-0", "block-1", ...
+    Sequential in document order, drawn from a single `itertools.count()`
+    shared across the WHOLE recursive walk (not restarted per recursive
+    call) -- `block_id_counter` is threaded through recursive
+    `_extract_blocks()` calls for exactly this reason. A collapsible's
+    own blockId is assigned before recursing into its children, so a
+    parent always numbers lower than everything nested inside it,
+    matching the order a reader actually encounters them in the
+    document.
+
+    Stability tradeoff, matching `types.ts`'s own comment on the React
+    side: a blockId is stable (identical) across two regenerations of
+    the SAME markdown -- nothing here is randomized or content-hashed,
+    so whitespace-only or non-structural edits reproduce the same ids.
+    It is NOT robust to a block being inserted/removed/reordered
+    upstream of it -- since ids are purely positional, every block
+    after the change point renumbers. That's a deliberate, documented
+    limitation (positional ids are simple and match "sequential in
+    document order" exactly as specced), not an oversight -- highlight
+    anchoring code on the React side already treats a highlight whose
+    blockId no longer resolves to a real block as orphaned rather than
+    assuming positional ids are permanent.
+    """
+    if block_id_counter is None:
+        block_id_counter = itertools.count()
+
+    def emit(block: dict) -> dict:
+        """Stamps blockId (document-order-sequential, shared across
+        this whole recursive walk) and appends to `blocks`. Every
+        block reaching `blocks` -- including stashed callout/youtube/
+        references/takeaways/image blocks resolved from their
+        placeholder markers -- must go through this, not a bare
+        `blocks.append()`, so no block silently skips numbering."""
+        block["blockId"] = f"block-{next(block_id_counter)}"
+        blocks.append(block)
+        return block
+
+    # Collapsible sections are pulled out FIRST, as opaque raw-text
+    # placeholders (see _extract_collapsibles_and_stash's docstring for
+    # why this must happen before the other stash passes). The other
+    # block types with their own explicit markdown wrappers are then
+    # stashed from what's left, so the line-based walk below only ever
+    # sees plain prose, headings, lists, tables, and placeholder markers.
+    body_md, collapsible_blocks = _extract_collapsibles_and_stash(body_md)
+    body_md, callouts = _extract_callouts_and_stash(body_md)
+    body_md, youtube_blocks = _extract_youtube_and_stash(body_md)
+    body_md, ref_block = _extract_references_and_stash(body_md)
+    body_md, takeaways_blocks = _extract_takeaways_and_stash(body_md)
+    body_md, image_blocks = _extract_images_and_stash(body_md)
+    stashed = {**callouts, **youtube_blocks, **(ref_block or {}), **takeaways_blocks, **image_blocks}
+
+    ol_item_re = re.compile(r'^(\d+)\.\s+(.*)$')
+    lines = body_md.split("\n")
+    blocks = []
+    in_ul = in_ol = in_table = in_pre = False
+    pre_lang = ""
+    pre_lines = []
+    ul_items = []
+    ol_items = []
+    table_headers = []
+    table_rows = []
+    i = 0
+
+    def close_ul():
+        nonlocal in_ul, ul_items
+        if in_ul:
+            emit({"type": "list", "ordered": False, "items": ul_items})
+            in_ul, ul_items = False, []
+
+    def close_ol():
+        nonlocal in_ol, ol_items
+        if in_ol:
+            emit({"type": "list", "ordered": True, "items": ol_items})
+            in_ol, ol_items = False, []
+
+    def close_lists():
+        close_ul(); close_ol()
+
+    def close_table():
+        nonlocal in_table, table_headers, table_rows
+        if in_table:
+            emit({"type": "table", "headers": table_headers, "rows": table_rows})
+            in_table, table_headers, table_rows = False, [], []
+
+    def is_table_separator(line):
+        return bool(re.match(r'^[\|\s\-:]+$', line.strip()))
+
+    def parse_table_row(line):
+        return [c.strip() for c in line.strip().strip("|").split("|")]
+
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+
+        key = stripped
+        if key in stashed:
+            close_lists(); close_table()
+            emit(stashed[key])
+            i += 1
+            continue
+
+        if stripped.startswith("```"):
+            if not in_pre:
+                close_lists(); close_table()
+                pre_lang = stripped[3:].strip()
+                in_pre = True
+                pre_lines = []
+            else:
+                emit({"type": "code", "lang": pre_lang, "code": "\n".join(pre_lines)})
+                in_pre = False
+            i += 1
+            continue
+        if in_pre:
+            pre_lines.append(line)
+            i += 1
+            continue
+
+        if stripped in collapsible_blocks:
+            close_lists(); close_table()
+            entry = collapsible_blocks[stripped]
+            inner_lines = entry["raw_inner"].split("\n")
+            # Heading is the first non-blank line inside (## or ###).
+            heading_text, level, remaining_inner = None, 2, inner_lines
+            for k, l2 in enumerate(inner_lines):
+                s2 = l2.strip()
+                if not s2:
+                    continue
+                if s2.startswith("### "):
+                    level, heading_text = 3, s2[4:].strip()
+                elif s2.startswith("## "):
+                    level, heading_text = 2, s2[3:].strip()
+                remaining_inner = inner_lines[k + 1:]
+                break
+            clean_text, heading_id = parse_heading_id(heading_text or "Section", used_ids)
+            # The collapsible's own blockId is claimed BEFORE recursing
+            # into its children, so it always numbers lower than
+            # anything nested inside it -- matching the order a reader
+            # actually encounters them (heading, then its contents),
+            # not the order this function happens to finish computing
+            # them in.
+            own_block_id = f"block-{next(block_id_counter)}"
+            # Fresh recursive call on the RAW, still-unprocessed inner
+            # markdown -- this is what makes nested [ref]/[youtube]/
+            # [note]/etc. blocks resolve correctly (see
+            # _extract_collapsibles_and_stash's docstring). The SAME
+            # counter is threaded through, not a fresh one, so ids stay
+            # sequential across the whole recursive walk, not just
+            # within one nesting level.
+            children = _extract_blocks("\n".join(remaining_inner), used_ids, block_id_counter)
+            blocks.append({
+                "type": "collapsible", "level": level, "id": heading_id,
+                "heading": clean_text, "open": entry["open"], "children": children,
+                "blockId": own_block_id,
+            })
+            i += 1
+            continue
+
+        if stripped.startswith("<code-tabs>"):
+            close_lists(); close_table()
+            j = i
+            while j < len(lines) and "</code-tabs>" not in lines[j]:
+                j += 1
+            emit({"type": "code_tabs_raw"})  # T5-3b's territory, not expanded here
+            i = j + 1
+            continue
+
+        # Opaque raw HTML lines (e.g. injected DSA visualisation markup,
+        # or any hand-authored HTML) -- not part of "body prose" in the
+        # structured sense; captured so nothing silently vanishes, but
+        # not parsed further.
+        is_html = (
+            (stripped.startswith("<") and not stripped.startswith("<p>")) or
+            stripped.startswith("aria-") or stripped.startswith("role=") or
+            stripped.startswith("id=") or stripped.startswith("data-") or
+            stripped.startswith("style=") or stripped == "/>" or
+            stripped.startswith("loading=") or stripped.startswith("frameborder=") or
+            stripped.startswith("width=") or stripped.startswith("height=") or
+            stripped.startswith("target=") or stripped.startswith("rel=") or
+            stripped.startswith("href=") or stripped.startswith("src=") or
+            stripped.startswith("class=") or stripped.startswith("alt=")
+        )
+        if is_html:
+            close_lists(); close_table()
+            if stripped:
+                emit({"type": "raw_html", "html": line})
+            i += 1
+            continue
+
+        if stripped.startswith("|"):
+            close_lists()
+            if not in_table:
+                table_headers = parse_table_row(line)
+                i += 1
+                if i < len(lines) and is_table_separator(lines[i]):
+                    i += 1
+                in_table = True
+            else:
+                table_rows.append([_extract_runs(c) for c in parse_table_row(line)])
+                i += 1
+            continue
+        else:
+            close_table()
+
+        if line.startswith("#### "):
+            close_lists()
+            emit({"type": "heading", "level": 4, "id": None, "text": _extract_runs(line[5:].strip())})
+        elif line.startswith("### "):
+            close_lists()
+            clean_text, heading_id = parse_heading_id(line[4:].strip(), used_ids)
+            emit({"type": "heading", "level": 3, "id": heading_id, "text": _extract_runs(clean_text)})
+        elif line.startswith("## "):
+            close_lists()
+            clean_text, heading_id = parse_heading_id(line[3:].strip(), used_ids)
+            emit({"type": "heading", "level": 2, "id": heading_id, "text": _extract_runs(clean_text)})
+        elif line.startswith("# "):
+            close_lists()
+            emit({"type": "heading", "level": 1, "id": None, "text": _extract_runs(line[2:].strip())})
+        elif stripped.startswith("- "):
+            close_ol()
+            in_ul = True
+            ul_items.append(_extract_runs(stripped[2:]))
+        elif ol_item_re.match(stripped):
+            close_ul()
+            in_ol = True
+            ol_items.append(_extract_runs(ol_item_re.match(stripped).group(2)))
+        elif stripped == "":
+            close_lists()
+        else:
+            close_lists()
+            emit({"type": "paragraph", "runs": _extract_runs(stripped)})
+
+        i += 1
+
+    close_table(); close_lists()
+    if in_pre:
+        emit({"type": "code", "lang": pre_lang, "code": "\n".join(pre_lines)})
+
+    return blocks
+
+
+def extract_body_prose(body_md: str) -> list:
+    """
+    Entry point. body_md should already have data-driven sections
+    (mcq/glossary/interview/checklist/problem/contest/visual-mcq/
+    reflection/hands-on/screenshot-guide) stripped -- same point in
+    parse_md_body() where convert_sections() would normally take over.
+    Returns a fresh list; does not mutate body_md's caller-visible state
+    (operates on a local copy internally).
+
+    P1-1: seeds the single `itertools.count()` that stamps every block's
+    "blockId" (see `_extract_blocks()`'s own docstring for the full
+    contract) and hands it to the top-level `_extract_blocks()` call --
+    every nested recursive call reuses this same counter, so ids stay
+    sequential across the entire note, not just within one nesting level.
+    """
+    used_ids = set()
+    block_id_counter = itertools.count()
+    return _extract_blocks(body_md, used_ids, block_id_counter)
+
+
+def write_body_prose_json(blocks: list, output_dir: str) -> None:
+    os.makedirs(os.path.join(output_dir, "json"), exist_ok=True)
+    out_path = os.path.join(output_dir, "json", "body-prose.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump({"blocks": blocks}, f, indent=2, ensure_ascii=False)
+    print(f"✅ body-prose.json written: {len(blocks)} top-level blocks → {out_path}")
+
+
 # ─── SECTION REORDERING ────────────────────────────────────────────────────────
 
 def reorder_sections(html: str, injected_containers: list, subject: str, is_lab: bool = False) -> str:
@@ -1528,8 +2143,8 @@ def reorder_sections(html: str, injected_containers: list, subject: str, is_lab:
     subsections) — the naive DOTALL regex stops at the first </details>
     instead of the matching outer one.
     """
-    if subject == "dsa":
-        fixed_order = DSA_FIXED_SECTION_ORDER
+    if subject in FIXED_SECTION_ORDER_BY_SUBJECT:
+        fixed_order = FIXED_SECTION_ORDER_BY_SUBJECT[subject]
     elif is_lab:
         fixed_order = AWS_LAB_FIXED_SECTION_ORDER
     else:
@@ -1635,38 +2250,49 @@ def reorder_sections(html: str, injected_containers: list, subject: str, is_lab:
 
 def parse_md_body(body_md: str, fm: dict, subject: str, is_lab: bool = False) -> str:
     output_dir = fm.get('_output_dir', '.')
+    cfg = TYPE_CONFIG[subject]
 
-    # DSA only: strip animation block (animate.py handles it separately)
-    if subject == "dsa":
+    # Animation-bearing subjects only: strip [animation] block (animate.py
+    # handles it separately). T3-7b: was hardcoded to "dsa"; now driven by
+    # the registry's "animation" feature.
+    if "animation" in cfg["features"]:
         body_md = re.sub(r'\[animation\].+?\[/animation\]', '', body_md, flags=re.DOTALL)
 
-    # AWS only: extract [screenshot-guide] blocks → screenshot-guide.md
-    # Runs before any stashing so the blocks are cleanly stripped from the
-    # body before downstream processing.
-    if subject == "aws":
+    # Subjects with the screenshotGuide feature only: extract
+    # [screenshot-guide] blocks → screenshot-guide.md. Runs before any
+    # stashing so the blocks are cleanly stripped from the body before
+    # downstream processing. T3-7b: was hardcoded to "aws".
+    if "screenshotGuide" in cfg["features"]:
         body_md = parse_screenshot_guide(body_md, output_dir)
 
-    # AWS only: strip the Reflection Questions wrapper, then parse its
-    # [reflection] blocks (static HTML, no JSON). Stripping the wrapper
-    # first (same as every other data-driven section) prevents an empty
-    # duplicate shell being left behind in the body.
+    # Subjects with the reflection feature only: strip the Reflection
+    # Questions wrapper, then parse its [reflection] blocks (static HTML,
+    # no JSON). Stripping the wrapper first (same as every other
+    # data-driven section) prevents an empty duplicate shell being left
+    # behind in the body. T3-7b: was hardcoded to "aws".
     reflection_html = ""
-    if subject == "aws":
+    if "reflection" in cfg["features"]:
         body_md, reflection_inner = strip_data_section_wrapper(
             body_md, "reflection", DATA_SECTION_HEADINGS["reflection"]
         )
         if reflection_inner is not None:
-            _, reflection_questions = parse_reflection(reflection_inner)
+            _, reflection_questions = parse_reflection(reflection_inner, output_dir)
             reflection_html = build_reflection_html(reflection_questions)
 
     # For each data-driven section: strip wrapper, parse JSON, queue container
     injected_containers = []
 
     for tag, heading in DATA_SECTION_HEADINGS.items():
-        # Skip sections that don't belong to this subject
-        if tag in DSA_ONLY_SECTIONS and subject != "dsa":
-            continue
-        if tag in AWS_ONLY_SECTIONS and subject != "aws":
+        # T3-7b: skip sections gated behind a registry feature this
+        # subject doesn't have. Replaces the old (and, as of this
+        # session, actually-broken — DSA_ONLY_SECTIONS/AWS_ONLY_SECTIONS
+        # were referenced here but never defined anywhere in this file,
+        # a live NameError on every run that reached this loop)
+        # subject-specific set-membership checks. A tag with no entry in
+        # SECTION_REQUIRES_FEATURE is common to every subject and is
+        # never skipped here.
+        required_feature = SECTION_REQUIRES_FEATURE.get(tag)
+        if required_feature and required_feature not in cfg["features"]:
             continue
         # reflection handled above (static HTML, no JSON parse step)
         if tag == "reflection":
@@ -1723,12 +2349,24 @@ def parse_md_body(body_md: str, fm: dict, subject: str, is_lab: bool = False) ->
     if reflection_html:
         injected_containers.append(reflection_html)
 
+    # T5-2: additive body-prose JSON extraction. Runs on a COPY of
+    # body_md at this exact point -- data-driven sections already
+    # stripped above (mcq/glossary/interview/checklist/problem/contest/
+    # visual-mcq/reflection/hands-on/screenshot-guide), but
+    # [collapsible-section] markers, callouts, takeaways, youtube, ref,
+    # and inline [image:...] syntax are all still raw markdown, exactly
+    # what extract_body_prose() expects. The real body_md below is never
+    # touched by this block -- existing HTML output is unaffected.
+    body_prose_blocks = extract_body_prose(body_md)
+    write_body_prose_json(body_prose_blocks, output_dir)
+
     page_used_ids = set()
     body_md = expand_collapsible(body_md, used_ids=page_used_ids)
 
-    # DSA only: visualisation tab panel
+    # Animation-bearing subjects only: visualisation tab panel.
+    # T3-7b: was hardcoded to "dsa"; now driven by the "animation" feature.
     viz_image_order = []
-    if subject == "dsa":
+    if "animation" in cfg["features"]:
         slug           = fm.get("slug", "")
         animation_name = fm.get("animation_name") or f"{slug}-animation"
         viz_image_order = extract_visualisation_image_order(body_md)
@@ -1808,8 +2446,9 @@ def build_body(fm: dict, body_md: str, cfg: dict, subject: str, is_lab: bool = F
     ]))
     parsed_sections = insert_after_title_block(parsed_sections, header_extras)
 
-    # AWS gets a lecture box (and lab notes always have session info); DSA doesn't use it
-    extra_top = build_lecture_box(fm) if subject == "aws" else ""
+    # Subjects with the lectureBox feature get a lecture box (and lab notes
+    # always have session info). T3-7b: was hardcoded to "aws".
+    extra_top = build_lecture_box(fm) if "lectureBox" in cfg["features"] else ""
 
     return "\n".join([
         f'<body data-subject="{note_type}"{mode_attr}>',
@@ -1872,11 +2511,13 @@ def build_html(md_path: str) -> str:
         html, slides = build_slides_html(fm, body_md, subject=subject)
         slug = fm.get("slug", "presentation")
         write_diagram_prompts(slides, topic_root, slug)
+        write_slides_json(slides, topic_root)
         return html
 
     subject = detect_subject(md_path, fm)
     cfg     = TYPE_CONFIG[subject]
-    is_lab  = detect_lab_mode(md_path, fm) if subject == "aws" else False
+    # Subjects with the labs feature only. T3-7b: was hardcoded to "aws".
+    is_lab  = detect_lab_mode(md_path, fm) if "labs" in cfg["features"] else False
 
     validate_frontmatter(fm, subject, is_lab=is_lab)
 
@@ -1890,8 +2531,11 @@ def build_html(md_path: str) -> str:
         build_body(fm, body_md, cfg, subject, is_lab=is_lab),
     ]
 
-    # DSA: run animate.py as a side effect
-    if subject == "dsa" and cfg["has_animation"]:
+    # T3-7b: "subject == 'dsa'" was fully redundant here — has_animation
+    # already resolves per-subject from the registry, so any subject with
+    # hasAnimation:true runs animate.py as a side effect, not just "dsa"
+    # specifically by name.
+    if cfg["has_animation"]:
         try:
             animate.run(md_path, project_root="..")
         except Exception as e:
@@ -1902,8 +2546,8 @@ def build_html(md_path: str) -> str:
 
 # ─── CLI + INBOX SCAN ──────────────────────────────────────────────────────────
 
-MARKDOWN_INBOX = "../src/data/notes/markdown"
-NOTES_ROOT     = "../src/data/notes"
+MARKDOWN_INBOX = "../web/public/data/notes/markdown"
+NOTES_ROOT     = "../web/public/data/notes"
 
 
 def resolve_md_path(arg: str) -> str:
@@ -1911,10 +2555,10 @@ def resolve_md_path(arg: str) -> str:
         return arg
 
     guesses = [
-        f"../src/data/notes/dsa-{arg}/markdown/dsa-{arg}.md",
-        f"../src/data/notes/aws-{arg}/markdown/aws-{arg}.md",
-        f"../src/data/notes/dsa-{arg}/{arg}.md",
-        f"../src/data/notes/aws-{arg}/{arg}.md",
+        f"../web/public/data/notes/dsa-{arg}/markdown/dsa-{arg}.md",
+        f"../web/public/data/notes/aws-{arg}/markdown/aws-{arg}.md",
+        f"../web/public/data/notes/dsa-{arg}/{arg}.md",
+        f"../web/public/data/notes/aws-{arg}/{arg}.md",
         f"{arg}.md",
     ]
     for path in guesses:

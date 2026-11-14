@@ -1,0 +1,27 @@
+# Learning Dashboard / Notebook Buddy — Python pipeline dependencies.
+#
+# This file didn't previously exist anywhere in the python/ checkout —
+# T0-3's CI placeholder job and B-4b's coverage-workflow comment both
+# already referenced "pip install -r requirements.txt" as the expected
+# step once real Python CI is wired in; this is that file.
+#
+# CORRECTED as part of the .github consolidation: this file's own
+# comment used to claim "no runtime third-party dependencies — test/dev
+# tooling only." That was false, confirmed by an AST-based import scan
+# of the whole pipeline: generate_notes.py genuinely does
+# `from bs4 import BeautifulSoup` (HTML post-processing) and both
+# generate_notes.py and generate_dsa_notes.py do `import yaml`
+# (frontmatter parsing). A separate, correct requirements.txt existed
+# at the repo root all along for deploy.yml's own `pip install` step —
+# this file was just never reconciled against it, so coverage.yml
+# (which installs from THIS file, not the root one) would have failed
+# on a clean runner with `ModuleNotFoundError: No module named 'bs4'`
+# the moment it tried to collect any test that imports generate_notes.
+# The root requirements.txt is removed as of this same change — this
+# file is now the single source of truth, and deploy.yml references it
+# explicitly instead of relying on a second, separately-maintained copy.
+
+pytest>=8.0
+pytest-cov>=5.0
+beautifulsoup4>=4.12
+PyYAML>=6.0

@@ -1,0 +1,76 @@
+name: Python coverage
+
+# B-4b ("Code coverage tracking") — Python half.
+#
+# RELOCATED from python/.github/workflows/coverage.yml. That file's own
+# comment already named this exact move as the fix once the web/ and
+# python/ checkouts merged into one repo — they already had (per
+# HANDOFF.md: one monorepo, .github/, python/, web/ as top-level
+# siblings), the file just hadn't been moved yet. This is that move,
+# with the one change its own comment called for: `working-directory:
+# python` added to every step that needs it, since dashboard.py,
+# requirements.txt, .coveragerc, etc. now sit one level down from
+# this file instead of at the checkout root.
+#
+# Scope: this workflow covers the ONE real Python asset this repo has —
+# the generate_*.py / utils/ pipeline under python/ — using
+# python/requirements.txt for tooling (pytest, pytest-cov) and
+# python/.coveragerc to exclude tests/ itself from the coverage %
+# (a test file at "100%" only proves it ran, not that anything
+# meaningful is covered).
+#
+# Non-blocking by design, matching web/'s own ci.yml jobs (B-4a/B-4c)
+# and audit_content.py's existing "warnings don't block" philosophy —
+# a real coverage drop is visible in the job summary and uploaded
+# report; it doesn't turn CI red. A future ticket can add a real
+# threshold gate once there's an agreed target number.
+#
+# This also makes web/.github/workflows/ci.yml's disabled `python-tests`
+# placeholder job (T0-3) redundant — that job's own comment already
+# named this file as the eventual real replacement. Removed there as
+# part of this same change; see this repo's CHANGELOG.md.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python-coverage:
+    name: pytest + coverage (Python pipeline, B-4b)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Run pytest with coverage
+        run: |
+          python -m pytest \
+            --cov=. \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-report=html
+
+      - name: Add coverage % to the job summary
+        if: always()
+        run: python print_coverage_summary.py coverage.xml >> "$GITHUB_STEP_SUMMARY" || echo "coverage.xml not found — coverage run may have failed." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-coverage-report
+          path: |
+            python/coverage.xml
+            python/htmlcov/
+          retention-days: 14

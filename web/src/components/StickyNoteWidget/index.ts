@@ -1,0 +1,1 @@
+export { StickyNoteWidget } from './StickyNoteWidget';

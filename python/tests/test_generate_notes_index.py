@@ -65,9 +65,21 @@ def read_index(index_dir):
 
 
 def note_urls_in_sitemap(folder_name):
+    """
+    Matches the T5-2 clean-path sitemap shape: /notes/<folder> for
+    notes.html/lab.html content, /slides/<folder> for slides.html/
+    slides-overview.html content -- not the old data/notes/<folder>/
+    <file>.html shape. A folder with both notes.html and lab.html
+    dedupes to ONE /notes/<folder> entry (both map to the same route),
+    so this helper intentionally does not distinguish by file.
+    """
     import utils.sitemap as sitemap_utils
     urls = sitemap_utils.load_sitemap()
-    return [u for u in urls if f"data/notes/{folder_name}/" in u["loc"]]
+    return [
+        u for u in urls
+        if u["loc"].rstrip("/").endswith(f"/notes/{folder_name}")
+        or u["loc"].rstrip("/").endswith(f"/slides/{folder_name}")
+    ]
 
 
 # ── New folder: added, sitemap touched ─────────────────────────────────────

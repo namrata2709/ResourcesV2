@@ -1,0 +1,11 @@
+[run]
+# Coverage of the pipeline scripts/utils themselves, not of the tests
+# that exercise them -- a test file at "100%" just means every line of
+# the test ran, which isn't a meaningful coverage signal on its own.
+omit =
+    tests/*
+branch = True
+
+[report]
+precision = 1
+show_missing = True

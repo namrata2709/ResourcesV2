@@ -1445,8 +1445,8 @@ def get_output_path(md_path: str, slug: str) -> str:
     return os.path.join(folder, "notes.html")
 
 
-MARKDOWN_INBOX = "../src/data/notes/markdown"
-DSA_NOTES_ROOT = "../src/data/notes"
+MARKDOWN_INBOX = "../web/public/data/notes/markdown"
+DSA_NOTES_ROOT = "../web/public/data/notes"
 
 
 def scan_and_build_inbox():

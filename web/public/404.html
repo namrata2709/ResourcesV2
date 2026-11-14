@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+  GitHub Pages serves this file for any path it doesn't recognize as a
+  real static file — which, on a client-side-routed SPA, is every clean
+  path React Router owns (/notes-index/aws, /quiz-index, a bookmark, a
+  QR-code scan, a hard refresh). Without this, those all hard-404 at the
+  GitHub Pages server *before* React Router ever gets a chance to run.
+
+  Standard pattern (rafgraph/spa-github-pages): encode the real path into
+  a query string on a redirect to index.html, then index.html's own
+  matching snippet (see index.html's <head>) decodes it back via
+  history.replaceState before React mounts, so React Router sees the
+  original clean URL as if nothing happened.
+
+  pathSegmentsToKeep = 1: this is a GitHub Pages *project* site
+  (username.github.io/ResourcesV2/...), not a user/org root site, so the
+  first path segment (/ResourcesV2) must be preserved as-is and not
+  folded into the redirect encoding.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Notebook Buddy</title>
+    <script type="text/javascript">
+      var pathSegmentsToKeep = 1;
+
+      var l = window.location;
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+        l.hash
+      );
+    </script>
+  </head>
+  <body></body>
+</html>

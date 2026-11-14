@@ -1,8 +1,11 @@
 """
 parse_hands_on.py — Parses [hands-on] wrapper containing [project] blocks.
-Renders directly to static HTML — no JSON, no JS dependency.
+Renders to static HTML (unchanged) AND, as of T5-2 (2026-07-26), also
+persists the same already-structured project list to json/hands-on.json
+— the React Note page (T5-3a) needs real structured data to render from,
+not a scrape of the static HTML this module has always produced.
 Same model as parse_reflection.py (block syntax for clean authoring,
-Python converts to ready-to-render HTML).
+Python converts to ready-to-render HTML, now also to JSON).
 
 Markdown syntax:
 [hands-on]
@@ -24,6 +27,8 @@ title: Project 2: ...
 [/hands-on]
 """
 
+import json
+import os
 import re
 import html as html_mod
 
@@ -32,7 +37,12 @@ def parse_hands_on(body_md: str, output_dir: str = ".") -> tuple[str, str]:
     """
     Finds [hands-on]...[/hands-on] block, parses nested [project] blocks,
     returns (body_md_with_block_stripped, static_html_string).
-    output_dir kept for signature compatibility — no files written.
+
+    Side effect (T5-2): also writes json/hands-on.json under output_dir,
+    the same structured `projects` list build_hands_on_html() renders
+    from — output_dir was already a parameter (previously unused, kept
+    only "for signature compatibility"), so no call-site signature change
+    was needed to add this.
     """
     outer = re.compile(r'\[hands-on\]\s*(.+?)\s*\[/hands-on\]', re.DOTALL)
     outer_match = outer.search(body_md)
@@ -51,6 +61,13 @@ def parse_hands_on(body_md: str, output_dir: str = ".") -> tuple[str, str]:
 
     body_md = outer.sub("", body_md)
     html    = build_hands_on_html(projects)
+
+    if projects:
+        os.makedirs(os.path.join(output_dir, "json"), exist_ok=True)
+        out_path = os.path.join(output_dir, "json", "hands-on.json")
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump({"projects": projects}, f, indent=2, ensure_ascii=False)
+
     print(f"✅ hands-on: {len(projects)} projects rendered as static HTML")
     return body_md, html
 

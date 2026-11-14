@@ -631,6 +631,27 @@ def build_slides_html(fm: dict, body_md: str, subject: str = "aws") -> tuple:
     return html, slides
 
 
+# ─── OUTPUT: json/slides.json ───────────────────────────────────────────
+
+def write_slides_json(slides: list, output_dir: str) -> None:
+    """
+    Persists parse_slides_body()'s already-structured per-slide list to
+    json/slides.json — T5-2 (2026-07-26): the structured data has existed
+    in memory since parse_slide()/parse_slides_body() were first written;
+    this just adds the one json.dump() call needed for the React Slides
+    page (T5-4) to render from real structured content instead of a
+    scraped copy of slides.html.
+
+    Same output-dir convention as parse_mcq.py/parse_glossary.py/etc. —
+    a json/ subfolder inside the note's topic_root.
+    """
+    os.makedirs(os.path.join(output_dir, "json"), exist_ok=True)
+    out_path = os.path.join(output_dir, "json", "slides.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump({"slides": slides}, f, indent=2, ensure_ascii=False)
+    print(f"✅ slides.json written: {len(slides)} slides → {out_path}")
+
+
 # ─── OUTPUT: diagram-prompts.md ─────────────────────────────────────────
 
 def write_diagram_prompts(slides: list, output_dir: str, slug: str):

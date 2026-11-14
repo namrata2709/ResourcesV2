@@ -1,0 +1,1 @@
+export { DailyGoalWidget } from './DailyGoalWidget';

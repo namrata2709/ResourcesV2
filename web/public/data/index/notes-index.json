@@ -1,0 +1,425 @@
+{
+  "notes": [
+    {
+      "title": "Introduction To Ai & Machine Learning",
+      "folder": "aws-sample1-session-sample",
+      "subject": "aws",
+      "session": "Sample",
+      "date": "2026-07-05",
+      "lastModified": "2026-05-21",
+      "readTimeMinutes": 15,
+      "category": "Serverless",
+      "tags": [
+        "AWS",
+        "AI",
+        "Machine Learning",
+        "Generative AI",
+        "Bedrock",
+        "SageMaker",
+        "PartyRock",
+        "Responsible AI",
+        "LLM",
+        "re/Start"
+      ],
+      "hasImages": true,
+      "images": [
+        {
+          "name": "ec2 Api Response Structure",
+          "file": "ec2-api-response-structure.png"
+        },
+        {
+          "name": "Ecs Api Flow",
+          "file": "ecs-api-flow.png"
+        },
+        {
+          "name": "Iam Least Privilege",
+          "file": "iam-least-privilege.png"
+        },
+        {
+          "name": "Openclaw Debug Flow",
+          "file": "openclaw-debug-flow.png"
+        },
+        {
+          "name": "Openclaw Execution Flow",
+          "file": "openclaw-execution-flow.png"
+        },
+        {
+          "name": "Openclaw Full Architecture",
+          "file": "openclaw-full-architecture.png"
+        },
+        {
+          "name": "Openclaw Intro Overview",
+          "file": "openclaw-intro-overview.png"
+        },
+        {
+          "name": "Openclaw Skill Checks",
+          "file": "openclaw-skill-checks.png"
+        },
+        {
+          "name": "Openclaw Skill Folder",
+          "file": "openclaw-skill-folder.png"
+        },
+        {
+          "name": "Openclaw Vs Alternatives",
+          "file": "openclaw-vs-alternatives.png"
+        },
+        {
+          "name": "Openclaw What Is",
+          "file": "openclaw-what-is.png"
+        }
+      ],
+      "files": [
+        {
+          "name": "Lab",
+          "file": "lab.html",
+          "type": "lab",
+          "icon": "\ud83e\uddea"
+        }
+      ]
+    },
+    {
+      "title": "Introduction To Ai & Machine Learning",
+      "folder": "aws-sample2",
+      "subject": "aws",
+      "session": null,
+      "date": "2026-07-05",
+      "lastModified": "2026-05-21",
+      "readTimeMinutes": 15,
+      "category": "Serverless",
+      "tags": [
+        "AWS",
+        "AI",
+        "Machine Learning",
+        "Generative AI",
+        "Bedrock",
+        "SageMaker",
+        "PartyRock",
+        "Responsible AI",
+        "LLM",
+        "re/Start"
+      ],
+      "hasImages": true,
+      "images": [
+        {
+          "name": "Iam Advanced Overview",
+          "file": "iam-advanced-overview.png"
+        },
+        {
+          "name": "Iam Confused Deputy",
+          "file": "iam-confused-deputy.png"
+        },
+        {
+          "name": "Iam Cross Account Architecture",
+          "file": "iam-cross-account-architecture.png"
+        },
+        {
+          "name": "Iam Evaluation Flow",
+          "file": "iam-evaluation-flow.png"
+        },
+        {
+          "name": "Iam Mfa Condition Keys",
+          "file": "iam-mfa-condition-keys.png"
+        },
+        {
+          "name": "Iam Mfa Mechanisms",
+          "file": "iam-mfa-mechanisms.png"
+        },
+        {
+          "name": "Iam Permission Boundary Intersection",
+          "file": "iam-permission-boundary-intersection.png"
+        },
+        {
+          "name": "Iam Role Assumption Drop",
+          "file": "iam-role-assumption-drop.png"
+        },
+        {
+          "name": "Iam Security Stack",
+          "file": "iam-security-stack.png"
+        },
+        {
+          "name": "Iam Session Policy Flow",
+          "file": "iam-session-policy-flow.png"
+        }
+      ],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "\ud83d\udcc4"
+        }
+      ]
+    },
+    {
+      "title": "Docker Migration",
+      "folder": "aws-docker-migration-session-restart-module-lab",
+      "subject": "aws",
+      "session": "Restart Module Lab",
+      "date": "2026-07-04",
+      "lastModified": "2026-07-01",
+      "readTimeMinutes": 27,
+      "category": "Containers",
+      "tags": [
+        "Docker",
+        "Containers",
+        "Amazon ECR",
+        "AWS Labs"
+      ],
+      "hasImages": true,
+      "images": [
+        {
+          "name": "Ai Umbrella Diagram",
+          "file": "ai-umbrella-diagram.png"
+        },
+        {
+          "name": "Ai Vs Pseudo Intelligence",
+          "file": "ai-vs-pseudo-intelligence.png"
+        },
+        {
+          "name": "Aws Aiml Stack",
+          "file": "aws-aiml-stack.png"
+        },
+        {
+          "name": "Aws Stack Comparison",
+          "file": "aws-stack-comparison.png"
+        },
+        {
+          "name": "Foundation Model Flow",
+          "file": "foundation-model-flow.png"
+        },
+        {
+          "name": "Ml Decision Tree",
+          "file": "ml-decision-tree.png"
+        },
+        {
+          "name": "Ml Training Inference Flow",
+          "file": "ml-training-inference-flow.png"
+        },
+        {
+          "name": "Responsible Ai Pillars",
+          "file": "responsible-ai-pillars.png"
+        },
+        {
+          "name": "Session Summary Mindmap",
+          "file": "session-summary-mindmap.png"
+        }
+      ],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "\ud83d\udcc4"
+        }
+      ]
+    },
+    {
+      "title": "Introduction To Computing",
+      "folder": "aws-introduction-to-computing",
+      "subject": "aws",
+      "session": null,
+      "date": "2026-07-02",
+      "lastModified": "2026-07-02",
+      "readTimeMinutes": 15,
+      "category": "General",
+      "tags": [
+        "General"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Presentation",
+          "file": "slides.html",
+          "type": "slides",
+          "icon": "\ud83d\udda5\ufe0f"
+        }
+      ]
+    },
+    {
+      "title": "Introduction To Computing",
+      "folder": "aws-introduction-to-computing-session-foundation-canvas-slides",
+      "subject": "aws",
+      "session": "Foundation Canvas Slides",
+      "date": "2026-07-02",
+      "lastModified": "2026-07-02",
+      "readTimeMinutes": 15,
+      "category": "General",
+      "tags": [
+        "General"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Presentation",
+          "file": "slides.html",
+          "type": "slides",
+          "icon": "\ud83d\udda5\ufe0f"
+        }
+      ]
+    },
+    {
+      "title": "Introduction To Linux",
+      "folder": "aws-introduction-to-linux-session-foundation-canvas-slides",
+      "subject": "aws",
+      "session": "Foundation Canvas Slides",
+      "date": "2026-07-02",
+      "lastModified": "2026-07-02",
+      "readTimeMinutes": 15,
+      "category": "General",
+      "tags": [
+        "General"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Presentation",
+          "file": "slides.html",
+          "type": "slides",
+          "icon": "\ud83d\udda5\ufe0f"
+        }
+      ]
+    },
+    {
+      "title": "Openclaw Agents",
+      "folder": "aws-openclaw-agents-session-aws-user-group-mumbai",
+      "subject": "aws",
+      "session": "Aws User Group Mumbai",
+      "date": "2026-07-02",
+      "lastModified": "2026-06-27",
+      "readTimeMinutes": 15,
+      "category": "Machine Learning",
+      "tags": [
+        "AI Agents",
+        "AWS",
+        "OpenClaw",
+        "Bedrock AgentCore",
+        "Security"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "\ud83d\udcc4"
+        },
+        {
+          "name": "Presentation",
+          "file": "slides-overview.html",
+          "type": "slides",
+          "icon": "\ud83d\udda5\ufe0f"
+        }
+      ]
+    },
+    {
+      "title": "Openclaw Skill",
+      "folder": "aws-openclaw-skill",
+      "subject": "aws",
+      "session": null,
+      "date": "2026-07-02",
+      "lastModified": "2026-06-27",
+      "readTimeMinutes": 15,
+      "category": "Machine Learning",
+      "tags": [
+        "OpenClaw",
+        "AI Agents",
+        "DevOps",
+        "AWS SDK",
+        "Monitoring"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "\ud83d\udcc4"
+        }
+      ]
+    },
+    {
+      "title": "Openclaw Skill",
+      "folder": "aws-openclaw-skill-session-aws-user-group-mumbai",
+      "subject": "aws",
+      "session": "Aws User Group Mumbai",
+      "date": "2026-07-02",
+      "lastModified": "2026-06-27",
+      "readTimeMinutes": 15,
+      "category": "Machine Learning",
+      "tags": [
+        "OpenClaw",
+        "AI Agents",
+        "DevOps",
+        "AWS SDK",
+        "Monitoring"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "\ud83d\udcc4"
+        }
+      ]
+    },
+    {
+      "title": "Merge Sort",
+      "folder": "dsa-merge-sort",
+      "subject": "dsa",
+      "session": null,
+      "date": "2026-07-02",
+      "lastModified": "2026-06-23",
+      "readTimeMinutes": 15,
+      "category": "Sorting",
+      "tags": [
+        "sorting",
+        "divide and conquer",
+        "recursion",
+        "stable sort"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "\ud83d\udcc4"
+        }
+      ]
+    },
+    {
+      "title": "Linear Search",
+      "folder": "dsa-linear-search",
+      "subject": "dsa",
+      "session": null,
+      "date": "2026-06-30",
+      "lastModified": "2026-06-27",
+      "readTimeMinutes": 15,
+      "category": "Searching",
+      "tags": [
+        "searching",
+        "arrays",
+        "beginner",
+        "brute force"
+      ],
+      "hasImages": false,
+      "images": [],
+      "files": [
+        {
+          "name": "Notes",
+          "file": "notes.html",
+          "type": "notes",
+          "icon": "\ud83d\udcc4"
+        }
+      ]
+    }
+  ]
+}

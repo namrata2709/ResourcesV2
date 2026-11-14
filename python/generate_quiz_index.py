@@ -15,9 +15,17 @@ exactly once. What's new in this version:
   duplicate. A true duplicate (same title AND same topic, appearing in
   two different JSON files) is skipped with a warning; first file found
   wins.
-- Sitemap side still prunes any quiz.html?quiz=<stem> entry whose source
+- Sitemap side still prunes any /quiz/<stem> entry whose source
   JSON no longer exists (unchanged logic, just re-verified against the
-  new duplicate handling).
+  new duplicate handling; URL shape updated T5-2 2026-07-26 from the old
+  quiz.html?quiz=<stem> query-string form to the clean /quiz/:quizId
+  path T5-1's React route uses).
+- PY-1: each entry now also carries questionCount and estimatedMinutes,
+  mirroring what generate_notes.py's calculate_read_time() already does
+  for notes — question-count-based instead of word-count-based, since a
+  quiz has no prose to count words in. Feeds T3-4's reading-time-style
+  sort in QuizIndex.tsx, previously impossible because the index carried
+  no count at all.
 
 --rebuild: forces the sitemap side to start from an empty list (old
 "rebuild from scratch" behavior) instead of loading + upserting against
@@ -35,8 +43,21 @@ from pathlib import Path
 from utils.sitemap import add_url, remove_url, load_sitemap, write_sitemap
 from utils.site_config import BASE_URL
 
-ROOT     = "../src/data/quiz"
-OUTPUT   = "../src/data/index/quiz-index.json"
+ROOT     = "../web/public/data/quiz"
+OUTPUT   = "../web/public/data/index/quiz-index.json"
+
+# PY-1: tunable default, matching calculate_read_time()'s wpm=225 convention
+# in generate_notes.py — a single named constant, not a magic number inline.
+SECONDS_PER_QUESTION = 45
+
+
+def calculate_quiz_time(question_count: int, seconds_per_question: int = SECONDS_PER_QUESTION) -> dict:
+    """Question-count-based time estimate, the quiz equivalent of
+    generate_notes.py's word-count-based calculate_read_time(). Always at
+    least 1 minute, even for a 0- or 1-question quiz — never 0 or negative.
+    """
+    minutes = max(1, round(question_count * seconds_per_question / 60))
+    return {"question_count": question_count, "estimated_minutes": minutes}
 
 
 def main():
@@ -88,20 +109,28 @@ def main():
         stem = Path(filename).stem
         seen_stems.add(stem)
 
+        questions = data.get("questions", [])
+        question_count = len(questions) if isinstance(questions, list) else 0
+        quiz_time = calculate_quiz_time(question_count)
+
         entry = {"title": title, "file": stem, "topic": topic}
         if data.get("description"):
             entry["description"] = data["description"].strip()
+        entry["questionCount"] = quiz_time["question_count"]
+        entry["estimatedMinutes"] = quiz_time["estimated_minutes"]
         items.append(entry)
 
         urls = add_url(
             urls,
-            f"{BASE_URL}/quiz.html?quiz={stem}",
+            f"{BASE_URL}/quiz/{stem}",
             changefreq="monthly",
             priority="0.7",
         )
 
-    # ── Prune orphans: quiz.html?quiz=<stem> URLs whose JSON no longer exists ──
-    quiz_url_prefix = f"{BASE_URL}/quiz.html?quiz="
+    # ── Prune orphans: /quiz/<stem> URLs whose JSON no longer exists ──
+    # T5-2 (2026-07-26): clean-path shape (T5-1's /quiz/:quizId route),
+    # not the old quiz.html?quiz=<stem> query-string URL.
+    quiz_url_prefix = f"{BASE_URL}/quiz/"
     removed = 0
     for entry in list(urls):
         loc = entry["loc"]

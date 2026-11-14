@@ -65,11 +65,11 @@ from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
 
-NOTES_ROOT   = "../src/data/notes"
-QUIZ_ROOT    = "../src/data/quiz"
-NOTES_INDEX  = "../src/data/index/notes-index.json"
-QUIZ_INDEX   = "../src/data/index/quiz-index.json"
-CATEGORY_ICONS_PATH = "../src/data/config/category-icons.json"
+NOTES_ROOT   = "../web/public/data/notes"
+QUIZ_ROOT    = "../web/public/data/quiz"
+NOTES_INDEX  = "../web/public/data/index/notes-index.json"
+QUIZ_INDEX   = "../web/public/data/index/quiz-index.json"
+CATEGORY_ICONS_PATH = "../web/public/data/config/category-icons.json"
 REPORTS_DIR  = "../reports"
 
 CONTENT_TYPES = ("notes", "lab", "slides")

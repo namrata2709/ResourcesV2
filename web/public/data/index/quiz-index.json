@@ -1,0 +1,18 @@
+{
+  "Quizzes": [
+    {
+      "title": "Additional Networking Protocols",
+      "file": "additional_networking_protocols",
+      "topic": "Networking",
+      "questionCount": 5,
+      "estimatedMinutes": 4
+    },
+    {
+      "title": "Additional Networking Technologies",
+      "file": "additional_networking_technologies",
+      "topic": "Networking",
+      "questionCount": 5,
+      "estimatedMinutes": 4
+    }
+  ]
+}

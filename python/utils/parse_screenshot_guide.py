@@ -2,8 +2,14 @@
 parse_screenshot_guide.py — Parses [screenshot-guide] blocks from md body,
 writes screenshot-guide.md to the topic folder.
 
-Unlike other parsers, this produces a Markdown file (not JSON) — it's a
-human-readable capture guide for the trainer, not a data file for the JS.
+This produces a Markdown file (unchanged) — a human-readable capture
+guide for the trainer, not content the note page itself renders. As of
+T5-2 (2026-07-26), also persists the same structured `screenshots` list
+to json/screenshot-guide.json alongside the .md — additive, for any
+future consumer (e.g. a trainer-facing tool) that wants the structured
+form rather than parsing the markdown back out; the React Note page
+(T5-3a) has no current need to render this to end users, so this is
+data availability, not a rendering requirement.
 
 Markdown syntax (one block per screenshot, anywhere in the md body):
 
@@ -22,6 +28,7 @@ Fields:
   note  — optional extra instruction for the trainer (e.g. "Zoom in on the status badge")
 """
 
+import json
 import re
 import os
 
@@ -29,7 +36,8 @@ import os
 def parse_screenshot_guide(body_md: str, output_dir: str) -> str:
     """
     Finds all [screenshot-guide]...[/screenshot-guide] blocks in body_md.
-    Writes screenshot-guide.md to output_dir.
+    Writes screenshot-guide.md (unchanged) and json/screenshot-guide.json
+    (T5-2, new) to output_dir.
     Returns body_md with all [screenshot-guide] blocks stripped out.
     """
     pattern = re.compile(
@@ -51,6 +59,11 @@ def parse_screenshot_guide(body_md: str, output_dir: str) -> str:
         out_path = os.path.join(output_dir, "screenshot-guide.md")
         write_screenshot_guide(screenshots, out_path)
         print(f"✅ screenshot-guide.md written: {len(screenshots)} screenshots → {out_path}")
+
+        os.makedirs(os.path.join(output_dir, "json"), exist_ok=True)
+        json_path = os.path.join(output_dir, "json", "screenshot-guide.json")
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump({"screenshots": screenshots}, f, indent=2, ensure_ascii=False)
 
     return pattern.sub("", body_md)
 

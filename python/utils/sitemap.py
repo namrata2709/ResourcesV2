@@ -21,8 +21,7 @@ import os
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-SITEMAP_FILE = "../src/sitemap.xml"
-BASE_URL     = "https://namrata2709.github.io/ResourcesV2/src"
+SITEMAP_FILE = "../sitemap.xml"
 NS           = "http://www.sitemaps.org/schemas/sitemap/0.9"
 TODAY        = datetime.now().strftime('%Y-%m-%d')
 

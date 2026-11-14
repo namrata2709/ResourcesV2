@@ -1,5 +1,29 @@
 name: Deploy GitHub Pages
 
+# CORRECTED as part of the .github consolidation. What this workflow was
+# actually doing before this change, confirmed by reading it against the
+# real repo layout rather than assuming it worked:
+#   - `npm ci` / `npm run build` ran with no working-directory, so they
+#     used the ROOT package.json — whose only "build" script was
+#     `node tools/minify.js`, the LEGACY VANILLA build tool. Vanilla
+#     src/ has been permanently deleted (scrapped, not just frozen), so
+#     this step built nothing real — it was deploying dead tooling, not
+#     the actual React app.
+#   - `pip install -r requirements.txt` and the upload step's
+#     `path: ./dist` both assumed a root-level requirements.txt/dist —
+#     `dist/` never existed at the repo root at all; the real build
+#     output is web/dist/ (Vite's output directory).
+# Fixed: npm steps now target web/ explicitly (working-directory: web),
+# the upload path points at the real web/dist/, and the pip install
+# step references python/requirements.txt directly (the single real
+# requirements file — see that file's own comment for why a second,
+# separately-maintained root copy was removed rather than kept in sync).
+#
+# The root package.json, package-lock.json, and tools/minify.js were
+# deleted alongside this fix — their only purpose was this workflow's
+# old (wrong) build step; nothing else in the repo referenced them
+# except .vscode/tasks.json, which is updated in the same change.
+
 on:
   push:
     branches:
@@ -26,27 +50,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: pip install -r python/requirements.txt
+
+      - name: Run Python test suite
+        run: pytest python/tests/
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: web/package-lock.json
 
-      - name: Install dependencies
+      - name: Install web dependencies
+        working-directory: web
         run: npm ci
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Python dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run Python test suite
-        run: pytest python/tests/
-
-      - name: Build website
+      - name: Build the React app
+        working-directory: web
         run: npm run build
 
       - name: Configure GitHub Pages
@@ -55,7 +82,7 @@ jobs:
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: web/dist
 
       - name: Deploy
         id: deployment

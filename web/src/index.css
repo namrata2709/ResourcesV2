@@ -1,0 +1,305 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Notebook Buddy theme tokens.
+ *
+ * Per tailwind.config.js's comment left by T0-5: Tailwind's config is
+ * compiled at build time, so it can't react to [data-theme] swapping at
+ * runtime. Wired here via CSS custom properties instead — tailwind.config.js
+ * now points its color keys at these var()s, so `bg-bg-primary` etc. stay
+ * live across the light/dark/comfort cycle without a rebuild.
+ *
+ * Exact per-mode hex values are a documented INTERPRETATION of
+ * Brand_Guide.md §5 (Brand Colors) + §6 (Theme System), since the brand
+ * guide gives the core mascot/wordmark palette but not exact per-theme
+ * background/text hex values beyond "brighter/navy-near-black/warm cream
+ * background, same character colors." Flagged here for design review —
+ * swap these if the brand-kit sheet's exact swatches differ once legible.
+ */
+
+:root,
+[data-theme='light'] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f4ff;
+  --bg-card: rgba(255, 255, 255, 0.97);
+  --text-primary: #0f1f4e;
+  --text-secondary: #3d3d3d;
+  --text-muted: #64748b;
+  --border-color: rgba(15, 31, 78, 0.1);
+  --shadow: rgba(15, 31, 78, 0.12);
+  --primary: #7c4dff;
+  --primary-hover: #6a3fe0;
+  --accent: #512dab;
+  --accent-hover: #3f2287;
+}
+
+[data-theme='dark'] {
+  --bg-primary: #0b1330;
+  --bg-secondary: #0f1f4e;
+  --bg-card: #16224f;
+  --text-primary: #fff9ee;
+  --text-secondary: #e2d4c1;
+  --text-muted: #9aa5c9;
+  --border-color: rgba(255, 249, 238, 0.1);
+  --shadow: rgba(0, 0, 0, 0.4);
+  --primary: #9b7bff;
+  --primary-hover: #ab8fff;
+  --accent: #7c4dff;
+  --accent-hover: #6a3fe0;
+}
+
+[data-theme='comfort'] {
+  --bg-primary: #fff9ee;
+  --bg-secondary: #f6e9d8;
+  --bg-card: #fffdf7;
+  --text-primary: #3f2a12;
+  --text-secondary: #6a3e1e;
+  --text-muted: #8a6b52;
+  --border-color: rgba(106, 62, 30, 0.15);
+  --shadow: rgba(106, 62, 30, 0.15);
+  --primary: #7c4dff;
+  --primary-hover: #6a3fe0;
+  --accent: #ffb347;
+  --accent-hover: #e89c34;
+}
+
+/**
+ * P0-2 (Extended Theme & Appearance) — additive tokens layered on top of
+ * the light/dark/comfort blocks above, not a fourth theme. These live
+ * outside the [data-theme='...'] blocks on purpose: they're independent
+ * of which theme is active, set once at :root and then overridden either
+ * by an inline style (accent/radius — see lib/appearance.ts's
+ * applyAppearanceToDocument) or by a [data-density]/[data-animations]
+ * attribute (density/animations, below), never by data-theme.
+ *
+ * --card-radius default (1rem) intentionally matches the pre-P0-2
+ * hardcoded `rounded-2xl` on .module-card, so a first-run visitor with no
+ * saved appearancePrefs sees a pixel-identical dashboard.
+ */
+:root {
+  --card-radius: 1rem;
+  --card-gap: 0.75rem;      /* comfortable density default — was gap-3 */
+  --card-padding: 1.5rem;   /* comfortable density default — was p-6 */
+  --grid-gap: 1.25rem;      /* comfortable density default — was gap-5 */
+  --motion-duration: 150ms;
+}
+
+/**
+ * Compact density (AppearancePrefs.density === 'compact') tightens
+ * spacing without touching --card-radius or theme colors — set on
+ * <html data-density="compact"> by applyAppearanceToDocument().
+ */
+[data-density='compact'] {
+  --card-gap: 0.375rem;
+  --card-padding: 1rem;
+  --grid-gap: 0.75rem;
+}
+
+/**
+ * Animations off (AppearancePrefs.animations === false) collapses every
+ * transition/animation duration to 0 — set on <html data-animations="off">
+ * by applyAppearanceToDocument(). !important is required here: it's
+ * overriding Tailwind utility classes (duration-150, etc.) that are more
+ * specific per-element than this single global rule would otherwise beat.
+ */
+[data-animations='off'] *,
+[data-animations='off'] *::before,
+[data-animations='off'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/**
+ * P0-9 (Accessibility options) — real CSS consumption for the 5
+ * data-* attributes applyA11yToDocument() (lib/a11y.ts) already sets on
+ * <html>. Previously the data layer was correct (attributes really were
+ * being set) but nothing in any .css/.tsx file read any of them — this
+ * block is the actual fix. Same "lib drives state, CSS renders it" split
+ * already used above for [data-density]/[data-animations].
+ */
+
+/* High contrast — pushes text/border tokens to near-max contrast against
+ * the active theme's background, layered on top of whichever
+ * [data-theme] is current. Deliberately never touches --bg-primary,
+ * --primary, or --accent, so brand colors and the light/dark/comfort
+ * cycle stay exactly as they were; only the values that specifically
+ * govern text/border contrast move.
+ */
+[data-high-contrast='on'] {
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --text-muted: #1a1a1a;
+  --border-color: #000000;
+  --shadow: rgba(0, 0, 0, 0.55);
+}
+[data-theme='dark'][data-high-contrast='on'] {
+  --text-primary: #ffffff;
+  --text-secondary: #ffffff;
+  --text-muted: #f2f2f2;
+  --border-color: #ffffff;
+  --shadow: rgba(255, 255, 255, 0.35);
+}
+[data-high-contrast='on'] button,
+[data-high-contrast='on'] a,
+[data-high-contrast='on'] input,
+[data-high-contrast='on'] select,
+[data-high-contrast='on'] textarea,
+[data-high-contrast='on'] .module-card {
+  border: 2px solid var(--border-color) !important;
+}
+[data-high-contrast='on'] * {
+  text-shadow: none !important;
+}
+
+/* Reduced motion (manual toggle) — same zero-duration rule shape as
+ * [data-animations='off'] above, but intentionally a separate attribute
+ * so this toggle never silently shares state with P0-2's Appearance >
+ * Animations switch (see lib/a11y.ts's own header comment). The
+ * OS-level `prefers-reduced-motion` query lives in index.html and keeps
+ * applying independently of this attribute either way.
+ */
+[data-reduced-motion='on'] *,
+[data-reduced-motion='on'] *::before,
+[data-reduced-motion='on'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Focus mode — a bigger, higher-contrast focus ring than the browser
+ * default, site-wide, for anyone who loses track of keyboard focus.
+ * :focus-visible so it only shows for keyboard/programmatic focus, not
+ * every mouse click.
+ */
+[data-focus-mode='on'] :focus-visible {
+  outline: 3px solid var(--primary) !important;
+  outline-offset: 2px !important;
+  border-radius: 2px;
+}
+
+/* Dyslexia-friendly font — swaps body copy to Atkinson Hyperlegible
+ * (imported above, alongside Poppins), falling back to widely-shipped
+ * humanist sans if it fails to load. Scoped to running text (body copy
+ * and note prose), not headings/icons/module chrome, same "typography
+ * only touches prose" split P0-8's --reading-font-family already uses.
+ * !important is required to beat P0-8's own --reading-font-family value
+ * on .notes-body-prose specifically.
+ */
+[data-dyslexia-font='on'] body,
+[data-dyslexia-font='on'] .notes-body-prose {
+  font-family: 'Atkinson Hyperlegible', Verdana, Tahoma, sans-serif !important;
+}
+
+/* Larger UI — scales the root font size up so every rem-based
+ * measurement (type, spacing, rem-sized icons) grows with it. Left
+ * separate from [data-density]'s --card-gap/--card-padding/--grid-gap,
+ * which control spacing, not type/control scale.
+ */
+[data-larger-ui='on'] {
+  font-size: 112.5%;
+}
+
+/**
+ * In-quiz search/status-filter (Quiz.tsx) — mirrors quiz-search.js's
+ * `.search-hidden` class: a question card that doesn't match the current
+ * keyword search or answer-status filter is removed from layout entirely
+ * rather than just dimmed, matching the vanilla behavior exactly.
+ */
+.search-hidden {
+  display: none !important;
+}
+
+/**
+ * T5-3c-2: Tools > Print's "Notes only" mode on the Note page. Applied
+ * as a class on <body> right before window.print() and removed on the
+ * browser's `afterprint` event (see pages/Note/PrintPicker.tsx) — same
+ * "hook drives state, CSS renders it" split as the fullscreen-chrome
+ * rule below. Targets the same `data-module-tag` LiteModeSection.tsx
+ * (T5-3c-1) already stamps on every module section, per
+ * lib/moduleRegistry.ts's "one source, not two lists that can drift"
+ * instruction — print categorization and Lite Mode visibility read the
+ * exact same registry, just applied differently (Lite Mode hides
+ * interactive+links; this hides interactive+links only for the print
+ * pass, leaving the on-screen page untouched).
+ */
+body.print-core-only [data-module-tag='interactive'],
+body.print-core-only [data-module-tag='links'] {
+  display: none !important;
+}
+
+/**
+ * T5-4a: fullscreen chrome hiding for the Slides page. Driven by
+ * useFullscreenChrome's `fullscreenchange` listener (hooks/
+ * useFullscreenChrome.ts), which toggles this attribute on <body> — the
+ * CSS itself just renders whatever state that hook already decided,
+ * same "hook drives state, CSS renders it" split as the print-guard
+ * rules above.
+ *
+ * Selector list originally matched vanilla slides.js's own
+ * `nav.breadcrumb, .page-header, #footerRoot` exactly. NAV-1b retired
+ * the trail-nav half of Breadcrumb (`.breadcrumb` no longer renders
+ * anywhere — removed from this list), keeping only `.page-header`,
+ * now PageHeader's class. PLUS two additions with no vanilla
+ * equivalent, #appChromeHeader and #appSidebarNav (NAV-1a) — see the
+ * hook's header comment for why.
+ */
+body[data-fullscreen-chrome-hidden] .page-header,
+body[data-fullscreen-chrome-hidden] #footerRoot,
+body[data-fullscreen-chrome-hidden] #appChromeHeader,
+/* NAV-1a: the new sidebar/rail/bottom-tab-bar chrome should hide during
+   Slides fullscreen the same way #appChromeHeader already does — same
+   reasoning, this is SPA shell chrome, not part of the presentation. */
+body[data-fullscreen-chrome-hidden] #appSidebarNav {
+  display: none !important;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Poppins', sans-serif;
+  transition: background-color var(--motion-duration) ease, color var(--motion-duration) ease;
+}
+
+/**
+ * P0-8 (Reading Preferences) — font size / line height / font family for
+ * a note's body-prose content, plus overall content width for the note
+ * page's reading column. lib/readingPreferences.ts's
+ * applyReadingPreferencesToDocument() sets the four --reading-* custom
+ * properties below at :root on every prefs change; two selectors
+ * deliberately split consumption the same "set globally, consume
+ * narrowly" way --accent/--card-radius already do, so nothing outside a
+ * note page is affected:
+ *   - `.notes-body-prose` (pages/Note/BodyProseModule.tsx's real
+ *     container) reads font-size/line-height/font-family — typography
+ *     only applies to prose text, not headers/buttons/module chrome.
+ *   - Note.tsx's own page wrapper reads --reading-content-width via a
+ *     Tailwind arbitrary-value class (max-w-[var(--reading-content-width)]),
+ *     replacing its previous hardcoded max-w-3xl — widening/narrowing the
+ *     whole reading column, same as any other "page width" preference.
+ *
+ * Defaults below (1.0625rem / 1.7 / inherit / 48rem) match
+ * DEFAULT_READING_PREFERENCES's own cssValue entries exactly — 48rem is
+ * also literally what max-w-3xl already computed to — so a first-run
+ * visitor with no saved readingPreferences sees no visual change from
+ * before this ticket landed.
+ */
+:root {
+  --reading-font-size: 1.0625rem;
+  --reading-line-height: 1.7;
+  --reading-font-family: inherit;
+  --reading-content-width: 48rem;
+}
+
+.notes-body-prose {
+  font-size: var(--reading-font-size);
+  line-height: var(--reading-line-height);
+  font-family: var(--reading-font-family);
+}

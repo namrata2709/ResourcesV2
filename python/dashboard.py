@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-dashboard.py — single CLI entry point for the Learning Dashboard's Python
-tooling. Lives in python/, same folder as every generator script it wraps.
+dashboard.py — single CLI entry point for Notebook Buddy's whole toolchain:
+the Python content pipeline AND the React/Vite app in web/. Lives in
+python/, same folder as every generator script it wraps.
 
 Usage (run from python/, or via dashboard.bat from anywhere in the repo):
     dashboard                     → show command list
@@ -30,17 +31,38 @@ Usage (run from python/, or via dashboard.bat from anywhere in the repo):
                                      before it runs.
     dashboard quiz    [--rebuild]
     dashboard sitemap [--rebuild]
+    dashboard popular-notes        → regenerate popular-notes.json (B-6)
+                                     from src/data/config/popular-notes-
+                                     curated.json + the current
+                                     notes-index.json. Not part of
+                                     `dashboard all` — run it explicitly
+                                     when the curated list changes.
+    dashboard cards                → regenerate dashboard-cards.json from
+                                     subjects.json (generate_dashboard_
+                                     cards.py) — real, but previously never
+                                     wired into dashboard.py. Not part of
+                                     `dashboard all`, same reasoning as
+                                     popular-notes.
     dashboard all     [--rebuild] → notes (scan mode), then quiz, then
                                      sitemap; stops immediately if any
                                      step fails
-    dashboard serve   [--dist] [--port 8000]
-                                   → serve src/ (default) or dist/ locally,
-                                     no more "cd src && python -m http.server"
+    dashboard package [--output PATH] [--strip-dead-code] [--keep-binaries]
+                                     [--no-minify]
+                                   → build a lean, filtered zip of the whole
+                                     repo for sharing in a Claude chat
+                                     (see package_for_claude.py)
     dashboard test    [-k EXPR] [--verbose]
                                    → run the pytest suite in python/tests/
-    dashboard build   [--open]    → run tools/minify.js, stop on first error
-                                     with a clearly bounded error block
-                                     (see cmd_build docstring below)
+
+  React app (web/) — thin wrappers over the real npm scripts (DX-3):
+    dashboard web-dev     [--port N] [--host H]
+                                   → `npm run dev` in web/ (Vite dev server)
+    dashboard web-build           → `npm run build` in web/ (tsc -b + vite
+                                     build); stops on first error, propagates
+                                     npm's exit code
+    dashboard web-preview [--port N] [--host H]
+                                   → `npm run preview` in web/ (serves the
+                                     built output; run web-build first)
 
 --rebuild on quiz/sitemap/notes is passed straight through to the
 underlying _index.py script — see each script's own docstring for exactly
@@ -50,15 +72,16 @@ so --rebuild never gets passed to it.
 """
 
 import argparse
+import shutil
 import subprocess
 import sys
 import os
+from pathlib import Path
 
 HERE      = os.path.dirname(os.path.abspath(__file__))   # .../python
 REPO_ROOT = os.path.dirname(HERE)                          # repo root
-SRC_DIR   = os.path.join(REPO_ROOT, "src")
-DIST_DIR  = os.path.join(REPO_ROOT, "dist")
-MARKDOWN_INBOX = os.path.join(SRC_DIR, "data", "notes", "markdown")
+WEB_DIR   = os.path.join(REPO_ROOT, "web")                # React/Vite app (package.json lives here)
+MARKDOWN_INBOX = os.path.join(WEB_DIR, "public", "data", "notes", "markdown")   # was src/data/notes/markdown before vanilla was deleted
 
 
 def run_script(script_name, extra_args=None):
@@ -104,7 +127,7 @@ def cmd_new_notes(args):
                 print(f"   - {f}")
         else:
             print(f"📭 Nothing waiting in {MARKDOWN_INBOX}.")
-            print(f"   Drop a new aws-<slug>.md or dsa-<slug>.md file there, then run this again.")
+            print("   Drop a new aws-<slug>.md or dsa-<slug>.md file there, then run this again.")
     else:
         print(f"⚠️  Inbox folder doesn't exist yet: {MARKDOWN_INBOX}")
 
@@ -122,6 +145,69 @@ def cmd_quiz(args):
 
 def cmd_sitemap(args):
     return run_script("generate_sitemap.py", ["--rebuild"] if args.rebuild else [])
+
+
+def cmd_popular_notes(args):
+    """
+    Cross-references src/data/config/popular-notes-curated.json against
+    the current notes-index.json to (re)write popular-notes.json (B-6).
+    Not part of `dashboard all` — it has its own hand-curated input file
+    to edit (adding/removing a folder slug), not something that changes
+    just because notes/quiz/sitemap were regenerated. Run it explicitly
+    whenever the curated list itself changes, or after a note referenced
+    in it gets renamed/recategorized and needs its resolved fields
+    refreshed.
+    """
+    return run_script("generate_popular_notes.py")
+
+
+def cmd_cards(args):
+    """
+    Regenerates dashboard-cards.json from subjects.json (generate_dashboard_
+    cards.py) — confirmed real this audit, but previously never wired into
+    dashboard.py at all (no subcommand existed for it, even though notes/
+    quiz/sitemap/popular-notes all had one). Adding a subject to
+    subjects.json is enough; no manual dashboard-cards.json edit needed.
+    Every non-subject ("standalone") card already in the output file — e.g.
+    quiz, calendar — round-trips untouched, since this script has no source
+    of truth for those beyond the existing file itself. Not part of
+    `dashboard all`, same reasoning as popular-notes: it has its own input
+    (subjects.json) that doesn't change just because notes/quiz/sitemap did.
+    """
+    return run_script("generate_dashboard_cards.py")
+
+
+def cmd_package(args):
+    """
+    Builds a lean, filtered zip of the whole repo for sharing in a Claude
+    chat (package_for_claude.py) — excludes node_modules/.venv/.git/dist/
+    caches, applies safe comment-preserving whitespace minification to
+    text/code files, and compacts JSON structurally. See
+    package_for_claude.py's own module docstring for exactly what's
+    excluded and why.
+    """
+    import package_for_claude as pfc
+
+    output = os.path.abspath(args.output) if args.output else os.path.join(REPO_ROOT, "ResourcesV2-lean.zip")
+    report = pfc.package(
+        Path(output),
+        minify=not args.no_minify,
+        keep_binaries=args.keep_binaries,
+        strip_dead_code=args.strip_dead_code,
+        extra_exclude_files=set(args.exclude_file),
+    )
+
+    def mb(n):
+        return f"{n / (1024 * 1024):.2f} MB"
+
+    zip_size = os.path.getsize(output)
+    print(f"Source tree read:     {mb(report.bytes_before)}")
+    print(f"Copied into package:  {mb(report.bytes_after)}  ({report.files_copied} files)")
+    print(f"  minified (text):    {report.files_minified}")
+    print(f"  compacted (JSON):   {report.files_json_compacted}")
+    print(f"  binaries skipped:   {report.files_skipped_binary}")
+    print(f"Final zip:            {mb(zip_size)}  -> {output}")
+    return 0
 
 
 def cmd_audit(args):
@@ -160,23 +246,6 @@ def cmd_all(args):
     return 0
 
 
-def cmd_serve(args):
-    target = DIST_DIR if args.dist else SRC_DIR
-    if not os.path.isdir(target):
-        print(f"❌ {target} doesn't exist. "
-              f"{'Run `dashboard build` first.' if args.dist else ''}")
-        return 1
-    label = "dist/" if args.dist else "src/"
-    print(f"Serving {label} at http://localhost:{args.port}  (Ctrl+C to stop)")
-    try:
-        return subprocess.run(
-            [sys.executable, "-m", "http.server", str(args.port)],
-            cwd=target,
-        ).returncode
-    except KeyboardInterrupt:
-        return 0
-
-
 def cmd_test(args):
     cmd = [sys.executable, "-m", "pytest"]
     if args.verbose:
@@ -186,56 +255,83 @@ def cmd_test(args):
     return subprocess.run(cmd, cwd=HERE).returncode
 
 
-def cmd_build(args):
+def run_npm_script(script, extra_args=None):
     """
-    Runs tools/minify.js and fails fast.
+    Runs `npm run <script> [-- <extra_args>]` inside web/ and returns npm's
+    exit code — unchanged, so `dashboard web-build` fails exactly when
+    `npm run build` fails. Output streams live (no capture): unlike the
+    old vanilla-site build command (removed — vanilla src/ was scrapped
+    and permanently deleted, see CHANGELOG.md), tsc/vite already print
+    one clean, ordered error block.
 
-    The original complaint: when minify.js hits a parse error partway
-    through a file, Node's stack trace mixes the *original* file's line
-    number with whatever internal line count minify.js/terser is tracking
-    (e.g. "line 300" reported against a 100-line file) — and because the
-    script kept going after the first failure, several of these mixed-up
-    traces end up stacked in the terminal, making it hard to tell which
-    error is which or where to actually scroll to.
-
-    This wrapper doesn't fix minify.js's own line-number reporting (that
-    needs an edit inside tools/minify.js itself — happy to do that too if
-    you upload it) — but it does two things immediately, without touching
-    minify.js:
-      1. Captures all output instead of letting it stream live, so once
-         it fails you get ONE clearly bounded error block instead of
-         output interleaved across multiple file attempts.
-      2. Stops there — doesn't run cmd_serve/anything else afterward, and
-         propagates the real exit code, so a failed build is unambiguous
-         (no dist/ preview to "check sometimes" after a failed run — the
-         build command flat out won't get that far).
+    Fails with a plain message (exit 1) instead of a traceback when the
+    preconditions aren't met: no web/ folder, npm not on PATH, or
+    node_modules missing (npm would otherwise die with a cryptic
+    "vite: not found").
     """
-    print("Running build (tools/minify.js)...")
-    result = subprocess.run(
-        ["node", "tools/minify.js"],
-        cwd=REPO_ROOT,
-        capture_output=True,
-        text=True,
-    )
-    if result.stdout:
-        print(result.stdout)
+    if not os.path.isdir(WEB_DIR):
+        print(f"❌ {WEB_DIR} doesn't exist — expected the React app in web/ next to python/.")
+        return 1
 
-    if result.returncode != 0:
-        print("\n" + "=" * 60)
-        print("❌ BUILD FAILED — stopped at first error, full output below")
-        print("=" * 60)
-        print(result.stderr)
-        print("=" * 60)
-        return result.returncode
+    # shutil.which resolves npm.cmd on Windows, where plain "npm" won't spawn.
+    npm = shutil.which("npm")
+    if npm is None:
+        print("❌ npm not found on PATH — install Node.js, then re-run.")
+        return 1
 
-    print("✅ Build succeeded — dist/ is up to date.")
-    if args.open:
-        return cmd_serve(argparse.Namespace(dist=True, port=args.port))
+    if not os.path.isdir(os.path.join(WEB_DIR, "node_modules")):
+        print(f"❌ {os.path.join(WEB_DIR, 'node_modules')} is missing — "
+              f"run `npm install` in web/ first.")
+        return 1
+
+    cmd = [npm, "run", script]
+    if extra_args:
+        cmd += ["--"] + list(extra_args)
+    try:
+        return subprocess.run(cmd, cwd=WEB_DIR, check=False).returncode
+    except KeyboardInterrupt:
+        return 0   # Ctrl+C is the normal way to stop dev/preview servers
+
+
+def _vite_server_args(args):
+    """--port/--host → Vite CLI flags, only when the user actually gave them."""
+    extra = []
+    if args.port is not None:
+        extra += ["--port", str(args.port)]
+    if args.host:
+        extra += ["--host", args.host]
+    return extra
+
+
+def cmd_web_dev(args):
+    return run_npm_script("dev", _vite_server_args(args))
+
+
+def cmd_web_build(args):
+    print("Running React build (npm run build in web/)...")
+    rc = run_npm_script("build")
+    if rc != 0:
+        print(f"\n❌ WEB BUILD FAILED (exit {rc}) — see the output above.")
+        return rc
+    print("✅ Web build succeeded — web/dist/ is up to date.")
     return 0
 
 
-def main():
-    ap = argparse.ArgumentParser(prog="dashboard", description="Learning Dashboard CLI")
+def cmd_web_preview(args):
+    return run_npm_script("preview", _vite_server_args(args))
+
+
+def build_parser():
+    ap = argparse.ArgumentParser(
+        prog="dashboard",
+        description="Notebook Buddy CLI",
+        epilog=(
+            "Python content pipeline: notes, new-notes, quiz, sitemap, popular-notes, "
+            "cards, package, audit, all, test\n"
+            "React app (web/):        web-dev, web-build, web-preview"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     sub = ap.add_subparsers(dest="command")
 
     p_notes = sub.add_parser("notes", help="Markdown -> HTML, then reindex.")
@@ -260,6 +356,34 @@ def main():
                         help="Full rebuild from scratch instead of incremental.")
         p.set_defaults(func=fn)
 
+    p_popular = sub.add_parser(
+        "popular-notes",
+        help="Regenerate popular-notes.json from the curated folder list + notes-index.json (B-6)."
+    )
+    p_popular.set_defaults(func=cmd_popular_notes)
+
+    p_cards = sub.add_parser(
+        "cards",
+        help="Regenerate dashboard-cards.json from subjects.json (generate_dashboard_cards.py)."
+    )
+    p_cards.set_defaults(func=cmd_cards)
+
+    p_package = sub.add_parser(
+        "package",
+        help="Build a lean, filtered zip of the repo for sharing in a Claude chat."
+    )
+    p_package.add_argument("--output", type=str, default=None,
+                            help="Output .zip path (default: <repo root>/ResourcesV2-lean.zip).")
+    p_package.add_argument("--no-minify", action="store_true",
+                            help="Copy files verbatim, skip whitespace/JSON minification.")
+    p_package.add_argument("--keep-binaries", action="store_true",
+                            help="Include images/fonts/media instead of excluding them.")
+    p_package.add_argument("--strip-dead-code", action="store_true",
+                            help="Also exclude known-dead files (see package_for_claude.DEFAULT_DEAD_CODE).")
+    p_package.add_argument("--exclude-file", action="append", default=[],
+                            help="Extra repo-relative file path to exclude (repeatable).")
+    p_package.set_defaults(func=cmd_package)
+
     p_audit = sub.add_parser(
         "audit",
         help="Cross-repo validation report — missing images, broken links, "
@@ -270,22 +394,29 @@ def main():
                           help="Suppress per-finding console output, just show the summary.")
     p_audit.set_defaults(func=cmd_audit)
 
-    p_serve = sub.add_parser("serve", help="Serve src/ (default) or dist/ locally.")
-    p_serve.add_argument("--dist", action="store_true", help="Serve dist/ instead of src/.")
-    p_serve.add_argument("--port", type=int, default=8000)
-    p_serve.set_defaults(func=cmd_serve)
-
     p_test = sub.add_parser("test", help="Run the pytest suite in python/tests/.")
     p_test.add_argument("-k", type=str, default=None, help="Only run tests matching this expression.")
     p_test.add_argument("--verbose", action="store_true")
     p_test.set_defaults(func=cmd_test)
 
-    p_build = sub.add_parser("build", help="Run tools/minify.js, stop on first error.")
-    p_build.add_argument("--open", action="store_true", help="Serve dist/ after a successful build.")
-    p_build.add_argument("--port", type=int, default=8000)
-    p_build.set_defaults(func=cmd_build)
+    for name, fn, helptext in (
+        ("web-dev", cmd_web_dev, "React app: start the Vite dev server (npm run dev in web/)."),
+        ("web-preview", cmd_web_preview, "React app: serve the built output (npm run preview in web/)."),
+    ):
+        p = sub.add_parser(name, help=helptext)
+        p.add_argument("--port", type=int, default=None, help="Override Vite's default port.")
+        p.add_argument("--host", type=str, default=None, help="Bind address (e.g. 0.0.0.0 to expose on the LAN).")
+        p.set_defaults(func=fn)
 
-    args = ap.parse_args()
+    p_web_build = sub.add_parser("web-build", help="React app: type-check + production build (npm run build in web/).")
+    p_web_build.set_defaults(func=cmd_web_build)
+
+    return ap
+
+
+def main(argv=None):
+    ap = build_parser()
+    args = ap.parse_args(argv)
 
     if not args.command:
         ap.print_help()

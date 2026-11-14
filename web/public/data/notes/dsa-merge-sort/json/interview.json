@@ -1,0 +1,17 @@
+{
+  "title": "Merge Sort Interview Prep",
+  "questions": [
+    {
+      "id": "i1",
+      "question": "Why is merge sort preferred over quicksort when worst-case guarantees matter?",
+      "answer": "Merge sort's worst-case time complexity is always O(n log n), regardless of the input's initial order. Quicksort's average case is O(n log n) too, but its worst case degrades to O(n^2) on already-sorted or adversarially-chosen input unless a randomized or median-of-medians pivot strategy is used.",
+      "tips": "Mention that this trade-off comes at the cost of merge sort's O(n) extra space, versus quicksort's typical O(log n) space."
+    },
+    {
+      "id": "i2",
+      "question": "How would you sort a linked list with merge sort, and why is it a natural fit?",
+      "answer": "Find the middle node with the slow/fast pointer technique, split the list into two halves, sort each half recursively, then merge the two sorted halves by relinking nodes. It's a natural fit because merging two sorted linked lists needs no extra array — just pointer rewiring — so merge sort on a linked list can run in O(1) extra space, unlike the array version.",
+      "tips": "Contrast this with quicksort on a linked list, which is awkward because linked lists don't support efficient random access for partitioning."
+    }
+  ]
+}

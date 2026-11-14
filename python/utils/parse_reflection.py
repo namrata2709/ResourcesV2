@@ -1,8 +1,9 @@
 """
 parse_reflection.py — Parses [reflection] blocks from md body.
-Unlike other parsers, reflection questions are rendered to STATIC HTML
-(no JSON, no JS dependency). The entire Reflection Questions section is
-replaced with a pre-built HTML block containing hint-reveal details elements.
+Renders to STATIC HTML (unchanged) AND, as of T5-2 (2026-07-26), also
+persists the same already-structured questions list to
+json/reflection.json — the React Note page (T5-3a) needs real
+structured data to render from, not a scrape of the static HTML.
 
 Markdown syntax:
 [reflection]
@@ -16,15 +17,24 @@ hint: Consider statefulness and where each operates in the network stack.
 [/reflection]
 """
 
+import json
+import os
 import re
 import html as html_mod
 
 
-def parse_reflection(body_md: str) -> tuple[str, list[dict]]:
+def parse_reflection(body_md: str, output_dir: str = None) -> tuple[str, list[dict]]:
     """
     Finds all [reflection]...[/reflection] blocks in body_md.
     Returns (body_md_with_blocks_stripped, list_of_question_dicts).
-    Does NOT write any JSON — caller builds static HTML from the list.
+    Caller still builds static HTML from the list via
+    build_reflection_html(), unchanged.
+
+    Side effect (T5-2): when output_dir is given, also writes
+    json/reflection.json with the same structured questions list — a
+    strictly additive change; passing no output_dir (the previous
+    default, and every existing call site before this ticket) preserves
+    the old "no JSON, static HTML only" behavior exactly.
     """
     pattern = re.compile(r'\[reflection\]\s*(.+?)\s*\[/reflection\]', re.DOTALL)
     blocks = pattern.findall(body_md)
@@ -39,7 +49,15 @@ def parse_reflection(body_md: str) -> tuple[str, list[dict]]:
             questions.append(q)
 
     body_md = pattern.sub("", body_md)
-    print(f"✅ reflection: {len(questions)} questions parsed (static HTML, no JSON)")
+
+    if output_dir and questions:
+        os.makedirs(os.path.join(output_dir, "json"), exist_ok=True)
+        out_path = os.path.join(output_dir, "json", "reflection.json")
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump({"questions": questions}, f, indent=2, ensure_ascii=False)
+
+    print(f"✅ reflection: {len(questions)} questions parsed (static HTML" +
+          (", json/reflection.json written)" if output_dir and questions else ", no JSON)"))
     return body_md, questions
 
 

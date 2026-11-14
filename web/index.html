@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Favicon set — generated package (RealFaviconGenerator-style output),
+         see ASSET-TODO.md. Standard multi-size setup: .ico for legacy
+         browsers, .svg for modern ones that support it, explicit PNG
+         sizes for platforms that don't respect the SVG/ico fallback chain. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#7C4DFF" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- T3-2a: shared-meta.js's site-wide tags (identical on every vanilla
+         page), set once here instead of per-route — per-route tags
+         (title, description, canonical, OG title/image) are handled by
+         src/components/PageMeta instead, since those genuinely differ
+         per page. -->
+    <meta name="author" content="Namrata" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:site_name" content="Notebook Buddy" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <title>Notebook Buddy</title>
+
+    <style>
+      /* T3-2a: page-loader.js's hide behavior — #pageLoader starts visible
+         and covering the page, then fades out once
+         src/lib/pageLoader.ts's hidePageLoader() adds this class (either
+         right after the initial React render commits, or via the 5s
+         safety timeout, whichever fires first). Inline here (not in
+         index.css) so it's already in effect before any app CSS loads. */
+      #pageLoader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        transition: opacity 0.25s ease;
+      }
+      #pageLoader.page-loader--hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      /* T3-2a: plain theme-colored spinner — the actual build for this
+         ticket, not a placeholder. R4-2's mascot loading GIF (custom
+         asset work) is the only piece deferred; this spinner is what
+         ships until that lands. var(--accent) already has a safe
+         default via :root's light-theme block (src/index.css) even
+         before React mounts and applies [data-theme], so this never
+         renders unstyled. Shape mirrors lucide-react's Loader2 (a
+         circle with a gap, rotating) since that's the icon this ticket
+         uses everywhere else — reimplemented in plain SVG here since
+         this markup renders before the React/lucide-react bundle loads. */
+      #pageLoader svg {
+        width: 40px;
+        height: 40px;
+        color: var(--accent, #512dab);
+        animation: page-loader-spin 0.9s linear infinite;
+      }
+      @keyframes page-loader-spin {
+        to { transform: rotate(360deg); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #pageLoader svg { animation: none; }
+      }
+    </style>
+
+    <!--
+      Counterpart to public/404.html's redirect. Must run before
+      main.tsx/React Router mount, so it's an inline blocking script here
+      rather than something inside the app. If 404.html bounced here with
+      the real path packed into `?/...`, unpack it back into a normal
+      clean URL via history.replaceState — React Router then sees the
+      original URL and no one (including the user, watching the address
+      bar) ever notices the redirect happened. A direct, non-redirected
+      load of index.html (e.g. hitting / itself) has no `?/` to unpack
+      and this is a no-op.
+    -->
+    <script type="text/javascript">
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function (s) {
+            return s.replace(/~and~/g, '&');
+          }).join('?');
+          window.history.replaceState(
+            null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location));
+    </script>
+  </head>
+  <body>
+    <!-- T3-2a: page-loader.js's loader, shown until
+         src/lib/pageLoader.ts's hidePageLoader() fires. The spinner
+         below (styled in the <style> block above) is the real build for
+         this ticket; only R4-2's three theme GIFs — which would replace
+         it — are deferred custom-asset work. -->
+    <div id="pageLoader">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M12 2a10 10 0 0 1 10 10" />
+      </svg>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+{
+  "title": "Merge Sort — Check Your Understanding",
+  "topic": "DSA",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the time complexity of Merge Sort in the worst case?",
+      "multiSelect": false,
+      "options": [
+        {
+          "id": "a",
+          "text": "O(n)",
+          "isCorrect": false,
+          "explanation": { "why": "O(n) would mean a single pass suffices, but merge sort must divide and then merge across log n levels." }
+        },
+        {
+          "id": "b",
+          "text": "O(n log n)",
+          "isCorrect": true,
+          "explanation": { "why": "Each of the log n levels of recursion does O(n) work to merge, giving O(n log n) overall — and this holds in the worst case too, unlike quicksort." }
+        },
+        {
+          "id": "c",
+          "text": "O(n^2)",
+          "isCorrect": false,
+          "explanation": { "why": "O(n^2) describes simpler comparison sorts like bubble or insertion sort, not the divide-and-conquer structure of merge sort." }
+        },
+        {
+          "id": "d",
+          "text": "O(log n)",
+          "isCorrect": false,
+          "explanation": { "why": "O(log n) alone would ignore the linear merge work done at each level of recursion." }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "question": "Which of the following are true about Merge Sort? (select all that apply)",
+      "multiSelect": true,
+      "options": [
+        {
+          "id": "a",
+          "text": "It is a stable sort",
+          "isCorrect": true,
+          "explanation": { "why": "The merge step can always take from the left sub-array first on ties, preserving the original relative order of equal elements." }
+        },
+        {
+          "id": "b",
+          "text": "It sorts in place with O(1) extra space",
+          "isCorrect": false,
+          "explanation": { "why": "The standard merge step needs an auxiliary array to merge two sorted halves, so it uses O(n) extra space, not O(1)." }
+        },
+        {
+          "id": "c",
+          "text": "It uses a divide-and-conquer strategy",
+          "isCorrect": true,
+          "explanation": { "why": "Merge sort splits the array in half recursively (divide), sorts each half, then combines the results (conquer/merge)." }
+        }
+      ]
+    }
+  ]
+}

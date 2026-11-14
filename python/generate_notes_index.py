@@ -107,8 +107,8 @@ from utils.site_config import BASE_URL as _BASE_URL
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
-ROOT   = "../src/data/notes"
-OUTPUT = "../src/data/index/notes-index.json"
+ROOT   = "../web/public/data/notes"
+OUTPUT = "../web/public/data/index/notes-index.json"
 
 IMAGE_EXT     = (".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg")
 CONTENT_TYPES = ("notes", "lab", "slides")
@@ -301,7 +301,7 @@ def fallback_folder_date(base_path: str):
 # This script only needs the "keywords" side of it. Add a new category or
 # tweak its keywords in that JSON — no code change needed here.
 
-CATEGORY_ICONS_PATH = "../src/data/config/category-icons.json"
+CATEGORY_ICONS_PATH = "../web/public/data/config/category-icons.json"
 
 # Which category-icons.json keys belong to which subject, so an AWS folder
 # can't accidentally match a DSA-only category (e.g. "Queue") or vice versa.
@@ -696,24 +696,42 @@ def main():
 
     sitemap = [] if args.rebuild else load_sitemap()
     today = datetime.now().strftime("%Y-%m-%d")
-    note_prefix = f"{BASE_URL}data/notes/"
+
+    # T5-2 (2026-07-26): emit clean-path URLs matching the React routes
+    # each ticket now owns, not the old data/notes/<folder>/<file>.html
+    # shape. notes.html/lab.html both resolve to T5-3a's single
+    # /notes/:folder route; slides.html/slides-overview.html both
+    # resolve to T5-4's /slides/:folder route — deliberately deduped to
+    # one sitemap entry per folder per route (a folder with both
+    # notes.html and slides.html gets two distinct entries, one per
+    # route; a folder with both notes.html and lab.html — if that ever
+    # occurs — gets one, since both map to the identical /notes/:folder
+    # URL). T5-3a's own ticket note flags the exact notes.html-vs-
+    # lab.html URL shape as still an open question (possibly needing a
+    # further /:file segment) — this mapping is the conservative,
+    # currently-correct-per-ticket-text choice, not a guess past what's
+    # actually been decided.
+    NOTES_TYPES = {"notes", "lab"}
+    SLIDES_TYPES = {"slides"}
 
     touch_set = current_folders if args.rebuild else sitemap_touch_folders
     for note in notes:
         if note["folder"] not in touch_set:
             continue
-        for file in note["files"]:
-            url = f"{note_prefix}{note['folder']}/{file['file']}"
-            sitemap = add_url(sitemap, url, lastmod=today, priority="0.7")
+        file_types = {f["type"] for f in note["files"]}
+        if file_types & NOTES_TYPES:
+            sitemap = add_url(sitemap, f"{BASE_URL}notes/{note['folder']}", lastmod=today, priority="0.7")
+        if file_types & SLIDES_TYPES:
+            sitemap = add_url(sitemap, f"{BASE_URL}slides/{note['folder']}", lastmod=today, priority="0.7")
 
     removed = 0
     for folder in stale_folders:
-        folder_prefix = f"{note_prefix}{folder}/"
-        for entry in list(sitemap):
-            if entry["loc"].startswith(folder_prefix):
-                sitemap = remove_url(sitemap, entry["loc"])
-                removed += 1
-                print(f"  🗑️  Removed stale sitemap entry: {entry['loc']} (folder deleted)")
+        for prefix in (f"{BASE_URL}notes/{folder}", f"{BASE_URL}slides/{folder}"):
+            for entry in list(sitemap):
+                if entry["loc"].rstrip("/") == prefix.rstrip("/"):
+                    sitemap = remove_url(sitemap, entry["loc"])
+                    removed += 1
+                    print(f"  🗑️  Removed stale sitemap entry: {entry['loc']} (folder deleted)")
 
     if removed:
         print(f"  Pruned {removed} stale note URL(s) from sitemap")

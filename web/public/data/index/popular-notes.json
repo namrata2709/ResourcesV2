@@ -1,0 +1,40 @@
+{
+  "notes": [
+    {
+      "folder": "aws-openclaw-agents-session-aws-user-group-mumbai",
+      "title": "Openclaw Agents",
+      "subject": "aws",
+      "category": "Machine Learning",
+      "url": "/notes/aws-openclaw-agents-session-aws-user-group-mumbai",
+      "internal": true,
+      "curated": true
+    },
+    {
+      "folder": "dsa-merge-sort",
+      "title": "Merge Sort",
+      "subject": "dsa",
+      "category": "Sorting",
+      "url": "/notes/dsa-merge-sort",
+      "internal": true,
+      "curated": true
+    },
+    {
+      "folder": "aws-sample2",
+      "title": "Introduction To Ai & Machine Learning",
+      "subject": "aws",
+      "category": "Serverless",
+      "url": "/notes/aws-sample2",
+      "internal": true,
+      "curated": true
+    },
+    {
+      "folder": "dsa-linear-search",
+      "title": "Linear Search",
+      "subject": "dsa",
+      "category": "Searching",
+      "url": "/notes/dsa-linear-search",
+      "internal": true,
+      "curated": true
+    }
+  ]
+}

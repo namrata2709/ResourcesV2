@@ -1,0 +1,156 @@
+name: CI
+
+# B-4a needed somewhere to actually run the new visual-regression suite
+# — no CI config existed anywhere in the project before this (T0-3's own
+# entry in sprint-tickets.md already flags this as "genuinely
+# unverifiable... no .github/workflows/*.yml was ever included in any
+# upload"). This file is new infrastructure for that reason, not an
+# edit to something that already existed.
+#
+# B-4b added the `js-coverage` job below. Python coverage is reported
+# by a separate workflow, .github/workflows/coverage.yml, not a job in
+# this file — that's B-4b's Python half, using working-directory: python
+# to run the real pipeline's pytest suite. This file's own
+# `python-tests` placeholder job (T0-3) has been removed as of this
+# change: coverage.yml already runs the real suite for real, so a
+# separate disabled stub job explaining why it *couldn't* run was no
+# longer accurate. T0-3 itself is still open in a narrower sense —
+# coverage.yml runs non-blocking (continue-on-error: true), so it
+# reports Python test failures without gating a merge on them; a real
+# blocking pytest gate is still a separate, undecided ticket.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-unit-tests:
+    name: Lint + Vitest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test -- --run
+
+  js-coverage:
+    name: JS coverage (Vitest, B-4b)
+    runs-on: ubuntu-latest
+    needs: lint-and-unit-tests
+    # Non-blocking by design — B-4/B-4a/B-4b/B-4c's own ticket text is
+    # explicit that none of this ticket group should block deploy,
+    # matching audit_content.py's existing "warnings don't block"
+    # philosophy. A real drop in coverage is still clearly visible in
+    # the uploaded report and the job summary below; it just doesn't
+    # turn this workflow red. (A future ticket could add a real
+    # threshold gate on top of this once there's an agreed target
+    # number — deliberately not invented here.)
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:coverage
+      - name: Add coverage % to the job summary
+        if: always()
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            node -e "
+              const s = require('./coverage/coverage-summary.json').total;
+              const line = (label, m) => \`| \${label} | \${m.covered}/\${m.total} | \${m.pct}% |\`;
+              console.log('## JS coverage (Vitest)');
+              console.log('| Metric | Covered/Total | % |');
+              console.log('|---|---|---|');
+              console.log(line('Lines', s.lines));
+              console.log(line('Statements', s.statements));
+              console.log(line('Functions', s.functions));
+              console.log(line('Branches', s.branches));
+            " >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "coverage/coverage-summary.json not found — coverage run may have failed." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: js-coverage-report
+          path: coverage/
+          retention-days: 14
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    needs: lint-and-unit-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  visual-regression:
+    name: Visual regression (Playwright, B-4a)
+    runs-on: ubuntu-latest
+    needs: lint-and-unit-tests
+    # Non-blocking by design — B-4/B-4a/B-4b/B-4c's own ticket text is
+    # explicit that none of this ticket group should block deploy,
+    # matching audit_content.py's existing "warnings don't block"
+    # philosophy. A real diff is still clearly visible in the uploaded
+    # HTML report; it just doesn't turn this workflow red.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:visual
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+  lighthouse:
+    name: Lighthouse audits (B-4c)
+    runs-on: ubuntu-latest
+    needs: lint-and-unit-tests
+    # Non-blocking by design — same B-4 group philosophy as js-coverage
+    # and visual-regression above: a real regression is visible in the
+    # uploaded report, it just doesn't turn this workflow red. A future
+    # ticket can add real score thresholds once there's an agreed
+    # baseline (see M2-2's own note about recording a first baseline
+    # manually before automating a gate against it).
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Run Lighthouse CI
+        run: npx @lhci/cli@0.15.x autorun --config=./lighthouserc.json
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: lighthouse-report/
+          retention-days: 14

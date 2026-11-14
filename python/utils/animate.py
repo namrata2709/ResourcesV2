@@ -3,6 +3,14 @@ animate.py — Extracts [animation] block from topic md, assembles final
 animation HTML by inlining: animation-core.css, animation-core.js,
 the matching renderer-[type].js, and Claude's computeSteps().
 
+T1-4: the generated page also bootstraps its own [data-theme] from the
+same "theme" localStorage key the rest of the site uses (light/dark/
+comfort, default light) — see build_animation_html()'s inline <script>/
+<style>. This page is a standalone document (embedded via an <iframe> in
+DsaAnimation.tsx) so it does not inherit data-theme from any parent
+document automatically; it has to read localStorage and apply the
+attribute itself.
+
 Usage: python animate.py <topic-md-path>
 Output: data/notes/dsa-[slug]/[animation_name].html
 """
@@ -159,6 +167,15 @@ def build_animation_html(fm: dict, anim: dict, output_path_depth: str = "../../.
     re-downloading identical bytes inside every single animation HTML file.
     Only Claude's topic-specific computeSteps() differs per topic, so that
     is the only piece actually inlined.
+
+    T1-4: also inlines a theme-bootstrap <script> (reads localStorage's
+    "theme" key, sets data-theme on <html>) and a <style> block with the
+    same light/dark/comfort CSS variables the React app defines, so this
+    standalone page matches the site's current theme rather than always
+    rendering in whatever animation-core.css hardcodes. Both are inlined
+    (not linked) since they're small and need to run/apply before the
+    linked animation-core.css stylesheet, to avoid a flash of the wrong
+    theme.
     """
     title = fm.get("title", "Animation")
     anim_type = anim["type"]
@@ -177,6 +194,89 @@ def build_animation_html(fm: dict, anim: dict, output_path_depth: str = "../../.
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{title} — Animation</title>
+<script>
+// T1-4 — theme bootstrap. This standalone page does not inherit
+// [data-theme] from the parent app document (different <html> element,
+// loaded here as its own document, e.g. via DsaAnimation.tsx's iframe),
+// so it must read the same localStorage key the rest of the site writes
+// and apply it itself. Same key/values/fallback as lib/theme.ts's
+// getSavedTheme() (ported from js/shared/theme.js): key "theme", one of
+// "light" | "dark" | "comfort", default "light" if unset/invalid.
+// Runs synchronously before the stylesheet link below so the correct
+// theme is already set by the time CSS is applied — avoids a flash of
+// the wrong theme on load.
+(function() {{
+    var THEMES = ["light", "dark", "comfort"];
+    var theme = "light";
+    try {{
+        var saved = localStorage.getItem("theme");
+        if (THEMES.indexOf(saved) !== -1) {{
+            theme = saved;
+        }}
+    }} catch (e) {{
+        // Private-browsing / storage-disabled: fail silently, same as
+        // lib/theme.ts's getSavedTheme().
+    }}
+    document.documentElement.setAttribute("data-theme", theme);
+}})();
+</script>
+<style>
+/* T1-4 — shared theme tokens, ported 1:1 from web/web/src/index.css so
+   this standalone page has the same variables available regardless of
+   what animation-core.css itself currently does with them. If/when
+   animation-core.css's own hardcoded hex values are swapped for
+   var(--bg-primary) etc., these definitions are the source of truth to
+   match — kept here (rather than assuming animation-core.css already
+   defines them) since this generator has no way to verify that file's
+   contents at generation time. */
+:root,
+[data-theme="light"] {{
+    --bg-primary: #ffffff;
+    --bg-secondary: #f6f4ff;
+    --bg-card: rgba(255, 255, 255, 0.97);
+    --text-primary: #0f1f4e;
+    --text-secondary: #3d3d3d;
+    --text-muted: #64748b;
+    --border-color: rgba(15, 31, 78, 0.1);
+    --shadow: rgba(15, 31, 78, 0.12);
+    --primary: #7c4dff;
+    --primary-hover: #6a3fe0;
+    --accent: #512dab;
+    --accent-hover: #3f2287;
+}}
+[data-theme="dark"] {{
+    --bg-primary: #0b1330;
+    --bg-secondary: #0f1f4e;
+    --bg-card: #16224f;
+    --text-primary: #fff9ee;
+    --text-secondary: #e2d4c1;
+    --text-muted: #9aa5c9;
+    --border-color: rgba(255, 249, 238, 0.1);
+    --shadow: rgba(0, 0, 0, 0.4);
+    --primary: #9b7bff;
+    --primary-hover: #ab8fff;
+    --accent: #7c4dff;
+    --accent-hover: #6a3fe0;
+}}
+[data-theme="comfort"] {{
+    --bg-primary: #fff9ee;
+    --bg-secondary: #f6e9d8;
+    --bg-card: #fffdf7;
+    --text-primary: #3f2a12;
+    --text-secondary: #6a3e1e;
+    --text-muted: #8a6b52;
+    --border-color: rgba(106, 62, 30, 0.15);
+    --shadow: rgba(106, 62, 30, 0.15);
+    --primary: #7c4dff;
+    --primary-hover: #6a3fe0;
+    --accent: #ffb347;
+    --accent-hover: #e89c34;
+}}
+body {{
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}}
+</style>
 <link rel="stylesheet" href="{depth}css/notes/dsa/animation-core.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>

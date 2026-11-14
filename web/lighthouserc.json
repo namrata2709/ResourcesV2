@@ -1,0 +1,23 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "npm run preview -- --port 4173",
+      "startServerReadyPattern": "Local:",
+      "startServerReadyTimeout": 30000,
+      "url": [
+        "http://localhost:4173/ResourcesV2/",
+        "http://localhost:4173/ResourcesV2/notes-index",
+        "http://localhost:4173/ResourcesV2/quiz-index",
+        "http://localhost:4173/ResourcesV2/notes/dsa-merge-sort"
+      ],
+      "numberOfRuns": 1,
+      "settings": {
+        "chromeFlags": "--no-sandbox --headless=new"
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": "./lighthouse-report"
+    }
+  }
+}
