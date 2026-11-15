@@ -924,6 +924,17 @@ Two small, genuinely low-risk additions — not speculative product work, just p
 **Done when:** [x] deploy workflow runs the suite from `python/`; [x] conftest pins the directory; [x] regression test added and proven to fail without the fix; [ ] *(optional, low priority)* anchor each module's path constants on `Path(__file__)` so every script works from any directory.
 **Manual test:** push the change and confirm the Deploy workflow's "Run Python test suite" step passes; run `python -m pytest python/tests/ -q` from the repo root and from `python/`.
 
+### DX-7 — Flaky "saves scroll position" test failed on GitHub (new 2026-11-14)
+**Track:** DX · **Type:** Fix · **Status:** 🟡 Fix written, not yet pushed.
+**Real evidence (your log):** `ci.yml` "Lint + Vitest" failed with 1 test of 988: `Note > Reading progress (P0-3) > saves scroll position + timestamp …` at `Note.test.tsx:428` — `expected undefined to be 500`, 1078 ms. Cause: the test fires one scroll event as soon as the heading appears, but `useReadingProgress` attaches its listener in an effect a moment later on a slow runner; the event is lost. Reproduced the mechanism by delaying the listener 400 ms (old test fails with the same message; fixed test passes). The app code is correct.
+**Fix:** retry the scroll inside `waitFor` (timeout 4000) and restore `scrollY`; set `asyncUtilTimeout` to 4000 in `src/test/setup.ts`.
+**Done when:** [ ] both edits applied; [ ] `npm test` 119 files / 988 tests passed locally; [ ] the next two GitHub runs of "Lint + Vitest" are green.
+
+### DX-8 — Update GitHub Actions to Node 24 versions (new 2026-11-14)
+**Track:** DX · **Type:** Maintenance · **Status:** ⬜ Ready, low priority (it is only a warning today).
+**Scope:** checkout v5, setup-node v5, setup-python v6, upload-artifact v6, configure-pages v6, deploy-pages v5, upload-pages-artifact v5 (versions checked against each action's `action.yml`). Separate commit; Pages actions only run on `main`.
+**Done when:** [ ] the "Node.js 20 is deprecated" annotation is gone from all three workflows; [ ] a deploy on `main` still publishes the site.
+
 ### DX-4 — Local admin UI (run the Python pipeline from a browser, not the CLI)
 **Track:** DX · **Type:** Build, future · **Status:** ⬜ Not started — genuinely new, not recovered. Searched every uploaded doc for a prior mention of this idea; found nothing. Either it lived somewhere not currently uploaded to this session, or it was discussed but never written down. Captured fresh rather than treated as recoverable.
 **Real scope, as described directly:** a local (not deployed) web UI that runs the Python content pipeline — the same real operations `dashboard.py` already exposes (`notes`, `quiz`, `sitemap`, `audit`, `serve`, `test`, `build`, plus `DX-3`'s new web ones) — through a browser instead of CLI flags. Not a hosted admin panel, not authenticated, not deployed anywhere — a local-only dev tool.

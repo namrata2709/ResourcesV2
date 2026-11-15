@@ -415,20 +415,32 @@ describe('Note', () => {
       expect(stored).toMatchObject({ v: 1, percent: 40, timestamp: 1000 });
     });
 
-    it('saves scroll position + timestamp to readingProgress-folder-<folder> as the user scrolls', async () => {
+        it('saves scroll position + timestamp to readingProgress-folder-<folder> as the user scrolls', async () => {
       mockFetch({ checklist: 'missing', glossary: 'missing', interview: 'missing' });
       renderNote();
       await screen.findByRole('heading', { name: 'Merge Sort', level: 1 });
 
+      const originalScrollY = Object.getOwnPropertyDescriptor(window, 'scrollY');
       Object.defineProperty(window, 'scrollY', { configurable: true, value: 500 });
-      fireEvent.scroll(window);
-
-      await waitFor(() => {
-        const saved = JSON.parse(localStorage.getItem('readingProgress-folder-dsa-merge-sort') || '{}');
-        expect(saved.scrollY).toBe(500);
-        expect(saved.v).toBe(1);
-        expect(typeof saved.timestamp).toBe('number');
-      });
+      try {
+        // The hook attaches its scroll listener in an effect once the note is ready, which can
+        // land a moment AFTER the heading first appears (slow CI runners). A single scroll event
+        // sent before that is simply lost, so keep scrolling until the listener is there instead
+        // of firing once and hoping.
+        await waitFor(
+          () => {
+            fireEvent.scroll(window);
+            const saved = JSON.parse(localStorage.getItem('readingProgress-folder-dsa-merge-sort') || '{}');
+            expect(saved.scrollY).toBe(500);
+            expect(saved.v).toBe(1);
+            expect(typeof saved.timestamp).toBe('number');
+          },
+          { timeout: 4000 },
+        );
+      } finally {
+        if (originalScrollY) Object.defineProperty(window, 'scrollY', originalScrollY);
+        else delete (window as unknown as Record<string, unknown>).scrollY;
+      }
     });
 
     it('saves a final snapshot on unmount (navigating away) even without a prior scroll event', async () => {

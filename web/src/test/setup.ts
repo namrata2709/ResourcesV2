@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach } from 'vitest';
-import { cleanup } from '@testing-library/react';
+import { cleanup, configure } from '@testing-library/react';
+
+// GitHub's runners are slower than a dev machine; testing-library's default 1000ms wait
+// (waitFor / findBy*) is too tight there and caused an intermittent failure in CI.
+// This only changes how long a *failing* wait takes to give up, never a passing one.
+configure({ asyncUtilTimeout: 4000 });
 
 /**
  * Global test setup, loaded once via vitest.config.ts's setupFiles.
